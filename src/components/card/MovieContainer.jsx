@@ -1,28 +1,29 @@
-import React from 'react';
+import React from 'react'
 import MovieCard from './MovieCard';
+import { MOVIES } from '../../MoviesData';
 
-const MovieContainer = ({ movies, onDeleteMovie }) => {
-    const moviesMapped = movies.map((movie) => (
-        <MovieCard
-            key={movie.id}
-            id={movie.id}
-            title={movie.title}
-            synopsis={movie.synopsis}
-            durationMinutes={movie.durationMinutes}
-            genre={movie.genre}
-            imageUrl={movie.imageUrl}
-            releaseDate={movie.releaseDate}
-            isActive={movie.isActive}
-            onDelete={onDeleteMovie}
-        />
-    ));
+const MovieContainer = ({movies}) => {
 
-    return (
-        <div className="movies-grid">
-            {moviesMapped}
-        </div>
-    );
-};
+  const moviesMapped = movies.map((movie) => (
+    <MovieCard
+    key={movie.id}
+    title={movie.title}
+    synopsis={movie.synopsis}
+    durationMinutes={movie.durationMinutes} 
+    genre={movie.genre}
+    imageUrl={movie.imageUrl}
+    releaseDate={movie.releaseDate}
+    isActive={movie.isActive}
+    />
+  ));
 
-export default MovieContainer;
+return (
+    <div className="movies-grid">
+      {moviesMapped}
+    </div>
+  )
+}
+
+export default MovieContainer
+
 
