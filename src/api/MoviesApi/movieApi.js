@@ -41,5 +41,10 @@ export const deleteMovie = async (id) => {
     const response = await fetch(`${API_BASE}/${id}`, {
         method: "DELETE",
     });
-    if (!response.ok) throw new Error("Error al eliminar la película");
+    if (!response.ok) {
+        // Traemos el body de la respuesta para ver el detalle real que manda el backend
+        // (por ejemplo una excepción de FK si la película tiene tickets/funciones asociadas).
+        const detail = await response.text().catch(() => "");
+        throw new Error(`Error al eliminar la película (status ${response.status})${detail ? `: ${detail}` : ""}`);
+    }
 };

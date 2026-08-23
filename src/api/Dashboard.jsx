@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { getAllMovies, addMovie, deleteMovie } from './movieApi';
-import NewMovie from './NewMovie';
-import MovieContainer from './MovieContainer';
+import { getAllMovies, addMovie, deleteMovie, updateMovie } from './MoviesApi/movieApi';
+import NewMovie from './MoviesApi/NewMovie';
+import MovieContainer from './MoviesApi/MovieContainer';
 
-const Dashboard = () => {
+// readOnly: el panel de Usuario lo usa así — un cliente puede mirar el catálogo pero
+// no dar de alta/editar/borrar películas, eso queda para el panel de Admin.
+const Dashboard = ({ readOnly = false }) => {
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -35,6 +37,7 @@ const Dashboard = () => {
             console.error(err);
         }
     };
+    
 
     const handleDeleteMovie = async (id) => {
         try {
@@ -42,6 +45,16 @@ const Dashboard = () => {
             setMovies((prev) => prev.filter((m) => m.id !== id));
         } catch (err) {
             setError("Error al eliminar la película");
+            console.error(err);
+        }
+    };
+
+    const handleUpdateMovie = async (id, movie) => {
+        try {
+            await updateMovie(id, movie);
+            setMovies((prev) => prev.map((m) => (m.id === id ? { ...m, ...movie } : m)));
+        } catch (err) {
+            setError("Error al actualizar la película");
             console.error(err);
         }
     };
@@ -56,8 +69,12 @@ const Dashboard = () => {
                     {error}
                 </p>
             )}
-            <NewMovie onAddMovie={handleAddMovie} />
-            <MovieContainer movies={movies} onDeleteMovie={handleDeleteMovie} />
+            {!readOnly && <NewMovie onAddMovie={handleAddMovie} />}
+            <MovieContainer
+                movies={movies}
+                onDeleteMovie={readOnly ? undefined : handleDeleteMovie}
+                onEditMovie={readOnly ? undefined : handleUpdateMovie}
+            />
         </main>
     );
 };

@@ -1,36 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
-import { FIXED_TICKET_PRICE } from './NewTicket.data';
+import { initialForm, FIXED_TICKET_PRICE } from './NewTicket.data';
 import { getShowtimesByMovie, formatShowtime } from '../ShowtimesApi/showtimeApi';
 
-// Busca el nombre legible de una película/sala/usuario por id. Si todavía no llegó la
-// lista (o el id no matchea a nada), mostramos el GUID como fallback en vez de romper.
-const findLabel = (list, id, field) => {
-    const found = list.find((item) => item.id === id);
-    return found ? found[field] : id;
-};
+// fixedUserId: panel de Usuario — el ticket se crea siempre a nombre del usuario
+// logueado, así que ni mostramos el combo de "Usuario" ni dejamos elegir otro.
+// Tampoco elige la Sala directamente: elige un Horario (función) de la película, y la
+// Sala se completa sola con la que tiene asignada ese horario.
+const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUserId }) => {
 
-const TicketCard = ({
-    id,
-    movieId,
-    screenId,
-    userId,
-    buyDate,
-    finalPrice,
-    movies = [],
-    screens = [],
-    users = [],
-    fixedUserId,
-    onDelete,
-    onEdit
-}) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [form, setForm] = useState({ movieId, screenId, userId, buyDate, finalPrice, showtimeId: "" });
+    const [form, setForm] = useState(initialForm);
     const [showtimes, setShowtimes] = useState([]);
     const [isLoadingShowtimes, setIsLoadingShowtimes] = useState(false);
 
     useEffect(() => {
-        if (!fixedUserId || !isEditing || !form.movieId) {
+        if (!fixedUserId || !form.movieId) {
+            setShowtimes([]);
             return;
         }
 
@@ -40,12 +25,6 @@ const TicketCard = ({
             (data) => {
                 setShowtimes(data);
                 setIsLoadingShowtimes(false);
-                const match = data.find(
-                    (s) => s.screenId === form.screenId && s.startTime.substring(0, 10) === form.buyDate
-                );
-                if (match) {
-                    setForm((prev) => ({ ...prev, showtimeId: match.id }));
-                }
             },
             (err) => {
                 console.error(err);
@@ -54,7 +33,7 @@ const TicketCard = ({
             }
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fixedUserId, isEditing, form.movieId]);
+    }, [fixedUserId, form.movieId]);
 
     const handleChangeValue = (event, inputKey) => {
         setForm((prevForm) => ({
@@ -63,11 +42,13 @@ const TicketCard = ({
         }));
     }
 
+    // Al elegir película se resetean sala/horario ya elegidos (correspondían a otra película).
     const handleChangeMovie = (event) => {
-        const newMovieId = event.target.value;
-        setForm((prevForm) => ({ ...prevForm, movieId: newMovieId, showtimeId: "", screenId: "", buyDate: "" }));
+        const movieId = event.target.value;
+        setForm((prevForm) => ({ ...prevForm, movieId, showtimeId: "", screenId: "", buyDate: "" }));
     }
 
+    // Al elegir un horario, la sala y la fecha se completan solas con lo que tiene ese horario.
     const handleChangeShowtime = (event) => {
         const showtimeId = event.target.value;
         const showtime = showtimes.find((s) => s.id === showtimeId);
@@ -79,24 +60,30 @@ const TicketCard = ({
         }));
     }
 
-    const handleSave = () => {
-        // Mismo criterio que al crear: el cliente no puede tocar el precio.
-        onEdit(id, fixedUserId ? { ...form, userId: fixedUserId, finalPrice: FIXED_TICKET_PRICE } : form);
-        setIsEditing(false);
+    const handleAddTicket = (event) => {
+        event.preventDefault();
+        // El cliente no elige el precio: se lo pisamos siempre al precio fijo, aunque
+        // el input esté oculto (si alguien lo manipulara desde devtools, no sirve de nada).
+        onAddTicket(fixedUserId ? { ...form, userId: fixedUserId, finalPrice: FIXED_TICKET_PRICE } : form);
+        setForm(initialForm);
     }
 
-    if (isEditing) {
-        return (
-            <Card bg="dark" text="white" className="mb-3">
-                <Card.Body>
+    return (
+        <Card bg="dark" text="white" className="mb-4">
+            <Card.Body>
+                <Card.Title style={{ color: '#ffbd59' }}>Agregar Nuevo Ticket</Card.Title>
+
+                <Form onSubmit={handleAddTicket}>
                     <Row>
                         <Col md={fixedUserId ? 6 : 4}>
-                            <Form.Group className="mb-2">
+                            <Form.Group className="mb-3">
                                 <Form.Label>Película</Form.Label>
                                 <Form.Select
                                     value={form.movieId}
                                     onChange={fixedUserId ? handleChangeMovie : (event) => handleChangeValue(event, "movieId")}
+                                    required
                                 >
+                                    <option value="">Seleccionar película...</option>
                                     {movies.map((movie) => (
                                         <option key={movie.id} value={movie.id}>{movie.title}</option>
                                     ))}
@@ -106,16 +93,22 @@ const TicketCard = ({
 
                         {fixedUserId ? (
                             <Col md={6}>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-3">
                                     <Form.Label>Horario</Form.Label>
                                     <Form.Select
                                         value={form.showtimeId || ""}
                                         onChange={handleChangeShowtime}
                                         required
-                                        disabled={isLoadingShowtimes}
+                                        disabled={!form.movieId || isLoadingShowtimes}
                                     >
                                         <option value="">
-                                            {isLoadingShowtimes ? "Cargando horarios..." : "Seleccionar horario..."}
+                                            {!form.movieId
+                                                ? "Elegí una película primero..."
+                                                : isLoadingShowtimes
+                                                    ? "Cargando horarios..."
+                                                    : showtimes.length === 0
+                                                        ? "No hay horarios para esta película"
+                                                        : "Seleccionar horario..."}
                                         </option>
                                         {showtimes.map((showtime) => (
                                             <option key={showtime.id} value={showtime.id}>
@@ -127,9 +120,14 @@ const TicketCard = ({
                             </Col>
                         ) : (
                             <Col md={4}>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-3">
                                     <Form.Label>Sala</Form.Label>
-                                    <Form.Select value={form.screenId} onChange={(event) => handleChangeValue(event, "screenId")}>
+                                    <Form.Select
+                                        value={form.screenId}
+                                        onChange={(event) => handleChangeValue(event, "screenId")}
+                                        required
+                                    >
+                                        <option value="">Seleccionar sala...</option>
                                         {screens.map((screen) => (
                                             <option key={screen.id} value={screen.id}>{screen.name}</option>
                                         ))}
@@ -140,9 +138,14 @@ const TicketCard = ({
 
                         {!fixedUserId && (
                             <Col md={4}>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-3">
                                     <Form.Label>Usuario</Form.Label>
-                                    <Form.Select value={form.userId} onChange={(event) => handleChangeValue(event, "userId")}>
+                                    <Form.Select
+                                        value={form.userId}
+                                        onChange={(event) => handleChangeValue(event, "userId")}
+                                        required
+                                    >
+                                        <option value="">Seleccionar usuario...</option>
                                         {users.map((user) => (
                                             <option key={user.id} value={user.id}>{user.name}</option>
                                         ))}
@@ -151,48 +154,46 @@ const TicketCard = ({
                             </Col>
                         )}
                     </Row>
+
                     <Row>
                         {!fixedUserId && (
                             <Col md={6}>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-3">
                                     <Form.Label>Fecha de compra</Form.Label>
-                                    <Form.Control type="date" value={form.buyDate} onChange={(event) => handleChangeValue(event, "buyDate")} />
+                                    <Form.Control
+                                        type="date"
+                                        value={form.buyDate}
+                                        onChange={(event) => handleChangeValue(event, "buyDate")}
+                                        required
+                                    />
                                 </Form.Group>
                             </Col>
                         )}
                         <Col md={6}>
-                            <Form.Group className="mb-2">
+                            <Form.Group className="mb-3">
                                 <Form.Label>Precio Final</Form.Label>
                                 {fixedUserId ? (
                                     <Form.Control type="text" value={`$${FIXED_TICKET_PRICE} (precio fijo)`} disabled readOnly />
                                 ) : (
-                                    <Form.Control type="number" value={form.finalPrice} onChange={(event) => handleChangeValue(event, "finalPrice")} />
+                                    <Form.Control
+                                        type="number"
+                                        value={form.finalPrice}
+                                        onChange={(event) => handleChangeValue(event, "finalPrice")}
+                                        min="0"
+                                        step="0.01"
+                                    />
                                 )}
                             </Form.Group>
                         </Col>
                     </Row>
-                    <Button variant="success" className="me-2" onClick={handleSave}>Guardar</Button>
-                    <Button variant="secondary" onClick={() => setIsEditing(false)}>Cancelar</Button>
-                </Card.Body>
-            </Card>
-        );
-    }
 
-    return (
-        <Card bg="dark" text="white" className="mb-3">
-            <Card.Body>
-                <Card.Title>🎟️ {findLabel(movies, movieId, 'title')}</Card.Title>
-                <Card.Text as="div">
-                    <div>Sala: {findLabel(screens, screenId, 'name')}</div>
-                    {!fixedUserId && <div>Usuario: {findLabel(users, userId, 'name')}</div>}
-                    <div>Fecha de compra: {buyDate ? buyDate.substring(0, 10) : "-"}</div>
-                    <div>Precio final: ${finalPrice}</div>
-                </Card.Text>
-                <Button variant="outline-warning" className="me-2" onClick={() => setIsEditing(true)}>Editar</Button>
-                <Button variant="outline-danger" onClick={() => onDelete(id)}>Eliminar</Button>
+                    <Button type="submit" style={{ backgroundColor: '#ffbd59', border: 'none', color: '#000', fontWeight: 'bold' }}>
+                        Guardar Ticket
+                    </Button>
+                </Form>
             </Card.Body>
         </Card>
     );
 };
 
-export default TicketCard;
+export default NewTicket;
