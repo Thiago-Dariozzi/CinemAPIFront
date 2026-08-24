@@ -1,7 +1,7 @@
 import React from 'react';
 import MovieCard from './MovieCard';
 
-const MovieContainer = ({ movies, onDeleteMovie }) => {
+const MovieContainer = ({ movies, onDeleteMovie, onEditMovie }) => {
     const moviesMapped = movies.map((movie) => (
         <MovieCard
             key={movie.id}
@@ -14,6 +14,7 @@ const MovieContainer = ({ movies, onDeleteMovie }) => {
             releaseDate={movie.releaseDate}
             isActive={movie.isActive}
             onDelete={onDeleteMovie}
+            onEdit={onEditMovie}
         />
     ));
 

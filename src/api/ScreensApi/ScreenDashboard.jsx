@@ -57,6 +57,7 @@ const ScreenDashboard = () => {
                 </p>
             )}
             <NewScreen onAddScreen={handleAddScreen} />
+            {screens.length === 0 ? <p style={{ color: 'white', textAlign: 'center' }}>No hay salas cargadas</p> : null}
             <ScreenContainer screens={screens} onDeleteScreen={handleDeleteScreen} />
         </main>
     );

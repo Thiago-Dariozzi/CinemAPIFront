@@ -7,6 +7,7 @@ const initialForm = {
 
 const NewScreen = ({ onAddScreen }) => {
     const [form, setForm] = useState(initialForm);
+    const [error, setError] = useState(null)
 
     const handleChangeValue = (event, inputKey) => {
         setForm((prevForm) => ({
@@ -17,8 +18,23 @@ const NewScreen = ({ onAddScreen }) => {
 
     const handleAddScreen = (event) => {
         event.preventDefault();
+
+        if(form.name === ""){
+            setError("Nombre vacío")
+            return;
+           
+        }
+
+        if(form.capacity <=0){
+            setError("La capacidad debe ser mayor a 0")
+            return;
+        }
+
+
+
         onAddScreen(form);
         setForm(initialForm);
+        setError(null)
     };
 
     return (
@@ -32,6 +48,8 @@ const NewScreen = ({ onAddScreen }) => {
             fontFamily: 'sans-serif'
         }}>
             <h2 style={{ color: '#ffbd59', marginTop: 0, marginBottom: '20px' }}>Agregar Nueva Sala</h2>
+            {error ? <p style={{ color: 'red' }}>{error}</p> : null}
+
 
             <form onSubmit={handleAddScreen} style={{ color: 'white' }}>
                 <div style={{ marginBottom: '15px' }}>

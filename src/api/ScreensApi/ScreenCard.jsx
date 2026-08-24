@@ -19,7 +19,7 @@ const ScreenCard = ({
             <h2 style={{ color: '#ffbd59', marginTop: 0 }}>{name}</h2>
 
             <div style={{ marginBottom: '10px' }}>
-                <span>🪑 Capacidad: {capacity}</span>
+                <span> Capacidad: {capacity}</span>
             </div>
 
             <div style={{
@@ -36,7 +36,8 @@ const ScreenCard = ({
 
             {onDelete && (
                 <button
-                    onClick={() => onDelete(id)}
+                    onClick={() => {if (window.confirm("¿Estás seguro de eliminar esta sala?"))
+                         onDelete(id)}}
                     style={{
                         marginTop: '10px',
                         display: 'block',
