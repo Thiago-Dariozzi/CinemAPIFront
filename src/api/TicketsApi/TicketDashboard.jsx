@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import { getAllTickets, getTicketsByUser, addTicket, updateTicket, deleteTicket } from './TicketApi';
 import { getAllMovies } from '../MoviesApi/movieApi';
-import { getAllScreens } from '../ScreensApi/screenApi';
+import { getAllScreens } from '../ScreensApi/ScreenApi';
 import { getAllUsers } from '../UsersApi/UserApi';
 import NewTicket from './NewTicket';
 import TicketContainer from './TicketContainer';

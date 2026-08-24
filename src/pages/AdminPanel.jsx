@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { logout, getSession } from '../auth/session';
 import Dashboard from '../api/Dashboard';
+import ScreenDashboard from '../api/ScreensApi/ScreenDashboard';
 import TicketDashboard from '../api/TicketsApi/TicketDashboard';
 import UserDashboard from '../api/UsersApi/UserDashboard';
 
@@ -25,6 +26,7 @@ const AdminPanel = () => {
                 </div>
             </header>
             <Dashboard />
+            <ScreenDashboard />
             <TicketDashboard />
             <UserDashboard />
         </div>
