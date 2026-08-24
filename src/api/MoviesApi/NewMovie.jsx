@@ -6,6 +6,7 @@ import MovieContainer from './MovieContainer';
 const NewMovie = ({ onAddMovie }) => {
     
     const [form, setForm] = useState(initialForm);
+    const [error, setError] = useState(null);
 
     const handleChangeValue = (event, inputKey) => {
         setForm((prevForm) => ({
@@ -22,10 +23,28 @@ const NewMovie = ({ onAddMovie }) => {
     }
 
     const handleAddMovie = (event) => {
-        event.preventDefault();
-        onAddMovie(form);
-        setForm(initialForm); 
+    event.preventDefault();
+    
+    if (form.title === "") {
+        setError("El título es obligatorio");
+        return;
     }
+
+    if (form.genre === ""){
+        setError("El genero está vacío")
+        return;
+    }
+
+    if (form.durationMinutes <= 0) {
+        setError("La duración debe ser mayor a 0");
+        return;
+    }
+    
+    
+    setError(null);
+    onAddMovie(form);
+    setForm(initialForm);
+}
 
     return (
         <div style={{ 
@@ -39,6 +58,8 @@ const NewMovie = ({ onAddMovie }) => {
         }}>
             <h2 style={{ color: '#ffbd59', marginTop: 0, marginBottom: '20px' }}>Agregar Nueva Película</h2>
             
+            {error ? <p style={{ color: 'red' }}>{error}</p> : null}
+
             <form onSubmit={handleAddMovie} style={{ color: 'white' }}>
                 
                 {/* TÍTULO */}

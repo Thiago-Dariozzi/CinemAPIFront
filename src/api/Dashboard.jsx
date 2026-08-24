@@ -9,6 +9,7 @@ const Dashboard = ({ readOnly = false }) => {
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
 
     useEffect(() => {
         fetchMovies();
@@ -20,6 +21,7 @@ const Dashboard = ({ readOnly = false }) => {
             const data = await getAllMovies();
             setMovies(data);
             setError(null);
+
         } catch (err) {
             setError("No se pudo conectar con el servidor. ¿Está corriendo el backend?");
             console.error(err);
@@ -29,14 +31,15 @@ const Dashboard = ({ readOnly = false }) => {
     };
 
     const handleAddMovie = async (movie) => {
-        try {
-            const created = await addMovie(movie);
-            setMovies((prev) => [created, ...prev]);
-        } catch (err) {
-            setError("Error al agregar la película");
-            console.error(err);
-        }
-    };
+    try {
+        const created = await addMovie(movie);
+        setMovies((prev) => [created, ...prev]);
+        setSuccess("Película creada correctamente");   
+    } catch (err) {
+        setError("Error al agregar la película");
+        console.error(err);
+    }
+};
     
 
     const handleDeleteMovie = async (id) => {
@@ -69,7 +72,14 @@ const Dashboard = ({ readOnly = false }) => {
                     {error}
                 </p>
             )}
+            {success && (
+            <p style={{ color: '#2ecc71', textAlign: 'center', padding: '10px',
+                backgroundColor: '#1e1e1e', borderRadius: '8px', border: '1px solid #2ecc71' }}>
+                {success}
+            </p>
+)}
             {!readOnly && <NewMovie onAddMovie={handleAddMovie} />}
+             {movies.length === 0 ? <p style={{ color: 'white', textAlign: 'center' }}>No hay películas cargadas</p> : null}
             <MovieContainer
                 movies={movies}
                 onDeleteMovie={readOnly ? undefined : handleDeleteMovie}

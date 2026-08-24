@@ -103,7 +103,9 @@ const MovieCard = ({
 
                 {onDelete && (
                     <button
-                        onClick={() => onDelete(id)}
+                        onClick={() =>{
+                            if (window.confirm("¿Estás seguro de eliminar esta pelicula?"))
+                         onDelete(id)}}
                         style={{
                             marginTop: '10px',
                             padding: '8px 16px',
