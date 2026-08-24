@@ -1,19 +1,28 @@
-import React, { useState } from 'react'
-import { MOVIES } from './moviesData'
-import MovieContainer from './components/card/MovieContainer'
-import NewMovie from './components/card/NewMovie'
-import Dashboard from './components/card/Dashboard'
+import React from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Login from './auth/Login'
+import ProtectedRoute from './auth/ProtectedRoute'
+import { getSession } from './auth/session'
+import AdminPanel from './pages/AdminPanel'
+import UserPanel from './pages/UserPanel'
+
+const HomeRedirect = () => {
+  const session = getSession()
+  if (!session) return <Navigate to="/login" replace />
+  return <Navigate to={session.role === "Admin" ? "/admin" : "/panel"} replace />
+}
 
 const App = () => {
-  const [movies, setMovies] = useState(MOVIES) 
-  
   return (
-    <div>
-      <header className="app-header">
-        <h1 className="app-title">🎥 CinemAPI</h1>
-      </header>
-      <Dashboard />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+        <Route path="/panel" element={<ProtectedRoute><UserPanel /></ProtectedRoute>} />
+        <Route path="/" element={<HomeRedirect />} />
+        <Route path="*" element={<HomeRedirect />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
