@@ -7,6 +7,7 @@ const ScreenDashboard = () => {
     const [screens, setScreens] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
 
     useEffect(() => {
         fetchScreens();
@@ -30,6 +31,7 @@ const ScreenDashboard = () => {
         try {
             const created = await addNewScreen(screen);
             setScreens((prev) => [created, ...prev]);
+            setSuccess("Sala creada correctamente");
         } catch (err) {
             setError("Error al agregar la sala");
             console.error(err);
@@ -55,6 +57,12 @@ const ScreenDashboard = () => {
                     backgroundColor: '#1e1e1e', borderRadius: '8px', border: '1px solid #e74c3c' }}>
                     {error}
                 </p>
+            )}
+            {success && (
+            <p style={{ color: '#2ecc71', textAlign: 'center', padding: '10px',
+                backgroundColor: '#1e1e1e', borderRadius: '8px', border: '1px solid #2ecc71' }}>
+                {success}
+            </p>
             )}
             <NewScreen onAddScreen={handleAddScreen} />
             {screens.length === 0 ? <p style={{ color: 'white', textAlign: 'center' }}>No hay salas cargadas</p> : null}
