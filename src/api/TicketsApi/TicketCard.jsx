@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
-import { FIXED_TICKET_PRICE } from './NewTicket.data';
 import { getShowtimesByMovie, formatShowtime } from '../ShowtimesApi/showtimeApi';
 
-// Busca el nombre legible de una película/sala/usuario por id. Si todavía no llegó la
-// lista (o el id no matchea a nada), mostramos el GUID como fallback en vez de romper.
+// Busca el nombre legible de una película/sala/usuario por id. Si no aparece en la
+// lista es porque ese registro se borró (soft-delete) y el ticket quedó apuntando a
+// algo que ya no está activo — mostramos "(eliminado)" en vez del GUID crudo.
 const findLabel = (list, id, field) => {
     const found = list.find((item) => item.id === id);
-    return found ? found[field] : id;
+    return found ? found[field] : "(eliminado)";
 };
 
 const TicketCard = ({
@@ -44,7 +44,7 @@ const TicketCard = ({
                     (s) => s.screenId === form.screenId && s.startTime.substring(0, 10) === form.buyDate
                 );
                 if (match) {
-                    setForm((prev) => ({ ...prev, showtimeId: match.id }));
+                    setForm((prev) => ({ ...prev, showtimeId: match.id, finalPrice: match.price }));
                 }
             },
             (err) => {
@@ -65,9 +65,11 @@ const TicketCard = ({
 
     const handleChangeMovie = (event) => {
         const newMovieId = event.target.value;
-        setForm((prevForm) => ({ ...prevForm, movieId: newMovieId, showtimeId: "", screenId: "", buyDate: "" }));
+        setForm((prevForm) => ({ ...prevForm, movieId: newMovieId, showtimeId: "", screenId: "", buyDate: "", finalPrice: 0 }));
     }
 
+    // Al elegir un horario, sala/fecha/precio se completan solos con lo que tiene ese
+    // horario (mismo precio que ve Admin, no un valor fijo inventado por el front).
     const handleChangeShowtime = (event) => {
         const showtimeId = event.target.value;
         const showtime = showtimes.find((s) => s.id === showtimeId);
@@ -76,12 +78,12 @@ const TicketCard = ({
             showtimeId,
             screenId: showtime ? showtime.screenId : "",
             buyDate: showtime ? showtime.startTime.substring(0, 10) : "",
+            finalPrice: showtime ? showtime.price : 0,
         }));
     }
 
     const handleSave = () => {
-        // Mismo criterio que al crear: el cliente no puede tocar el precio.
-        onEdit(id, fixedUserId ? { ...form, userId: fixedUserId, finalPrice: FIXED_TICKET_PRICE } : form);
+        onEdit(id, fixedUserId ? { ...form, userId: fixedUserId } : form);
         setIsEditing(false);
     }
 
@@ -119,7 +121,7 @@ const TicketCard = ({
                                         </option>
                                         {showtimes.map((showtime) => (
                                             <option key={showtime.id} value={showtime.id}>
-                                                {formatShowtime(showtime.startTime)}
+                                                {formatShowtime(showtime.startTime)} — ${showtime.price}
                                             </option>
                                         ))}
                                     </Form.Select>
@@ -164,7 +166,12 @@ const TicketCard = ({
                             <Form.Group className="mb-2">
                                 <Form.Label>Precio Final</Form.Label>
                                 {fixedUserId ? (
-                                    <Form.Control type="text" value={`$${FIXED_TICKET_PRICE} (precio fijo)`} disabled readOnly />
+                                    <Form.Control
+                                        type="text"
+                                        value={form.showtimeId ? `$${form.finalPrice}` : "Elegí un horario primero..."}
+                                        disabled
+                                        readOnly
+                                    />
                                 ) : (
                                     <Form.Control type="number" value={form.finalPrice} onChange={(event) => handleChangeValue(event, "finalPrice")} />
                                 )}

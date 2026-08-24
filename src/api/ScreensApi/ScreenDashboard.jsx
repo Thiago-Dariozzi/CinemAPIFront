@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllScreens, addNewScreen, deleteScreen } from './ScreenApi';
+import { getAllScreens, addNewScreen, updateScreen, deleteScreen } from './ScreenApi';
 import NewScreen from './NewScreen';
 import ScreenContainer from './ScreenContainer';
 
@@ -38,6 +38,17 @@ const ScreenDashboard = () => {
         }
     };
 
+    const handleUpdateScreen = async (id, screen) => {
+        try {
+            await updateScreen(id, screen);
+            setScreens((prev) => prev.map((s) => (s.id === id ? { ...s, ...screen } : s)));
+            setSuccess("Sala actualizada correctamente");
+        } catch (err) {
+            setError("Error al actualizar la sala");
+            console.error(err);
+        }
+    };
+
     const handleDeleteScreen = async (id) => {
         try {
             await deleteScreen(id);
@@ -66,7 +77,7 @@ const ScreenDashboard = () => {
             )}
             <NewScreen onAddScreen={handleAddScreen} />
             {screens.length === 0 ? <p style={{ color: 'white', textAlign: 'center' }}>No hay salas cargadas</p> : null}
-            <ScreenContainer screens={screens} onDeleteScreen={handleDeleteScreen} />
+            <ScreenContainer screens={screens} onDeleteScreen={handleDeleteScreen} onEditScreen={handleUpdateScreen} />
         </main>
     );
 };

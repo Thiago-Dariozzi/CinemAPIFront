@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
-import { initialForm, FIXED_TICKET_PRICE } from './NewTicket.data';
+import { initialForm } from './NewTicket.data';
 import { getShowtimesByMovie, formatShowtime } from '../ShowtimesApi/showtimeApi';
 
 // fixedUserId: panel de Usuario — el ticket se crea siempre a nombre del usuario
 // logueado, así que ni mostramos el combo de "Usuario" ni dejamos elegir otro.
 // Tampoco elige la Sala directamente: elige un Horario (función) de la película, y la
-// Sala se completa sola con la que tiene asignada ese horario.
+// Sala y el Precio se completan solos con lo que tiene asignado ese horario.
 const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUserId }) => {
 
     const [form, setForm] = useState(initialForm);
@@ -42,13 +42,14 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
         }));
     }
 
-    // Al elegir película se resetean sala/horario ya elegidos (correspondían a otra película).
+    // Al elegir película se resetean sala/horario/precio ya elegidos (correspondían a otra película).
     const handleChangeMovie = (event) => {
         const movieId = event.target.value;
-        setForm((prevForm) => ({ ...prevForm, movieId, showtimeId: "", screenId: "", buyDate: "" }));
+        setForm((prevForm) => ({ ...prevForm, movieId, showtimeId: "", screenId: "", buyDate: "", finalPrice: 0 }));
     }
 
-    // Al elegir un horario, la sala y la fecha se completan solas con lo que tiene ese horario.
+    // Al elegir un horario, la sala, la fecha y el precio se completan solos con lo que
+    // tiene ese horario (mismo precio que ve Admin al crear tickets, no uno inventado).
     const handleChangeShowtime = (event) => {
         const showtimeId = event.target.value;
         const showtime = showtimes.find((s) => s.id === showtimeId);
@@ -57,14 +58,13 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
             showtimeId,
             screenId: showtime ? showtime.screenId : "",
             buyDate: showtime ? showtime.startTime.substring(0, 10) : "",
+            finalPrice: showtime ? showtime.price : 0,
         }));
     }
 
     const handleAddTicket = (event) => {
         event.preventDefault();
-        // El cliente no elige el precio: se lo pisamos siempre al precio fijo, aunque
-        // el input esté oculto (si alguien lo manipulara desde devtools, no sirve de nada).
-        onAddTicket(fixedUserId ? { ...form, userId: fixedUserId, finalPrice: FIXED_TICKET_PRICE } : form);
+        onAddTicket(fixedUserId ? { ...form, userId: fixedUserId } : form);
         setForm(initialForm);
     }
 
@@ -112,7 +112,7 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
                                         </option>
                                         {showtimes.map((showtime) => (
                                             <option key={showtime.id} value={showtime.id}>
-                                                {formatShowtime(showtime.startTime)}
+                                                {formatShowtime(showtime.startTime)} — ${showtime.price}
                                             </option>
                                         ))}
                                     </Form.Select>
@@ -173,7 +173,12 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
                             <Form.Group className="mb-3">
                                 <Form.Label>Precio Final</Form.Label>
                                 {fixedUserId ? (
-                                    <Form.Control type="text" value={`$${FIXED_TICKET_PRICE} (precio fijo)`} disabled readOnly />
+                                    <Form.Control
+                                        type="text"
+                                        value={form.showtimeId ? `$${form.finalPrice}` : "Elegí un horario primero..."}
+                                        disabled
+                                        readOnly
+                                    />
                                 ) : (
                                     <Form.Control
                                         type="number"

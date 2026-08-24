@@ -9,6 +9,7 @@ const mapShowtimeFromBackend = (showtime) => ({
     movieId: showtime.movieId,
     screenId: showtime.screenId,
     startTime: showtime.startTime,
+    price: showtime.price,
 });
 
 export const getShowtimesByMovie = (movieId, onSuccess, onError) => {

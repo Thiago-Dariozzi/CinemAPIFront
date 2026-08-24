@@ -1,7 +1,7 @@
 import React from 'react';
 import ScreenCard from './ScreenCard';
 
-const ScreenContainer = ({ screens, onDeleteScreen }) => {
+const ScreenContainer = ({ screens, onDeleteScreen, onEditScreen }) => {
     const screensMapped = screens.map((screen) => (
         <ScreenCard
             key={screen.id}
@@ -10,6 +10,7 @@ const ScreenContainer = ({ screens, onDeleteScreen }) => {
             capacity={screen.capacity}
             isActive={screen.isActive}
             onDelete={onDeleteScreen}
+            onEdit={onEditScreen}
         />
     ));
 
