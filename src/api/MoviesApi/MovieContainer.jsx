@@ -1,7 +1,7 @@
 import React from 'react';
 import MovieCard from './MovieCard';
 
-const MovieContainer = ({ movies, onDeleteMovie, onEditMovie }) => {
+const MovieContainer = ({ movies, genres = [], onDeleteMovie, onEditMovie }) => {
     const moviesMapped = movies.map((movie) => (
         <MovieCard
             key={movie.id}
@@ -9,9 +9,11 @@ const MovieContainer = ({ movies, onDeleteMovie, onEditMovie }) => {
             title={movie.title}
             synopsis={movie.synopsis}
             durationMinutes={movie.durationMinutes}
-            genre={movie.genre}
+            genreId={movie.genreId}
+            genres={genres}
             imageUrl={movie.imageUrl}
             releaseDate={movie.releaseDate}
+            suggestedPrice={movie.suggestedPrice}
             isActive={movie.isActive}
             onDelete={onDeleteMovie}
             onEdit={onEditMovie}

@@ -124,3 +124,119 @@ body {
   color: var(--danger);
   border: 1px solid var(--danger);
 }
+
+/* =========================================
+   REACT-DATEPICKER (tema oscuro a medida)
+   Selector de fecha para armar funciones (MovieFunctionsPanel). El !important en los
+   colores es a propósito: react-datepicker trae su propio CSS con la misma especificidad
+   que estas reglas, y no queremos depender de qué import gane por orden de carga.
+   ========================================= */
+.react-datepicker-popper {
+  z-index: 1000;
+}
+
+.react-datepicker {
+  background-color: var(--bg-card) !important;
+  border: 1px solid #444 !important;
+  border-radius: 8px !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-main) !important;
+}
+
+.react-datepicker-popper .react-datepicker__triangle {
+  stroke: #444 !important;
+}
+
+.react-datepicker-popper[data-placement^="bottom"] .react-datepicker__triangle,
+.react-datepicker-popper[data-placement^="top"] .react-datepicker__triangle {
+  fill: var(--bg-dark) !important;
+  color: var(--bg-dark) !important;
+}
+
+.react-datepicker__header {
+  background-color: var(--bg-dark) !important;
+  border-bottom: 1px solid var(--accent-gold) !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header {
+  color: var(--accent-gold) !important;
+}
+
+/* Selector de hora (showTimeSelectOnly): misma paleta que el calendario de fecha. */
+.react-datepicker__time-container .react-datepicker__time {
+  background-color: var(--bg-card) !important;
+}
+
+.react-datepicker__time-list-item {
+  color: var(--text-main) !important;
+}
+
+.react-datepicker__time-list-item:hover {
+  background-color: var(--accent-gold) !important;
+  color: #000 !important;
+}
+
+.react-datepicker__time-list-item--selected {
+  background-color: var(--accent-gold) !important;
+  color: #000 !important;
+  font-weight: bold;
+}
+
+.react-datepicker__time-list-item--selected:hover {
+  background-color: var(--accent-gold) !important;
+  color: #000 !important;
+}
+
+.react-datepicker__time-list-item--disabled {
+  color: #555 !important;
+}
+
+.react-datepicker__day-name {
+  color: var(--text-muted) !important;
+}
+
+.react-datepicker__day {
+  color: var(--text-main) !important;
+}
+
+.react-datepicker__day:not([aria-disabled="true"]):hover {
+  background-color: var(--accent-gold) !important;
+  color: #000 !important;
+  border-radius: 0.3rem;
+}
+
+.react-datepicker__day--today {
+  color: var(--accent-gold) !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: var(--accent-gold) !important;
+  color: #000 !important;
+  font-weight: bold;
+}
+
+.react-datepicker__day--disabled {
+  color: #555 !important;
+  cursor: not-allowed;
+}
+
+.react-datepicker__day--disabled:hover {
+  background-color: transparent !important;
+  color: #555 !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: var(--text-main) !important;
+}
+
+.react-datepicker__navigation:hover *::before {
+  border-color: var(--accent-gold) !important;
+}
+
+.react-datepicker__input-container input {
+  cursor: pointer;
+}

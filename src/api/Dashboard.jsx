@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAllMovies, addMovie, deleteMovie, updateMovie } from './MoviesApi/movieApi';
+import { getAllGenres } from './GenresApi/genreApi';
 import NewMovie from './MoviesApi/NewMovie';
 import MovieContainer from './MoviesApi/MovieContainer';
 
@@ -7,12 +8,17 @@ import MovieContainer from './MoviesApi/MovieContainer';
 // no dar de alta/editar/borrar películas, eso queda para el panel de Admin.
 const Dashboard = ({ readOnly = false }) => {
     const [movies, setMovies] = useState([]);
+    const [genres, setGenres] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
     useEffect(() => {
         fetchMovies();
+        // Se trae una sola vez acá (no en cada MovieCard) para no repetir el mismo fetch
+        // por cada tarjeta: Movie ahora guarda GenreId, y esta lista es lo que permite
+        // mostrar el nombre del género y poblar el desplegable de alta/edición.
+        getAllGenres(setGenres, (err) => console.error(err));
     }, []);
 
     const fetchMovies = async () => {
@@ -82,6 +88,7 @@ const Dashboard = ({ readOnly = false }) => {
              {movies.length === 0 ? <p style={{ color: 'white', textAlign: 'center' }}>No hay películas cargadas</p> : null}
             <MovieContainer
                 movies={movies}
+                genres={genres}
                 onDeleteMovie={readOnly ? undefined : handleDeleteMovie}
                 onEditMovie={readOnly ? undefined : handleUpdateMovie}
             />
