@@ -15,9 +15,6 @@ const Dashboard = ({ readOnly = false }) => {
 
     useEffect(() => {
         fetchMovies();
-        // Se trae una sola vez acá (no en cada MovieCard) para no repetir el mismo fetch
-        // por cada tarjeta: Movie ahora guarda GenreId, y esta lista es lo que permite
-        // mostrar el nombre del género y poblar el desplegable de alta/edición.
         getAllGenres(setGenres, (err) => console.error(err));
     }, []);
 

@@ -3,8 +3,6 @@ import MovieFunctionsPanel from '../ShowtimesApi/MovieFunctionsPanel';
 
 const inputStyle = { width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #555', backgroundColor: '#333', color: 'white', boxSizing: 'border-box', marginBottom: '8px' };
 
-// Misma flechita dorada que NewMovie.jsx, para que el <select> nativo no desentone con
-// el resto de los selectores del sistema (react-datepicker ya usa esta paleta).
 const selectArrow = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffbd59' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
 const selectStyle = {
     ...inputStyle,
@@ -29,8 +27,6 @@ const MovieCard = ({
     onEdit
 }) => {
     const [isEditing, setIsEditing] = useState(false);
-    // Vive acá (no en MovieFunctionsPanel) porque la propia tarjeta necesita saber si su
-    // lista de funciones está desplegada, para resaltarse en medio de la grilla.
     const [isFunctionsListOpen, setIsFunctionsListOpen] = useState(false);
     const [form, setForm] = useState({
         title, synopsis, durationMinutes, genreId, imageUrl, releaseDate,
@@ -169,8 +165,7 @@ const MovieCard = ({
                     </button>
                 )}
 
-                {/* Gestión de funciones: solo para el Admin (mismo gate que Editar/Eliminar;
-                    el panel de Usuario pasa onEdit/onDelete undefined). */}
+                {/* Solo para el Admin: el panel de Usuario pasa onEdit undefined. */}
                 {onEdit && (
                     <MovieFunctionsPanel
                         movieId={id}

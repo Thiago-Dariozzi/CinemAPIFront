@@ -1,7 +1,5 @@
 // showtimeApi.js
 // Fetch de la entidad Showtime (horario/función): MovieId, ScreenId, StartTime, Price.
-// Lo usa el panel de Usuario para armar el combo "Horario" de NewTicket, y el panel de
-// Admin para dar de alta/baja las funciones de una película (MovieFunctionsPanel).
 
 const API_BASE = "http://localhost:5288/api/showtime";
 
@@ -33,9 +31,7 @@ export const getShowtimesByMovie = (movieId, onSuccess, onError) => {
         .catch((error) => onError(error));
 };
 
-// Horarios ya ocupados de una sala en una fecha puntual (date: "YYYY-MM-DD"). Lo usa
-// MovieFunctionsPanel para avisar ANTES de guardar si la franja elegida choca con otra
-// función activa de esa sala, en vez de que el admin lo descubra recién al mandar el form.
+// date: "YYYY-MM-DD"
 export const getOccupiedShowtimesByScreen = (screenId, date, onSuccess, onError) => {
     fetch(`${API_BASE}/screen/${screenId}?date=${date}`, {
         headers: { "Accept": "application/json" },
@@ -59,9 +55,7 @@ export const addShowtime = (showtime, onSuccess, onError) => {
     })
         .then(async (response) => {
             if (!response.ok) {
-                // Choque de horario (409) u otro error de negocio (400): el backend manda
-                // el mensaje tal cual en el body de texto plano. Lo propagamos así, no un
-                // "Error al crear la función" genérico, para que el form lo muestre igual.
+                // El backend manda los errores de negocio (409) como texto plano, no JSON.
                 const detail = await response.text().catch(() => "");
                 throw new Error(detail || "Error al crear la función");
             }

@@ -4,8 +4,6 @@ import MovieCard from './MovieCard';
 import MovieContainer from './MovieContainer';
 import { getAllGenres } from '../GenresApi/genreApi';
 
-// Errores derivados en cada render a partir de form (no es estado aparte: son puramente
-// función de los valores actuales, así que no hace falta un useEffect para "recalcularlos").
 const validate = (form) => ({
     title: form.title.trim() === "" ? "El título es obligatorio" : null,
     genreId: !form.genreId ? "Elegí un género" : null,
@@ -17,17 +15,11 @@ const validate = (form) => ({
 
 const baseInputStyle = { width: '100%', padding: '10px', borderRadius: '5px', backgroundColor: '#333', color: 'white', boxSizing: 'border-box' };
 
-// Flechita dorada prolija en vez de la del navegador, para que el <select> nativo no
-// desentone con el resto de los selectores del form (react-datepicker ya usa esta paleta).
 const selectArrow = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffbd59' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
 
 const NewMovie = ({ onAddMovie }) => {
 
     const [form, setForm] = useState(initialForm);
-    // Un campo entra acá recién cuando el usuario lo completó por primera vez (onBlur) —
-    // hasta entonces no se le muestra error, aunque ya esté "mal" (ej. título vacío al
-    // arrancar). De ahí en adelante, cada tecla re-valida en vivo porque `errors` se
-    // recalcula en cada render.
     const [touched, setTouched] = useState({});
     const [genres, setGenres] = useState([]);
 
@@ -82,8 +74,6 @@ const NewMovie = ({ onAddMovie }) => {
     const handleAddMovie = (event) => {
         event.preventDefault();
 
-        // Defensa extra: con el botón deshabilitado esto no debería dispararse mientras
-        // haya errores, pero no confiamos solo en el disabled del botón.
         if (!isFormValid) {
             setTouched({ title: true, genreId: true, durationMinutes: true, suggestedPrice: true });
             return;

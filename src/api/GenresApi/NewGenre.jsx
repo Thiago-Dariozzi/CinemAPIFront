@@ -3,8 +3,6 @@ import { addGenre } from './genreApi';
 
 const initialForm = { name: "" };
 
-// Derivado en cada render a partir de form (no es estado aparte): así ya es "en vivo"
-// sin necesitar un useEffect para recalcularlo.
 const validate = (form) => ({
     name: form.name.trim() === "" ? "El nombre es obligatorio" : null,
 });
@@ -13,8 +11,6 @@ const inputStyle = { width: '100%', padding: '10px', borderRadius: '5px', backgr
 
 const NewGenre = ({ onAdded }) => {
     const [form, setForm] = useState(initialForm);
-    // Recién entra en "touched" cuando el usuario sale del campo por primera vez — hasta
-    // entonces no se le muestra error aunque ya esté "mal" (ej. vacío al arrancar).
     const [touched, setTouched] = useState({});
     const [formError, setFormError] = useState(null);
 
@@ -27,8 +23,6 @@ const NewGenre = ({ onAdded }) => {
         event.preventDefault();
         setFormError(null);
 
-        // Defensa extra: con el botón deshabilitado esto no debería dispararse mientras
-        // el nombre esté vacío, pero no confiamos solo en el disabled del botón.
         if (!isFormValid) {
             setTouched({ name: true });
             return;
@@ -41,11 +35,7 @@ const NewGenre = ({ onAdded }) => {
                 setForm(initialForm);
                 setTouched({});
             },
-            (err) => {
-                // err.message viene tal cual del backend en un nombre duplicado (409),
-                // no un "Error al crear el género" genérico.
-                setFormError(err.message || "Error al crear el género");
-            }
+            (err) => setFormError(err.message || "Error al crear el género")
         );
     };
 

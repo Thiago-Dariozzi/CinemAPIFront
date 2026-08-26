@@ -12,12 +12,10 @@ import {
     formatShowtime,
 } from './showtimeApi';
 
-// Debe coincidir con ShowtimeService.CLEANING_BUFFER_MINUTES en el backend: acá solo se
-// usa para el aviso visual ANTES de guardar (para que el admin no lo descubra recién al
-// mandar el form); la regla real que manda es siempre la validación del backend.
+// Debe coincidir con ShowtimeService.CLEANING_BUFFER_MINUTES en el backend: la validación
+// real la sigue haciendo el backend, esto es solo para el aviso visual antes de guardar.
 const CLEANING_BUFFER_MINUTES = 15;
 
-// Calendario y selector de hora en español: el resto de la app ya está en español.
 registerLocale('es', es);
 
 const baseInputStyle = { width: '100%', padding: '8px', borderRadius: '5px', backgroundColor: '#333', color: 'white', boxSizing: 'border-box', marginBottom: '4px' };
@@ -26,8 +24,7 @@ const fieldErrorStyle = { color: '#f44336', fontSize: '0.8rem', margin: '0 0 10p
 
 const pad = (n) => String(n).padStart(2, '0');
 
-// "Hoy" a las 00:00 (hora local), para bloquear fechas pasadas tanto en el calendario
-// (minDate) como al enviar el form (por si algo lo esquiva, ej. reloj del sistema raro).
+// "Hoy" a las 00:00 (hora local), para bloquear fechas pasadas.
 const startOfToday = () => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -38,8 +35,8 @@ const startOfDay = (date) => new Date(date.getFullYear(), date.getMonth(), date.
 
 const isPastDate = (date) => startOfDay(date) < startOfToday();
 
-// Combina la fecha (Date, del calendario) con la hora (Date, del time-picker — solo se usan
-// sus horas/minutos) en un único Date real, en hora local (sin pasar por UTC).
+// Combina la fecha con la hora (solo se usan sus horas/minutos) en un único Date, en
+// hora local, sin pasar por UTC.
 const combineDateAndTime = (date, timeDate) => {
     if (!date || !timeDate) return null;
     const combined = new Date(date);
@@ -58,8 +55,6 @@ const formatRange = (range) => {
     return `${range.start.toLocaleTimeString('es-AR', opts)} a ${range.end.toLocaleTimeString('es-AR', opts)}`;
 };
 
-// Errores derivados en cada render a partir de los valores actuales (no es estado aparte,
-// así que no hace falta un useEffect para "recalcularlos" — ya son en vivo por naturaleza).
 const validate = ({ screenId, selectedDate, selectedTime, price }) => ({
     screenId: !screenId ? "Elegí una sala" : null,
     selectedDate: !selectedDate
@@ -71,10 +66,6 @@ const validate = ({ screenId, selectedDate, selectedTime, price }) => ({
     price: price !== "" && Number(price) < 0 ? "El precio no puede ser negativo" : null,
 });
 
-// Lista de funciones (Showtimes) de una película puntual, con alta y baja de cada una.
-// Vive en MovieCard, visible solo para el Admin (mismo gate que Editar/Eliminar película).
-// isListOpen/onToggleList son controlados por MovieCard (no estado local acá): la tarjeta
-// necesita saber si la lista está desplegada para resaltarse a sí misma en la grilla.
 const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPrice, isListOpen, onToggleList }) => {
     const [functions, setFunctions] = useState([]);
     const [screens, setScreens] = useState([]);
@@ -91,20 +82,12 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
     const [occupied, setOccupied] = useState([]);
     const [isLoadingOccupied, setIsLoadingOccupied] = useState(false);
 
-    // Un campo entra en "touched" recién cuando el usuario lo completó por primera vez, no
-    // antes — hasta entonces no se le muestra error aunque ya esté "mal" (ej. sala sin
-    // elegir al abrir el form). De ahí en adelante, cada cambio re-valida en vivo porque
-    // `errors` se recalcula en cada render.
     const [touched, setTouched] = useState({});
 
-    // Estable durante toda la vida del componente: minDate={startOfToday()} inline le pasaría
-    // un Date nuevo (referencia distinta) a <DatePicker> en cada render, sin necesidad.
+    // Referencia estable: pasarle startOfToday() inline a <DatePicker> le daría un Date
+    // nuevo en cada render.
     const todayDate = useMemo(() => startOfToday(), []);
 
-    // Funciones ya cargadas de esta película + catálogo de salas/películas (esto último
-    // para poder mostrar título y duración de la función "ajena" con la que se choca,
-    // igual que el resto de los componentes de este proyecto, que traen sus propias
-    // dependencias en vez de compartir un store global).
     useEffect(() => {
         let isMounted = true;
 
@@ -127,8 +110,6 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         return () => { isMounted = false; };
     }, [movieId]);
 
-    // Cada vez que cambian la sala o la fecha elegidas, preguntamos qué horarios ya están
-    // ocupados en esa sala ese día (GET api/showtime/screen/{screenId}?date=...).
     useEffect(() => {
         if (!screenId || !selectedDate) {
             setOccupied([]);
@@ -198,7 +179,6 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         setTouched({});
     };
 
-    // Colapsado por defecto: "+ Agregar función" lo abre, "Cancelar" lo cierra sin guardar.
     const handleOpenForm = () => {
         setFormError(null);
         setIsFormOpen(true);
@@ -214,9 +194,6 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         event.preventDefault();
         setFormError(null);
 
-        // Defensa extra: con el botón deshabilitado esto no debería dispararse mientras
-        // haya campos inválidos o un choque de horario, pero no confiamos solo en el
-        // disabled del botón.
         if (!isFormValid) {
             setTouched({ screenId: true, selectedDate: true, selectedTime: true, price: true });
             if (conflict) {
@@ -240,12 +217,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
                 resetForm();
                 setIsFormOpen(false); // se guardó bien: el form vuelve a colapsado
             },
-            (err) => {
-                // err.message viene tal cual del backend en un choque de horario (400/409),
-                // no un "Error al crear la función" genérico, y se muestra dentro del
-                // formulario de ESTA película (no un alert global).
-                setFormError(err.message || "Error al crear la función");
-            }
+            (err) => setFormError(err.message || "Error al crear la función")
         );
     };
 
@@ -354,18 +326,10 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
                         dateFormat="dd/MM/yyyy"
                         placeholderText="Elegir fecha"
                         customInput={<input style={styleFor("selectedDate")} />}
-                        // BUG que arreglamos acá: withPortal SIN portalId no usa un portal de
-                        // verdad (ReactDOM.createPortal) — solo pinta un div position:fixed
-                        // DENTRO del árbol DOM normal. .movie-card:hover tiene un transform
-                        // (index.css), y un transform activo en un ancestro "secuestra" el
-                        // containing block de sus descendientes position:fixed (así lo define
-                        // CSS). El calendario quedaba atado a la tarjeta, tapaba el cursor,
-                        // sacaba el :hover, liberaba el containing block, se reposicionaba, el
-                        // mouse volvía a entrar en :hover... loop de parpadeo autoalimentado.
-                        // portalId sí sigue andando en runtime en esta versión (solo lo
-                        // sacaron de los tipos de TS; acá no hay chequeo de tipos) y usa
-                        // ReactDOM.createPortal de verdad, afuera del overflow:hidden Y del
-                        // transform de .movie-card.
+                        // withPortal sin portalId no usa ReactDOM.createPortal de verdad: pinta
+                        // un div position:fixed dentro del árbol DOM normal, y .movie-card:hover
+                        // tiene un transform que le secuestra el containing block (parpadeo).
+                        // portalId sí porta a document.body de verdad, afuera de eso.
                         portalId="cinemapi-datepicker-portal"
                     />
                     {touched.selectedDate && errors.selectedDate && <p style={fieldErrorStyle}>{errors.selectedDate}</p>}
