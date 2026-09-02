@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 import { initialForm } from './NewTicket.data';
-import { getShowtimesByMovie, formatShowtime } from '../ShowtimesApi/showtimeApi';
+import { getShowtimesByMovie, formatShowtime } from '../../api/showtimeApi';
 
-// fixedUserId: panel de Usuario — el ticket se crea siempre a nombre del usuario
-// logueado, así que ni mostramos el combo de "Usuario" ni dejamos elegir otro.
-// Tampoco elige la Sala directamente: elige un Horario (función) de la película, y la
-// Sala y el Precio se completan solos con lo que tiene asignado ese horario.
 const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUserId }) => {
 
     const [form, setForm] = useState(initialForm);
@@ -42,14 +38,11 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
         }));
     }
 
-    // Al elegir película se resetean sala/horario/precio ya elegidos (correspondían a otra película).
     const handleChangeMovie = (event) => {
         const movieId = event.target.value;
         setForm((prevForm) => ({ ...prevForm, movieId, showtimeId: "", screenId: "", buyDate: "", finalPrice: 0 }));
     }
 
-    // Al elegir un horario, la sala, la fecha y el precio se completan solos con lo que
-    // tiene ese horario (mismo precio que ve Admin al crear tickets, no uno inventado).
     const handleChangeShowtime = (event) => {
         const showtimeId = event.target.value;
         const showtime = showtimes.find((s) => s.id === showtimeId);
@@ -71,7 +64,7 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
     return (
         <Card bg="dark" text="white" className="mb-4">
             <Card.Body>
-                <Card.Title style={{ color: '#ffbd59' }}>Agregar Nuevo Ticket</Card.Title>
+                <Card.Title className="accent-title">Agregar Nuevo Ticket</Card.Title>
 
                 <Form onSubmit={handleAddTicket}>
                     <Row>
@@ -192,7 +185,7 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
                         </Col>
                     </Row>
 
-                    <Button type="submit" style={{ backgroundColor: '#ffbd59', border: 'none', color: '#000', fontWeight: 'bold' }}>
+                    <Button type="submit" className="btn-accent">
                         Guardar Ticket
                     </Button>
                 </Form>

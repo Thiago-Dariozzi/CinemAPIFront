@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { getAllGenres } from './genreApi';
-import { getAllMovies } from '../MoviesApi/movieApi';
+import { getAllGenres } from '../../api/genreApi';
+import { getAllMovies } from '../../api/movieApi';
 import NewGenre from './NewGenre';
 import GenreContainer from './GenreContainer';
 
@@ -21,10 +21,6 @@ const GenreDashboard = () => {
             }
         );
 
-        // El backend no expone un conteo de películas por género, así que se trae la
-        // lista completa (una sola vez acá, no por tarjeta) y se cuenta del lado del
-        // cliente — mismo criterio que ya usa MovieFunctionsPanel para resolver nombres
-        // cruzando listas traídas por separado.
         getAllMovies().then(setMovies).catch((err) => console.error(err));
     }, []);
 
@@ -48,22 +44,21 @@ const GenreDashboard = () => {
         setGenres((prev) => prev.filter((g) => g.id !== id));
     };
 
-    if (isLoading) return <p style={{ color: 'white', textAlign: 'center' }}>Cargando géneros...</p>;
+    if (isLoading) return <p className="msg-loading">Cargando géneros...</p>;
 
     return (
-        <main style={{ padding: '0 20px' }}>
-            <h1 style={{ color: '#ffbd59' }}>🎭 Géneros</h1>
+        <main className="dashboard">
+            <h1 className="section-title">🎭 Géneros</h1>
 
             {error && (
-                <p style={{ color: '#e74c3c', textAlign: 'center', padding: '10px',
-                    backgroundColor: '#1e1e1e', borderRadius: '8px', border: '1px solid #e74c3c' }}>
+                <p className="msg-error">
                     {error}
                 </p>
             )}
 
             <NewGenre onAdded={handleAdded} />
 
-            {genres.length === 0 ? <p style={{ color: 'white', textAlign: 'center' }}>No hay géneros cargados</p> : null}
+            {genres.length === 0 ? <p className="msg-empty">No hay géneros cargados</p> : null}
 
             <GenreContainer
                 genres={genres}

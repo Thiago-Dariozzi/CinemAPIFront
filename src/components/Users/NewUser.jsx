@@ -22,7 +22,7 @@ const NewUser = ({ onAddUser }) => {
     return (
         <Card bg="dark" text="white" className="mb-4">
             <Card.Body>
-                <Card.Title style={{ color: '#ffbd59' }}>Agregar Nuevo Usuario</Card.Title>
+                <Card.Title className="accent-title">Agregar Nuevo Usuario</Card.Title>
 
                 <Form onSubmit={handleAddUser}>
                     <Row>
@@ -79,7 +79,7 @@ const NewUser = ({ onAddUser }) => {
                         </Col>
                     </Row>
 
-                    <Button type="submit" style={{ backgroundColor: '#ffbd59', border: 'none', color: '#000', fontWeight: 'bold' }}>
+                    <Button type="submit" className="btn-accent">
                         Guardar Usuario
                     </Button>
                 </Form>

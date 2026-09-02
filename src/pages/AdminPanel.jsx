@@ -2,11 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { logout, getSession } from '../auth/session';
-import Dashboard from '../api/Dashboard';
-import GenreDashboard from '../api/GenresApi/GenreDashboard';
-import ScreenDashboard from '../api/ScreensApi/ScreenDashboard';
-import TicketDashboard from '../api/TicketsApi/TicketDashboard';
-import UserDashboard from '../api/UsersApi/UserDashboard';
+import Dashboard from '../components/Movies/Dashboard';
+import GenreDashboard from '../components/Genres/GenreDashboard';
+import ScreenDashboard from '../components/Screens/ScreenDashboard';
+import TicketDashboard from '../components/Tickets/TicketDashboard';
+import UserDashboard from '../components/Users/UserDashboard';
 
 const AdminPanel = () => {
     const navigate = useNavigate();

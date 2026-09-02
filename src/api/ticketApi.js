@@ -1,12 +1,3 @@
-// TicketApi.js
-// Centraliza todos los fetch de la entidad Ticket (getAll, getById, getByUser, create, update, remove).
-// Cada función recibe onSuccess/onError como callbacks (estilo Dashboard.server.js).
-// El mapeo entre el shape del backend y el shape que usa el front vive acá, no en los componentes.
-//
-// Shape real del backend (Domain.Entities.Ticket):
-//   Id, MovieId, ScreenId, UserId, BuyDate, FinalPrice, IsActive
-// (no tiene "seat"/butaca ni "price": son movieId/screenId/userId/buyDate/finalPrice).
-
 const API_BASE = "http://localhost:5288/api/ticket";
 
 const mapTicketFromBackend = (ticket) => ({
@@ -19,8 +10,6 @@ const mapTicketFromBackend = (ticket) => ({
     isActive: ticket.isActive,
 });
 
-// Para crear: el backend ignora Id/IsActive que mandemos (TicketService.Add los pisa),
-// así que alcanza con mandar los datos "de negocio".
 const mapTicketToBackendForCreate = (ticket) => ({
     movieId: ticket.movieId,
     screenId: ticket.screenId,
@@ -29,11 +18,6 @@ const mapTicketToBackendForCreate = (ticket) => ({
     finalPrice: Number(ticket.finalPrice) || 0,
 });
 
-// Para actualizar: TicketController.UpdateTicket valida que el id del body coincida con el
-// de la ruta, y TicketService.Update hace un reemplazo completo de la entidad (no un patch).
-// Si no mandamos isActive, System.Text.Json lo deserializa en false y el ticket "desaparece"
-// (soft-delete accidental). Como solo se puede editar un ticket que ya está activo en la
-// lista, mandamos isActive: true siempre.
 const mapTicketToBackendForUpdate = (id, ticket) => ({
     id,
     movieId: ticket.movieId,

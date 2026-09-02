@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { getAllMovies, addMovie, deleteMovie, updateMovie } from './MoviesApi/movieApi';
-import { getAllGenres } from './GenresApi/genreApi';
-import NewMovie from './MoviesApi/NewMovie';
-import MovieContainer from './MoviesApi/MovieContainer';
+import { getAllMovies, addMovie, deleteMovie, updateMovie } from '../../api/movieApi';
+import { getAllGenres } from '../../api/genreApi';
+import NewMovie from './NewMovie';
+import MovieContainer from './MovieContainer';
 
-// readOnly: el panel de Usuario lo usa así — un cliente puede mirar el catálogo pero
-// no dar de alta/editar/borrar películas, eso queda para el panel de Admin.
 const Dashboard = ({ readOnly = false }) => {
     const [movies, setMovies] = useState([]);
     const [genres, setGenres] = useState([]);
@@ -65,24 +63,22 @@ const Dashboard = ({ readOnly = false }) => {
         }
     };
 
-    if (loading) return <p style={{ color: 'white', textAlign: 'center' }}>Cargando películas...</p>;
+    if (loading) return <p className="msg-loading">Cargando películas...</p>;
 
     return (
-        <main style={{ padding: '0 20px' }}>
+        <main className="dashboard">
             {error && (
-                <p style={{ color: '#e74c3c', textAlign: 'center', padding: '10px',
-                    backgroundColor: '#1e1e1e', borderRadius: '8px', border: '1px solid #e74c3c' }}>
+                <p className="msg-error">
                     {error}
                 </p>
             )}
             {success && (
-            <p style={{ color: '#2ecc71', textAlign: 'center', padding: '10px',
-                backgroundColor: '#1e1e1e', borderRadius: '8px', border: '1px solid #2ecc71' }}>
+            <p className="msg-success">
                 {success}
             </p>
 )}
             {!readOnly && <NewMovie onAddMovie={handleAddMovie} />}
-             {movies.length === 0 ? <p style={{ color: 'white', textAlign: 'center' }}>No hay películas cargadas</p> : null}
+             {movies.length === 0 ? <p className="msg-empty">No hay películas cargadas</p> : null}
             <MovieContainer
                 movies={movies}
                 genres={genres}

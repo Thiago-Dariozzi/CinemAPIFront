@@ -2,18 +2,13 @@ import React from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { logout, getSession } from '../auth/session';
-import Dashboard from '../api/Dashboard';
-import TicketDashboard from '../api/TicketsApi/TicketDashboard';
+import Dashboard from '../components/Movies/Dashboard';
+import TicketDashboard from '../components/Tickets/TicketDashboard';
 
-// Panel de usuario: puede mirar el catálogo de películas (solo lectura) y administrar
-// sus propios tickets, pero no el de otros usuarios ni la gestión de Users (eso queda
-// reservado al panel de Admin).
 const UserPanel = () => {
     const navigate = useNavigate();
     const session = getSession();
 
-    // Sesión vieja (guardada antes de vincular la cuenta demo a un User real) sin
-    // userId: forzamos a loguear de nuevo en vez de mostrar los tickets de todos.
     if (session && session.role === "Client" && !session.userId) {
         logout();
         return <Navigate to="/login" replace />;

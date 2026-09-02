@@ -1,6 +1,3 @@
-// showtimeApi.js
-// Fetch de la entidad Showtime (horario/función): MovieId, ScreenId, StartTime, Price.
-
 const API_BASE = "http://localhost:5288/api/showtime";
 
 const mapShowtimeFromBackend = (showtime) => ({
@@ -11,7 +8,6 @@ const mapShowtimeFromBackend = (showtime) => ({
     price: showtime.price,
 });
 
-// Para crear: el backend ignora Id/IsActive que mandemos (ShowtimeService.Add los pisa).
 const mapShowtimeToBackendForCreate = (showtime) => ({
     movieId: showtime.movieId,
     screenId: showtime.screenId,
@@ -31,7 +27,6 @@ export const getShowtimesByMovie = (movieId, onSuccess, onError) => {
         .catch((error) => onError(error));
 };
 
-// date: "YYYY-MM-DD"
 export const getOccupiedShowtimesByScreen = (screenId, date, onSuccess, onError) => {
     fetch(`${API_BASE}/screen/${screenId}?date=${date}`, {
         headers: { "Accept": "application/json" },
@@ -55,7 +50,6 @@ export const addShowtime = (showtime, onSuccess, onError) => {
     })
         .then(async (response) => {
             if (!response.ok) {
-                // El backend manda los errores de negocio (409) como texto plano, no JSON.
                 const detail = await response.text().catch(() => "");
                 throw new Error(detail || "Error al crear la función");
             }
@@ -76,7 +70,6 @@ export const deleteShowtime = (id, onSuccess, onError) => {
         .catch((error) => onError(error));
 };
 
-// "2026-08-27T18:00:00" -> "mié 27 ago · 18:00"
 export const formatShowtime = (startTime) => {
     const date = new Date(startTime);
     if (Number.isNaN(date.getTime())) return startTime;

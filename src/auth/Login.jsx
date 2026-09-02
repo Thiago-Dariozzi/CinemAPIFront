@@ -33,7 +33,7 @@ const Login = () => {
         <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
             <Card bg="dark" text="white" style={{ width: '380px' }}>
                 <Card.Body>
-                    <Card.Title style={{ color: '#ffbd59' }} className="mb-3">🎥 CinemAPI - Ingresar</Card.Title>
+                    <Card.Title className="accent-title mb-3">🎥 CinemAPI - Ingresar</Card.Title>
 
                     {error && <p className="text-danger">{error}</p>}
 
@@ -59,12 +59,12 @@ const Login = () => {
                             />
                         </Form.Group>
 
-                        <Button type="submit" disabled={isSubmitting} style={{ backgroundColor: '#ffbd59', border: 'none', color: '#000', fontWeight: 'bold' }} className="w-100">
+                        <Button type="submit" disabled={isSubmitting} className="btn-accent w-100">
                             {isSubmitting ? "Ingresando..." : "Ingresar"}
                         </Button>
                     </Form>
 
-                    <p className="text-muted mt-3 mb-0" style={{ fontSize: '0.85rem' }}>
+                    <p className="text-muted mt-3 mb-0 login-hint">
                         Demo: admin@admin.com / admin (panel Admin) — user@user.com / user (panel Usuario)
                     </p>
                 </Card.Body>

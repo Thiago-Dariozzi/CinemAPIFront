@@ -42,8 +42,6 @@ export const deleteMovie = async (id) => {
         method: "DELETE",
     });
     if (!response.ok) {
-        // Traemos el body de la respuesta para ver el detalle real que manda el backend
-        // (por ejemplo una excepción de FK si la película tiene tickets/funciones asociadas).
         const detail = await response.text().catch(() => "");
         throw new Error(`Error al eliminar la película (status ${response.status})${detail ? `: ${detail}` : ""}`);
     }

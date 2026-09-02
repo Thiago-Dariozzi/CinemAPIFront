@@ -15,12 +15,7 @@ const ScreenContainer = ({ screens, onDeleteScreen, onEditScreen }) => {
     ));
 
     return (
-        <div className="screens-grid" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '20px',
-            padding: '20px 0'
-        }}>
+        <div className="entity-grid">
             {screensMapped}
         </div>
     );

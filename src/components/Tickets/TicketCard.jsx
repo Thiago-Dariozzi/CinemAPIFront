@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
-import { getShowtimesByMovie, formatShowtime } from '../ShowtimesApi/showtimeApi';
+import { getShowtimesByMovie, formatShowtime } from '../../api/showtimeApi';
 
-// Busca el nombre legible de una película/sala/usuario por id. Si no aparece en la
-// lista es porque ese registro se borró (soft-delete) y el ticket quedó apuntando a
-// algo que ya no está activo — mostramos "(eliminado)" en vez del GUID crudo.
 const findLabel = (list, id, field) => {
     const found = list.find((item) => item.id === id);
     return found ? found[field] : "(eliminado)";
@@ -68,8 +65,6 @@ const TicketCard = ({
         setForm((prevForm) => ({ ...prevForm, movieId: newMovieId, showtimeId: "", screenId: "", buyDate: "", finalPrice: 0 }));
     }
 
-    // Al elegir un horario, sala/fecha/precio se completan solos con lo que tiene ese
-    // horario (mismo precio que ve Admin, no un valor fijo inventado por el front).
     const handleChangeShowtime = (event) => {
         const showtimeId = event.target.value;
         const showtime = showtimes.find((s) => s.id === showtimeId);

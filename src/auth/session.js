@@ -1,9 +1,4 @@
-// session.js
-// Login MUY simple para esta etapa del proyecto: sin JWT, sin hash de nuestro lado.
-// Dos cuentas hardcodeadas para poder navegar el panel de Admin y el panel de Usuario.
-// Cuando el backend tenga auth real, esto se reemplaza por llamadas a AuthApi.js sin
-// tocar el resto de la app (Login/ProtectedRoute solo dependen de getSession()/login()/logout()).
-import { getUserByEmail, addUser } from '../api/UsersApi/UserApi';
+import { getUserByEmail, addUser } from '../api/userApi';
 
 const SESSION_KEY = "cinemapi_session";
 
@@ -12,9 +7,6 @@ const ACCOUNTS = [
     { email: "user@user.com", password: "user", role: "Client" },
 ];
 
-// El panel de Usuario necesita filtrar "mis tickets" por userId real de la base, así que
-// la cuenta demo de Client tiene que corresponder a un User real. Si todavía no existe
-// (el DbSeeder no lo crea), lo damos de alta la primera vez que alguien entra con ella.
 const DEMO_CLIENT_PROFILE = {
     name: "Usuario Demo",
     email: "user@user.com",
@@ -39,7 +31,6 @@ export const login = (email, password, onSuccess, onError) => {
     }
 
     if (account.role !== "Client") {
-        // Admin administra todo, no algo "propio": no necesita un User real en la base.
         saveSession(account.email, account.role, null, onSuccess);
         return;
     }

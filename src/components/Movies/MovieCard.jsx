@@ -1,16 +1,5 @@
 import React, { useState } from 'react';
-import MovieFunctionsPanel from '../ShowtimesApi/MovieFunctionsPanel';
-
-const inputStyle = { width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #555', backgroundColor: '#333', color: 'white', boxSizing: 'border-box', marginBottom: '8px' };
-
-const selectArrow = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffbd59' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
-const selectStyle = {
-    ...inputStyle,
-    appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none',
-    backgroundImage: `url("${selectArrow}")`, backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'right 12px center', backgroundSize: '12px', paddingRight: '32px',
-    cursor: 'pointer',
-};
+import MovieFunctionsPanel from '../Showtimes/MovieFunctionsPanel';
 
 const MovieCard = ({
     id,
@@ -44,8 +33,6 @@ const MovieCard = ({
     };
 
     const handleSave = () => {
-        // Precio sugerido opcional: si quedó vacío mandamos null, no un string vacío
-        // (Movie.SuggestedPrice es decimal? en el backend).
         const suggestedPriceToSend = form.suggestedPrice === "" ? null : Number(form.suggestedPrice);
         onEdit(id, { ...form, suggestedPrice: suggestedPriceToSend, id, isActive });
         setIsEditing(false);
@@ -56,28 +43,28 @@ const MovieCard = ({
             <div className="movie-card">
                 <div className="movie-info">
                     <label>Título</label>
-                    <input style={inputStyle} value={form.title} onChange={(e) => handleChangeValue(e, "title")} />
+                    <input className="form-input form-input--compact" value={form.title} onChange={(e) => handleChangeValue(e, "title")} />
 
                     <label>Género</label>
-                    <select style={selectStyle} value={form.genreId} onChange={(e) => handleChangeValue(e, "genreId")}>
-                        <option value="" style={{ backgroundColor: '#333', color: 'white' }}>Seleccionar género...</option>
+                    <select className="form-select form-input--compact" value={form.genreId} onChange={(e) => handleChangeValue(e, "genreId")}>
+                        <option value="">Seleccionar género...</option>
                         {genres.map((g) => (
-                            <option key={g.id} value={g.id} style={{ backgroundColor: '#333', color: 'white' }}>{g.name}</option>
+                            <option key={g.id} value={g.id}>{g.name}</option>
                         ))}
                     </select>
 
                     <label>Sinopsis</label>
-                    <input style={inputStyle} value={form.synopsis} onChange={(e) => handleChangeValue(e, "synopsis")} />
+                    <input className="form-input form-input--compact" value={form.synopsis} onChange={(e) => handleChangeValue(e, "synopsis")} />
 
                     <label>URL Imagen</label>
-                    <input style={inputStyle} value={form.imageUrl} onChange={(e) => handleChangeValue(e, "imageUrl")} />
+                    <input className="form-input form-input--compact" value={form.imageUrl} onChange={(e) => handleChangeValue(e, "imageUrl")} />
 
                     <label>Minutos</label>
-                    <input style={inputStyle} type="number" value={form.durationMinutes} onChange={(e) => handleChangeValue(e, "durationMinutes")} />
+                    <input className="form-input form-input--compact" type="number" value={form.durationMinutes} onChange={(e) => handleChangeValue(e, "durationMinutes")} />
 
                     <label>Precio sugerido (opcional)</label>
                     <input
-                        style={inputStyle}
+                        className="form-input form-input--compact"
                         type="number"
                         min="0"
                         step="0.01"
@@ -88,13 +75,13 @@ const MovieCard = ({
 
                     <button
                         onClick={handleSave}
-                        style={{ marginTop: '10px', marginRight: '8px', padding: '8px 16px', backgroundColor: '#2ecc71', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
+                        className="btn btn--save btn-group"
                     >
                         Guardar
                     </button>
                     <button
                         onClick={() => setIsEditing(false)}
-                        style={{ marginTop: '10px', padding: '8px 16px', backgroundColor: '#7f8c8d', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
+                        className="btn btn--cancel btn-group"
                     >
                         Cancelar
                     </button>
@@ -105,10 +92,7 @@ const MovieCard = ({
 
     return (
         <div
-            className="movie-card"
-            style={isFunctionsListOpen ? {
-                boxShadow: '0 0 0 3px var(--accent-gold), 0 4px 15px rgba(0, 0, 0, 0.5)'
-            } : undefined}
+            className={`movie-card ${isFunctionsListOpen ? 'movie-card--highlighted' : ''}`}
         >
             {imageUrl && <img className="movie-image" src={imageUrl} alt={title} />}
 
@@ -129,17 +113,7 @@ const MovieCard = ({
                 {onEdit && (
                     <button
                         onClick={() => setIsEditing(true)}
-                        style={{
-                            marginTop: '10px',
-                            marginRight: '8px',
-                            padding: '8px 16px',
-                            backgroundColor: '#ffbd59',
-                            color: '#000',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                            fontWeight: 'bold'
-                        }}
+                        className="btn btn--primary btn-group"
                     >
                         Actualizar
                     </button>
@@ -150,22 +124,12 @@ const MovieCard = ({
                         onClick={() =>{
                             if (window.confirm("¿Estás seguro de eliminar esta pelicula?"))
                          onDelete(id)}}
-                        style={{
-                            marginTop: '10px',
-                            padding: '8px 16px',
-                            backgroundColor: '#e74c3c',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                            fontWeight: 'bold'
-                        }}
+                        className="btn btn--delete btn-group"
                     >
                         Eliminar
                     </button>
                 )}
 
-                {/* Solo para el Admin: el panel de Usuario pasa onEdit undefined. */}
                 {onEdit && (
                     <MovieFunctionsPanel
                         movieId={id}
