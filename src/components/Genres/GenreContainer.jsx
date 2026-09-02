@@ -1,23 +1,21 @@
 import React from 'react';
+import EntityGrid from '../common/EntityGrid';
 import GenreCard from './GenreCard';
 
-const GenreContainer = ({ genres, movieCounts, onUpdated, onDeleted }) => {
-    const genresMapped = genres.map((genre) => (
-        <GenreCard
-            key={genre.id}
-            id={genre.id}
-            name={genre.name}
-            movieCount={movieCounts[genre.id] ?? 0}
-            onUpdated={onUpdated}
-            onDeleted={onDeleted}
-        />
-    ));
-
-    return (
-        <div className="entity-grid">
-            {genresMapped}
-        </div>
-    );
-};
+const GenreContainer = ({ genres, movieCounts, onEdit, onDelete }) => (
+    <EntityGrid
+        items={genres}
+        renderItem={(genre) => (
+            <GenreCard
+                key={genre.id}
+                id={genre.id}
+                name={genre.name}
+                movieCount={movieCounts[genre.id] ?? 0}
+                onEdit={onEdit}
+                onDelete={onDelete}
+            />
+        )}
+    />
+);
 
 export default GenreContainer;

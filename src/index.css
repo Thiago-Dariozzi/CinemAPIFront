@@ -334,6 +334,15 @@ body {
 .form-row {
   display: flex;
   gap: 15px;
+  margin-bottom: 15px;
+}
+
+.form-row__grow {
+  flex: 1;
+}
+
+.form-row__fixed {
+  width: 120px;
 }
 
 .form-checkbox-row {
