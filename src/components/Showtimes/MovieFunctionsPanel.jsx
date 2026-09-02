@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { es } from 'date-fns/locale/es';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -55,6 +55,50 @@ const validate = ({ screenId, selectedDate, selectedTime, price }) => ({
     price: price !== "" && Number(price) < 0 ? "El precio no puede ser negativo" : null,
 });
 
+// Las siguientes 4 funciones NO son hooks (no arrancan con "use" ni llaman a ningún
+// hook adentro): son funciones comunes que reciben datos y devuelven un resultado.
+// Antes de este cambio, sus resultados se guardaban en useMemo para no recalcularlos
+// en cada render. Como todavía no vimos memoización, ahora se llaman directamente
+// dentro del componente, en cada render. No hay problema de rendimiento: en el peor
+// caso recorren un puñado de películas o de funciones ya cargadas, no hacen ningún
+// pedido a la red.
+
+// Diccionario { idDePelicula: pelicula }, para no hacer movies.find(...) repetidas veces.
+const buildMoviesById = (movies) => {
+    const map = {};
+    movies.forEach((m) => { map[m.id] = m; });
+    return map;
+};
+
+// Por cada función ya ocupada en esa sala/día, calcula el rango [inicio, fin] que
+// ocupa realmente (duración de esa otra película + la limpieza de la sala).
+const buildOccupiedRanges = (occupied, moviesById) => (
+    occupied.map((s) => {
+        const otherMovie = moviesById[s.movieId];
+        const durationMinutes = (otherMovie?.durationMinutes ?? 0) + CLEANING_BUFFER_MINUTES;
+        const start = new Date(s.startTime);
+        const end = new Date(start.getTime() + durationMinutes * 60000);
+        return { id: s.id, start, end, title: otherMovie?.title ?? "otra película" };
+    })
+);
+
+// El rango [inicio, fin] que ocuparía la función que se está por crear, según la
+// fecha/hora elegidas en el formulario.
+const buildPendingRange = (selectedDate, selectedTime, movieDurationMinutes) => {
+    const start = combineDateAndTime(selectedDate, selectedTime);
+    if (!start) return null;
+    const end = new Date(start.getTime() + (movieDurationMinutes + CLEANING_BUFFER_MINUTES) * 60000);
+    return { start, end };
+};
+
+// Busca si el rango pendiente se cruza con alguno de los ya ocupados. Dos rangos se
+// cruzan si cada uno empieza antes de que el otro termine (tocarse justo en el borde
+// no cuenta como choque).
+const findConflict = (pendingRange, occupiedRanges) => {
+    if (!pendingRange) return null;
+    return occupiedRanges.find((r) => pendingRange.start < r.end && r.start < pendingRange.end) || null;
+};
+
 const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPrice, isListOpen, onToggleList }) => {
     const [functions, setFunctions] = useState([]);
     const [screens, setScreens] = useState([]);
@@ -73,7 +117,9 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
 
     const [touched, setTouched] = useState({});
 
-    const todayDate = useMemo(() => startOfToday(), []);
+    // Se recalcula en cada render (antes estaba en un useMemo). No importa: siempre
+    // da "hoy a las 00:00" y es una cuenta instantánea.
+    const todayDate = startOfToday();
 
     useEffect(() => {
         let isMounted = true;
@@ -112,33 +158,12 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         );
     }, [screenId, selectedDate]);
 
-    const moviesById = useMemo(() => {
-        const map = {};
-        movies.forEach((m) => { map[m.id] = m; });
-        return map;
-    }, [movies]);
-
-    const occupiedRanges = useMemo(() => (
-        occupied.map((s) => {
-            const otherMovie = moviesById[s.movieId];
-            const durationMinutes = (otherMovie?.durationMinutes ?? 0) + CLEANING_BUFFER_MINUTES;
-            const start = new Date(s.startTime);
-            const end = new Date(start.getTime() + durationMinutes * 60000);
-            return { id: s.id, start, end, title: otherMovie?.title ?? "otra película" };
-        })
-    ), [occupied, moviesById]);
-
-    const pendingRange = useMemo(() => {
-        const start = combineDateAndTime(selectedDate, selectedTime);
-        if (!start) return null;
-        const end = new Date(start.getTime() + (movieDurationMinutes + CLEANING_BUFFER_MINUTES) * 60000);
-        return { start, end };
-    }, [selectedDate, selectedTime, movieDurationMinutes]);
-
-    const conflict = useMemo(() => {
-        if (!pendingRange) return null;
-        return occupiedRanges.find((r) => pendingRange.start < r.end && r.start < pendingRange.end) || null;
-    }, [pendingRange, occupiedRanges]);
+    // Estos 4 se recalculan en cada render (antes vivían en useMemo): son variables
+    // comunes, derivadas de screens/movies/occupied/selectedDate/selectedTime.
+    const moviesById = buildMoviesById(movies);
+    const occupiedRanges = buildOccupiedRanges(occupied, moviesById);
+    const pendingRange = buildPendingRange(selectedDate, selectedTime, movieDurationMinutes);
+    const conflict = findConflict(pendingRange, occupiedRanges);
 
     const errors = validate({ screenId, selectedDate, selectedTime, price });
     const isFieldsValid = Object.values(errors).every((e) => e === null);
