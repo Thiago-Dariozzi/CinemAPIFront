@@ -1,14 +1,5 @@
-// UserApi.js
-// Centraliza todos los fetch de la entidad User (getAll, getById, getByEmail, create, update, remove).
-// Cada función recibe onSuccess/onError como callbacks (estilo Dashboard.server.js).
-// El mapeo entre el shape del backend y el shape que usa el front vive acá, no en los componentes.
-//
-// Shape real del backend (Domain.Entities.User): Id, Name, Email, Password, Role, IsActive.
-
 const API_BASE = "http://localhost:5288/api/user";
 
-// El backend hoy todavía devuelve el campo Password en el JSON (bug pendiente del lado del
-// back), pero igual no lo levantamos acá: nunca debe vivir en el estado del front.
 const mapUserFromBackend = (user) => ({
     id: user.id,
     name: user.name,
@@ -24,11 +15,6 @@ const mapUserToBackendForCreate = (user) => ({
     role: user.role,
 });
 
-// UserController.UpdateUser valida que el id del body coincida con el de la ruta, y
-// UserService.Update reemplaza la entidad entera (no hace patch). Por eso:
-//   - mandamos id + isActive: true siempre (solo se edita algo que ya está activo/listado).
-//   - la contraseña viaja siempre con un valor real (el form la exige), nunca vacía:
-//     si mandáramos "" el backend la pisaría y el usuario quedaría con password en blanco.
 const mapUserToBackendForUpdate = (id, user) => ({
     id,
     name: user.name,

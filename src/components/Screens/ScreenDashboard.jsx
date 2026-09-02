@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllScreens, addNewScreen, updateScreen, deleteScreen } from './ScreenApi';
+import { getAllScreens, addNewScreen, updateScreen, deleteScreen } from '../../api/screenApi';
 import NewScreen from './NewScreen';
 import ScreenContainer from './ScreenContainer';
 
@@ -59,24 +59,22 @@ const ScreenDashboard = () => {
         }
     };
 
-    if (loading) return <p style={{ color: 'white', textAlign: 'center' }}>Cargando salas...</p>;
+    if (loading) return <p className="msg-loading">Cargando salas...</p>;
 
     return (
-        <main style={{ padding: '0 20px' }}>
+        <main className="dashboard">
             {error && (
-                <p style={{ color: '#e74c3c', textAlign: 'center', padding: '10px',
-                    backgroundColor: '#1e1e1e', borderRadius: '8px', border: '1px solid #e74c3c' }}>
+                <p className="msg-error">
                     {error}
                 </p>
             )}
             {success && (
-            <p style={{ color: '#2ecc71', textAlign: 'center', padding: '10px',
-                backgroundColor: '#1e1e1e', borderRadius: '8px', border: '1px solid #2ecc71' }}>
+            <p className="msg-success">
                 {success}
             </p>
             )}
             <NewScreen onAddScreen={handleAddScreen} />
-            {screens.length === 0 ? <p style={{ color: 'white', textAlign: 'center' }}>No hay salas cargadas</p> : null}
+            {screens.length === 0 ? <p className="msg-empty">No hay salas cargadas</p> : null}
             <ScreenContainer screens={screens} onDeleteScreen={handleDeleteScreen} onEditScreen={handleUpdateScreen} />
         </main>
     );

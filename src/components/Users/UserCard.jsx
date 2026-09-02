@@ -10,9 +10,6 @@ const UserCard = ({
     onEdit
 }) => {
     const [isEditing, setIsEditing] = useState(false);
-    // El backend reemplaza el User entero al actualizar (no hace patch), así que la
-    // contraseña viaja siempre con un valor real: no ofrecemos "dejar en blanco" porque
-    // eso pisaría la contraseña guardada con un string vacío.
     const [form, setForm] = useState({ name, email, role, password: "" });
 
     const handleChangeValue = (event, inputKey) => {

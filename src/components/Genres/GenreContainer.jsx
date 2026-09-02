@@ -14,12 +14,7 @@ const GenreContainer = ({ genres, movieCounts, onUpdated, onDeleted }) => {
     ));
 
     return (
-        <div className="screens-grid" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '20px',
-            padding: '20px 0'
-        }}>
+        <div className="entity-grid">
             {genresMapped}
         </div>
     );

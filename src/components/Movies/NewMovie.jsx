@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { initialForm } from './NewMovieData';
 import MovieCard from './MovieCard';
 import MovieContainer from './MovieContainer';
-import { getAllGenres } from '../GenresApi/genreApi';
+import { getAllGenres } from '../../api/genreApi';
 
 const validate = (form) => ({
     title: form.title.trim() === "" ? "El título es obligatorio" : null,
@@ -12,10 +12,6 @@ const validate = (form) => ({
         ? "El precio sugerido no puede ser negativo"
         : null,
 });
-
-const baseInputStyle = { width: '100%', padding: '10px', borderRadius: '5px', backgroundColor: '#333', color: 'white', boxSizing: 'border-box' };
-
-const selectArrow = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffbd59' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
 
 const NewMovie = ({ onAddMovie }) => {
 
@@ -53,24 +49,6 @@ const NewMovie = ({ onAddMovie }) => {
         setTouched((prev) => ({ ...prev, [field]: true }));
     };
 
-    const inputStyleFor = (field) => ({
-        ...baseInputStyle,
-        border: `1px solid ${touched[field] && errors[field] ? '#f44336' : '#555'}`,
-    });
-
-    const selectStyleFor = (field) => ({
-        ...inputStyleFor(field),
-        appearance: 'none',
-        WebkitAppearance: 'none',
-        MozAppearance: 'none',
-        backgroundImage: `url("${selectArrow}")`,
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'right 12px center',
-        backgroundSize: '12px',
-        paddingRight: '32px',
-        cursor: 'pointer',
-    });
-
     const handleAddMovie = (event) => {
         event.preventDefault();
 
@@ -79,8 +57,6 @@ const NewMovie = ({ onAddMovie }) => {
             return;
         }
 
-        // El precio sugerido es opcional: si no se cargó, no lo mandamos (queda null en el
-        // backend); si se cargó, lo mandamos como número, no como string.
         const { suggestedPrice, ...rest } = form;
         const payload = suggestedPrice === "" ? rest : { ...rest, suggestedPrice: Number(suggestedPrice) };
 
@@ -90,100 +66,92 @@ const NewMovie = ({ onAddMovie }) => {
     }
 
     return (
-        <div style={{
-            backgroundColor: '#1e1e1e',
-            padding: '20px',
-            borderRadius: '12px',
-            maxWidth: '600px',
-            margin: '0 auto 40px auto',
-            border: '1px solid #444',
-            fontFamily: 'sans-serif'
-        }}>
-            <h2 style={{ color: '#ffbd59', marginTop: 0, marginBottom: '20px' }}>Agregar Nueva Película</h2>
+        <div className="form-panel">
+            <h2 className="form-panel__title">Agregar Nueva Película</h2>
 
-            <form onSubmit={handleAddMovie} style={{ color: 'white' }}>
+            <form onSubmit={handleAddMovie} className="form-body">
 
                 {/* TÍTULO */}
-                <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px' }}>Título</label>
+                <div className="form-field">
+                    <label className="form-label">Título</label>
                     <input
                         type="text"
                         value={form.title}
                         onChange={(event) => handleChangeValue(event, "title")}
                         onBlur={() => handleBlur("title")}
-                        style={inputStyleFor("title")}
+                        className={`form-input ${touched.title && errors.title ? 'form-input--error' : ''}`}
                         placeholder="Ingresar título"
                     />
                     {touched.title && errors.title && (
-                        <p style={{ color: '#f44336', fontSize: '0.85rem', margin: '4px 0 0' }}>{errors.title}</p>
+                        <p className="form-error-text">{errors.title}</p>
                     )}
                 </div>
 
                 {/* GÉNERO */}
-                <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px' }}>Género</label>
+                <div className="form-field">
+                    <label className="form-label">Género</label>
                     <select
                         value={form.genreId}
                         onChange={(event) => handleChangeValue(event, "genreId")}
                         onBlur={() => handleBlur("genreId")}
-                        style={selectStyleFor("genreId")}
+                        className={`form-select ${touched.genreId && errors.genreId ? 'form-select--error' : ''}`}
                     >
-                        <option value="" style={{ backgroundColor: '#333', color: 'white' }}>Seleccionar género...</option>
+                        <option value="">Seleccionar género...</option>
                         {genres.map((g) => (
-                            <option key={g.id} value={g.id} style={{ backgroundColor: '#333', color: 'white' }}>{g.name}</option>
+                            <option key={g.id} value={g.id}>{g.name}</option>
                         ))}
                     </select>
                     {touched.genreId && errors.genreId && (
-                        <p style={{ color: '#f44336', fontSize: '0.85rem', margin: '4px 0 0' }}>{errors.genreId}</p>
+                        <p className="form-error-text">{errors.genreId}</p>
                     )}
                 </div>
 
                 {/* SINOPSIS */}
-                <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px' }}>Sinopsis</label>
+                <div className="form-field">
+                    <label className="form-label">Sinopsis</label>
                     <input
                         type="text"
                         value={form.synopsis}
                         onChange={(event) => handleChangeValue(event, "synopsis")}
-                        style={baseInputStyle}
+                        className="form-input"
                         placeholder="Breve resumen"
                     />
                 </div>
 
                 {/* IMAGEN Y DURACIÓN EN LA MISMA FILA */}
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '5px' }}>
+                <div className="form-row" style={{ marginBottom: '5px' }}>
                     <div style={{ flex: 1 }}>
-                        <label style={{ display: 'block', marginBottom: '5px' }}>URL Imagen</label>
+                        <label className="form-label">URL Imagen</label>
                         <input
                             type="text"
                             value={form.imageUrl}
                             onChange={(event) => handleChangeValue(event, "imageUrl")}
-                            style={baseInputStyle}
+                            className="form-input"
                         />
                     </div>
                     <div style={{ width: '120px' }}>
-                        <label style={{ display: 'block', marginBottom: '5px' }}>Minutos</label>
+                        <label className="form-label">Minutos</label>
                         <input
                             type="number"
                             value={form.durationMinutes}
                             onChange={(event) => handleChangeValue(event, "durationMinutes")}
                             onBlur={() => handleBlur("durationMinutes")}
-                            style={inputStyleFor("durationMinutes")}
+                            className={`form-input ${touched.durationMinutes && errors.durationMinutes ? 'form-input--error' : ''}`}
                         />
                     </div>
                 </div>
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+                <div className="form-row" style={{ marginBottom: '20px' }}>
                     <div style={{ flex: 1 }} />
                     <div style={{ width: '120px' }}>
                         {touched.durationMinutes && errors.durationMinutes && (
-                            <p style={{ color: '#f44336', fontSize: '0.85rem', margin: '4px 0 0' }}>{errors.durationMinutes}</p>
+                            <p className="form-error-text">{errors.durationMinutes}</p>
                         )}
                     </div>
                 </div>
 
                 {/* PRECIO SUGERIDO (opcional) */}
-                <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px' }}>Precio sugerido (opcional)</label>
+                <div className="form-field--lg">
+                    <label className="form-label">Precio sugerido (opcional)</label>
                     <input
                         type="number"
                         min="0"
@@ -191,42 +159,31 @@ const NewMovie = ({ onAddMovie }) => {
                         value={form.suggestedPrice}
                         onChange={(event) => handleChangeValue(event, "suggestedPrice")}
                         onBlur={() => handleBlur("suggestedPrice")}
-                        style={inputStyleFor("suggestedPrice")}
+                        className={`form-input ${touched.suggestedPrice && errors.suggestedPrice ? 'form-input--error' : ''}`}
                         placeholder="Precio de referencia para precargar sus funciones"
                     />
                     {touched.suggestedPrice && errors.suggestedPrice && (
-                        <p style={{ color: '#f44336', fontSize: '0.85rem', margin: '4px 0 0' }}>{errors.suggestedPrice}</p>
+                        <p className="form-error-text">{errors.suggestedPrice}</p>
                     )}
                 </div>
 
                 {/* CHECKBOX: ¿Está en cartelera? */}
-                <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div className="form-checkbox-row">
                     <input
                         type="checkbox"
                         id="isActive"
                         checked={form.isActive}
                         onChange={handleChangeIsActive}
-                        style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                        className="form-checkbox"
                     />
-                    <label htmlFor="isActive" style={{ cursor: 'pointer' }}>¿Está en cartelera disponible?</label>
+                    <label htmlFor="isActive">¿Está en cartelera disponible?</label>
                 </div>
 
                 {/* BOTÓN GUARDAR */}
                 <button
                     type="submit"
                     disabled={!isFormValid}
-                    style={{
-                        padding: '12px 20px',
-                        backgroundColor: isFormValid ? '#ffbd59' : '#555',
-                        color: isFormValid ? '#000' : '#888',
-                        border: 'none',
-                        borderRadius: '5px',
-                        fontWeight: 'bold',
-                        cursor: isFormValid ? 'pointer' : 'not-allowed',
-                        opacity: isFormValid ? 1 : 0.6,
-                        width: '100%',
-                        fontSize: '1.1rem'
-                    }}
+                    className={`btn btn--submit ${!isFormValid ? 'btn--disabled' : ''}`}
                 >
                     Guardar Película
                 </button>

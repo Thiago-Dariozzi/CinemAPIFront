@@ -238,3 +238,382 @@ body {
 .react-datepicker__input-container input {
   cursor: pointer;
 }
+
+/* =========================================
+   FORMULARIOS — Panel contenedor
+   ========================================= */
+.form-panel {
+  background-color: var(--bg-card);
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+  border: 1px solid #444;
+  font-family: sans-serif;
+}
+
+.form-panel__title {
+  color: var(--accent-gold);
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.form-body {
+  color: white;
+}
+
+/* =========================================
+   FORMULARIOS — Campos
+   ========================================= */
+.form-field {
+  margin-bottom: 15px;
+}
+
+.form-field--lg {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #333;
+  color: white;
+  box-sizing: border-box;
+}
+
+.form-input--compact {
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.form-input--error {
+  border-color: var(--danger);
+}
+
+.form-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #333;
+  color: white;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffbd59' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+.form-select--error {
+  border-color: var(--danger);
+}
+
+.form-select option {
+  background-color: #333;
+  color: white;
+}
+
+.form-error-text {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin: 4px 0 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-checkbox-row {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* =========================================
+   BOTONES
+   ========================================= */
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background-color: var(--accent-gold);
+  color: #000;
+}
+
+.btn--save {
+  background-color: #2ecc71;
+  color: #fff;
+}
+
+.btn--cancel {
+  background-color: #7f8c8d;
+  color: #fff;
+}
+
+.btn--delete {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.btn--delete-sm {
+  background-color: #e74c3c;
+  color: #fff;
+  border-radius: 4px;
+  padding: 4px 10px;
+}
+
+.btn--outline-gold {
+  background-color: transparent;
+  color: var(--accent-gold);
+  border: 1px solid var(--accent-gold);
+}
+
+.btn--submit {
+  padding: 12px 20px;
+  width: 100%;
+  font-size: 1.1rem;
+  background-color: var(--accent-gold);
+  color: #000;
+}
+
+.btn--disabled {
+  background-color: #555;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-group {
+  margin-top: 10px;
+}
+
+.btn + .btn {
+  margin-left: 8px;
+}
+
+/* =========================================
+   TARJETAS DE ENTIDAD (Salas, Géneros)
+   ========================================= */
+.entity-card {
+  background-color: var(--bg-card);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #444;
+  color: #fff;
+  font-family: sans-serif;
+}
+
+.entity-card__title {
+  color: var(--accent-gold);
+  margin-top: 0;
+}
+
+.entity-card__detail {
+  margin-bottom: 10px;
+}
+
+.entity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+/* =========================================
+   PILLS DE ESTADO (inline badges)
+   ========================================= */
+.status-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.status-pill--active {
+  background-color: #2ecc71;
+}
+
+.status-pill--inactive {
+  background-color: #e74c3c;
+}
+
+/* =========================================
+   MENSAJES (error, éxito, carga, vacío)
+   ========================================= */
+.msg-error {
+  color: #e74c3c;
+  text-align: center;
+  padding: 10px;
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid #e74c3c;
+}
+
+.msg-success {
+  color: #2ecc71;
+  text-align: center;
+  padding: 10px;
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid #2ecc71;
+}
+
+.msg-loading,
+.msg-empty {
+  color: white;
+  text-align: center;
+}
+
+.msg-inline-error {
+  color: #e74c3c;
+  font-size: 0.9rem;
+}
+
+.msg-inline-error--sm {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+/* =========================================
+   DASHBOARDS — Layout
+   ========================================= */
+.dashboard {
+  padding: 0 20px;
+}
+
+.section-title {
+  color: var(--accent-gold);
+}
+
+/* =========================================
+   MOVIE CARD — extensiones
+   ========================================= */
+.movie-card--highlighted {
+  box-shadow: 0 0 0 3px var(--accent-gold), 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* =========================================
+   PANEL DE FUNCIONES (Showtimes)
+   ========================================= */
+.functions-panel {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #444;
+}
+
+.functions-panel__title {
+  color: var(--accent-gold);
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.functions-btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.functions-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 15px;
+}
+
+.functions-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2a2a2a;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.functions-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.functions-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.functions-field-error {
+  color: var(--danger);
+  font-size: 0.8rem;
+  margin: 0 0 10px;
+}
+
+.functions-muted {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.functions-status {
+  font-size: 0.85rem;
+  margin-top: -4px;
+  margin-bottom: 10px;
+}
+
+.functions-status--loading {
+  color: #aaa;
+}
+
+.functions-status--ok {
+  color: var(--success);
+}
+
+.functions-status--conflict {
+  color: #e74c3c;
+}
+
+/* =========================================
+   BOOTSTRAP OVERRIDES (componentes de Thiago)
+   ========================================= */
+.accent-title {
+  color: var(--accent-gold);
+}
+
+.btn-accent {
+  background-color: var(--accent-gold) !important;
+  border: none !important;
+  color: #000 !important;
+  font-weight: bold !important;
+}
+
+.login-hint {
+  font-size: 0.85rem;
+}

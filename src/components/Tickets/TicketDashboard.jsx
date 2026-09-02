@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
-import { getAllTickets, getTicketsByUser, addTicket, updateTicket, deleteTicket } from './TicketApi';
-import { getAllMovies } from '../MoviesApi/movieApi';
-import { getAllScreens } from '../ScreensApi/ScreenApi';
-import { getAllUsers } from '../UsersApi/UserApi';
+import { getAllTickets, getTicketsByUser, addTicket, updateTicket, deleteTicket } from '../../api/ticketApi';
+import { getAllMovies } from '../../api/movieApi';
+import { getAllScreens } from '../../api/screenApi';
+import { getAllUsers } from '../../api/userApi';
 import NewTicket from './NewTicket';
 import TicketContainer from './TicketContainer';
 
-// scopeUserId: si viene seteado (panel de Usuario) esta pantalla solo trae/crea tickets
-// de ese usuario puntual, vía GET /api/ticket/user/{userId}. Sin scopeUserId (panel de
-// Admin) ve y administra los tickets de todos.
 const TicketDashboard = ({ scopeUserId }) => {
     const [tickets, setTickets] = useState([]);
     const [movies, setMovies] = useState([]);
@@ -35,8 +32,6 @@ const TicketDashboard = ({ scopeUserId }) => {
             getAllTickets(onTicketsSuccess, onTicketsError);
         }
 
-        // Películas, salas y usuarios se traen aparte para poder mostrar nombres
-        // (y elegirlos por combo) en vez de tipear/mostrar GUIDs en los tickets.
         getAllMovies()
             .then(setMovies)
             .catch((err) => console.error(err));
@@ -45,8 +40,6 @@ const TicketDashboard = ({ scopeUserId }) => {
             .then(setScreens)
             .catch((err) => console.error(err));
 
-        // La lista completa de usuarios solo hace falta para el combo "Usuario" del panel
-        // de Admin; un Client tiene su userId fijo y no necesita ver la tabla de usuarios.
         if (!scopeUserId) {
             getAllUsers(setUsers, (err) => console.error(err));
         }
@@ -76,8 +69,6 @@ const TicketDashboard = ({ scopeUserId }) => {
     };
 
     const handleUpdateTicket = (id, ticket) => {
-        // Defensa extra: aunque el form no deje tocar el usuario cuando está scoped, nos
-        // aseguramos de no mandar un userId distinto al del dueño de la pantalla.
         const ticketToSend = scopeUserId ? { ...ticket, userId: scopeUserId } : ticket;
         updateTicket(
             id,
@@ -92,7 +83,7 @@ const TicketDashboard = ({ scopeUserId }) => {
 
     return (
         <Container className="py-4">
-            <h1 style={{ color: '#ffbd59' }} className="mb-4">🎟️ {scopeUserId ? "Mis Tickets" : "Tickets"}</h1>
+            <h1 className="accent-title mb-4">🎟️ {scopeUserId ? "Mis Tickets" : "Tickets"}</h1>
             {error && <p className="text-danger">{error}</p>}
             <NewTicket onAddTicket={handleAddTicket} movies={movies} screens={screens} users={users} fixedUserId={scopeUserId} />
             <TicketContainer

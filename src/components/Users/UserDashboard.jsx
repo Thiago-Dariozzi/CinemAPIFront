@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
-import { getAllUsers, addUser, updateUser, deleteUser } from './UserApi';
+import { getAllUsers, addUser, updateUser, deleteUser } from '../../api/userApi';
 import NewUser from './NewUser';
 import UserContainer from './UserContainer';
 
@@ -59,7 +59,7 @@ const UserDashboard = () => {
 
     return (
         <Container className="py-4">
-            <h1 style={{ color: '#ffbd59' }} className="mb-4">👤 Usuarios</h1>
+            <h1 className="accent-title mb-4">👤 Usuarios</h1>
             {error && <p className="text-danger">{error}</p>}
             <NewUser onAddUser={handleAddUser} />
             <UserContainer

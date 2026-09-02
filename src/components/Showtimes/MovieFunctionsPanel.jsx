@@ -2,29 +2,22 @@ import React, { useEffect, useMemo, useState } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { es } from 'date-fns/locale/es';
 import 'react-datepicker/dist/react-datepicker.css';
-import { getAllScreens } from '../ScreensApi/ScreenApi';
-import { getAllMovies } from '../MoviesApi/movieApi';
+import { getAllScreens } from '../../api/screenApi';
+import { getAllMovies } from '../../api/movieApi';
 import {
     getShowtimesByMovie,
     getOccupiedShowtimesByScreen,
     addShowtime,
     deleteShowtime,
     formatShowtime,
-} from './showtimeApi';
+} from '../../api/showtimeApi';
 
-// Debe coincidir con ShowtimeService.CLEANING_BUFFER_MINUTES en el backend: la validación
-// real la sigue haciendo el backend, esto es solo para el aviso visual antes de guardar.
 const CLEANING_BUFFER_MINUTES = 15;
 
 registerLocale('es', es);
 
-const baseInputStyle = { width: '100%', padding: '8px', borderRadius: '5px', backgroundColor: '#333', color: 'white', boxSizing: 'border-box', marginBottom: '4px' };
-const labelStyle = { display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: '#ccc' };
-const fieldErrorStyle = { color: '#f44336', fontSize: '0.8rem', margin: '0 0 10px' };
-
 const pad = (n) => String(n).padStart(2, '0');
 
-// "Hoy" a las 00:00 (hora local), para bloquear fechas pasadas.
 const startOfToday = () => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -35,8 +28,6 @@ const startOfDay = (date) => new Date(date.getFullYear(), date.getMonth(), date.
 
 const isPastDate = (date) => startOfDay(date) < startOfToday();
 
-// Combina la fecha con la hora (solo se usan sus horas/minutos) en un único Date, en
-// hora local, sin pasar por UTC.
 const combineDateAndTime = (date, timeDate) => {
     if (!date || !timeDate) return null;
     const combined = new Date(date);
@@ -44,10 +35,8 @@ const combineDateAndTime = (date, timeDate) => {
     return combined;
 };
 
-// "YYYY-MM-DD" en hora local (toISOString() correría el día según el huso horario del navegador).
 const toDateOnlyString = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
-// "YYYY-MM-DDTHH:mm:00" en hora local — mismo formato que ya esperaba el backend.
 const toLocalIsoString = (date) => `${toDateOnlyString(date)}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
 
 const formatRange = (range) => {
@@ -84,8 +73,6 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
 
     const [touched, setTouched] = useState({});
 
-    // Referencia estable: pasarle startOfToday() inline a <DatePicker> le daría un Date
-    // nuevo en cada render.
     const todayDate = useMemo(() => startOfToday(), []);
 
     useEffect(() => {
@@ -131,8 +118,6 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         return map;
     }, [movies]);
 
-    // Mismo cálculo que ShowtimeService.ValidateNoOverlap en el backend: el tramo ocupado
-    // por cada función existente es [StartTime, StartTime + duración de su película + buffer].
     const occupiedRanges = useMemo(() => (
         occupied.map((s) => {
             const otherMovie = moviesById[s.movieId];
@@ -150,8 +135,6 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         return { start, end };
     }, [selectedDate, selectedTime, movieDurationMinutes]);
 
-    // Se cruzan si [pendingStart, pendingEnd) y [otherStart, otherEnd) se solapan aunque
-    // sea parcialmente (tocarse justo en el borde no cuenta como choque).
     const conflict = useMemo(() => {
         if (!pendingRange) return null;
         return occupiedRanges.find((r) => pendingRange.start < r.end && r.start < pendingRange.end) || null;
@@ -164,11 +147,6 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
     const handleBlur = (field) => {
         setTouched((prev) => ({ ...prev, [field]: true }));
     };
-
-    const styleFor = (field) => ({
-        ...baseInputStyle,
-        border: `1px solid ${touched[field] && errors[field] ? '#f44336' : '#555'}`,
-    });
 
     const resetForm = () => {
         setScreenId("");
@@ -215,7 +193,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
             (created) => {
                 setFunctions((prev) => [...prev, created].sort((a, b) => a.startTime.localeCompare(b.startTime)));
                 resetForm();
-                setIsFormOpen(false); // se guardó bien: el form vuelve a colapsado
+                setIsFormOpen(false);
             },
             (err) => setFormError(err.message || "Error al crear la función")
         );
@@ -233,24 +211,16 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
     const screenName = (id) => screens.find((s) => s.id === id)?.name || id;
 
     return (
-        <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid #444' }}>
-            <h3 style={{ color: '#ffbd59', fontSize: '1rem', marginBottom: '10px' }}>🕒 Funciones</h3>
+        <div className="functions-panel">
+            <h3 className="functions-panel__title">🕒 Funciones</h3>
 
-            {error && <p style={{ color: '#e74c3c', fontSize: '0.9rem' }}>{error}</p>}
+            {error && <p className="msg-inline-error">{error}</p>}
 
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
+            <div className="functions-btn-group">
                 <button
                     type="button"
                     onClick={onToggleList}
-                    style={{
-                        padding: '8px 16px',
-                        backgroundColor: 'transparent',
-                        color: '#ffbd59',
-                        border: '1px solid #ffbd59',
-                        borderRadius: '5px',
-                        fontWeight: 'bold',
-                        cursor: 'pointer'
-                    }}
+                    className="btn btn--outline-gold"
                 >
                     {isListOpen ? "▲ Ocultar funciones" : `▼ Ver funciones${!isLoading ? ` (${functions.length})` : ""}`}
                 </button>
@@ -259,15 +229,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
                     <button
                         type="button"
                         onClick={handleOpenForm}
-                        style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#ffbd59',
-                            color: '#000',
-                            border: 'none',
-                            borderRadius: '5px',
-                            fontWeight: 'bold',
-                            cursor: 'pointer'
-                        }}
+                        className="btn btn--primary"
                     >
                         + Agregar función
                     </button>
@@ -276,21 +238,17 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
 
             {isListOpen && (
                 isLoading ? (
-                    <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Cargando funciones...</p>
+                    <p className="functions-muted">Cargando funciones...</p>
                 ) : functions.length === 0 ? (
-                    <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Todavía no hay funciones cargadas para esta película.</p>
+                    <p className="functions-muted">Todavía no hay funciones cargadas para esta película.</p>
                 ) : (
-                    <ul style={{ listStyle: 'none', padding: 0, marginBottom: '15px' }}>
+                    <ul className="functions-list">
                         {functions.map((f) => (
-                            <li key={f.id} style={{
-                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                backgroundColor: '#2a2a2a', padding: '8px 12px', borderRadius: '6px', marginBottom: '6px',
-                                fontSize: '0.9rem'
-                            }}>
+                            <li key={f.id} className="functions-item">
                                 <span>{screenName(f.screenId)} · {formatShowtime(f.startTime)} · ${f.price}</span>
                                 <button
                                     onClick={() => handleDelete(f.id)}
-                                    style={{ backgroundColor: '#e74c3c', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer', fontWeight: 'bold' }}
+                                    className="btn btn--delete-sm"
                                 >
                                     Eliminar
                                 </button>
@@ -302,11 +260,11 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
 
             {isFormOpen && (
                 <form onSubmit={handleAdd}>
-                    {formError && <p style={{ color: '#e74c3c', fontSize: '0.9rem' }}>{formError}</p>}
+                    {formError && <p className="msg-inline-error">{formError}</p>}
 
-                    <label style={labelStyle}>Sala</label>
+                    <label className="functions-label">Sala</label>
                     <select
-                        style={styleFor("screenId")}
+                        className={`form-input form-input--compact ${touched.screenId && errors.screenId ? 'form-input--error' : ''}`}
                         value={screenId}
                         onChange={(event) => setScreenId(event.target.value)}
                         onBlur={() => handleBlur("screenId")}
@@ -314,9 +272,9 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
                         <option value="">Seleccionar sala...</option>
                         {screens.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                     </select>
-                    {touched.screenId && errors.screenId && <p style={fieldErrorStyle}>{errors.screenId}</p>}
+                    {touched.screenId && errors.screenId && <p className="functions-field-error">{errors.screenId}</p>}
 
-                    <label style={labelStyle}>Fecha</label>
+                    <label className="functions-label">Fecha</label>
                     <DatePicker
                         selected={selectedDate}
                         onChange={(date) => setSelectedDate(date)}
@@ -325,16 +283,12 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
                         locale="es"
                         dateFormat="dd/MM/yyyy"
                         placeholderText="Elegir fecha"
-                        customInput={<input style={styleFor("selectedDate")} />}
-                        // withPortal sin portalId no usa ReactDOM.createPortal de verdad: pinta
-                        // un div position:fixed dentro del árbol DOM normal, y .movie-card:hover
-                        // tiene un transform que le secuestra el containing block (parpadeo).
-                        // portalId sí porta a document.body de verdad, afuera de eso.
+                        customInput={<input className={`form-input form-input--compact ${touched.selectedDate && errors.selectedDate ? 'form-input--error' : ''}`} />}
                         portalId="cinemapi-datepicker-portal"
                     />
-                    {touched.selectedDate && errors.selectedDate && <p style={fieldErrorStyle}>{errors.selectedDate}</p>}
+                    {touched.selectedDate && errors.selectedDate && <p className="functions-field-error">{errors.selectedDate}</p>}
 
-                    <label style={labelStyle}>Hora de inicio</label>
+                    <label className="functions-label">Hora de inicio</label>
                     <DatePicker
                         selected={selectedTime}
                         onChange={(date) => setSelectedTime(date)}
@@ -346,18 +300,13 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
                         dateFormat="HH:mm"
                         locale="es"
                         placeholderText="Elegir hora"
-                        customInput={<input style={styleFor("selectedTime")} />}
-                        // Mismo fix que en el calendario de fecha (ver comentario arriba): un
-                        // portal de verdad, no withPortal, para no reabrir el bug de parpadeo.
+                        customInput={<input className={`form-input form-input--compact ${touched.selectedTime && errors.selectedTime ? 'form-input--error' : ''}`} />}
                         portalId="cinemapi-datepicker-portal"
                     />
-                    {touched.selectedTime && errors.selectedTime && <p style={fieldErrorStyle}>{errors.selectedTime}</p>}
+                    {touched.selectedTime && errors.selectedTime && <p className="functions-field-error">{errors.selectedTime}</p>}
 
                     {screenId && selectedDate && (
-                        <p style={{
-                            fontSize: '0.85rem', marginTop: '-4px', marginBottom: '10px',
-                            color: isLoadingOccupied ? '#aaa' : conflict ? '#e74c3c' : '#4caf50'
-                        }}>
+                        <p className={`functions-status ${isLoadingOccupied ? 'functions-status--loading' : conflict ? 'functions-status--conflict' : 'functions-status--ok'}`}>
                             {isLoadingOccupied
                                 ? "Consultando horarios ocupados..."
                                 : !selectedTime
@@ -372,48 +321,31 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
                         </p>
                     )}
 
-                    <label style={labelStyle}>Precio</label>
+                    <label className="functions-label">Precio</label>
                     <input
                         type="number"
                         min="0"
                         step="0.01"
-                        style={styleFor("price")}
+                        className={`form-input form-input--compact ${touched.price && errors.price ? 'form-input--error' : ''}`}
                         value={price}
                         onChange={(event) => setPrice(event.target.value)}
                         onBlur={() => handleBlur("price")}
                         placeholder={movieSuggestedPrice != null ? `Sugerido: $${movieSuggestedPrice}` : "Precio de esta función"}
                     />
-                    {touched.price && errors.price && <p style={fieldErrorStyle}>{errors.price}</p>}
+                    {touched.price && errors.price && <p className="functions-field-error">{errors.price}</p>}
 
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                    <div className="functions-form-actions">
                         <button
                             type="submit"
                             disabled={!isFormValid}
-                            style={{
-                                padding: '8px 16px',
-                                backgroundColor: isFormValid ? '#ffbd59' : '#555',
-                                color: isFormValid ? '#000' : '#888',
-                                border: 'none',
-                                borderRadius: '5px',
-                                fontWeight: 'bold',
-                                cursor: isFormValid ? 'pointer' : 'not-allowed',
-                                opacity: isFormValid ? 1 : 0.6
-                            }}
+                            className={`btn ${isFormValid ? 'btn--primary' : 'btn--disabled'}`}
                         >
                             Guardar función
                         </button>
                         <button
                             type="button"
                             onClick={handleCancelForm}
-                            style={{
-                                padding: '8px 16px',
-                                backgroundColor: '#7f8c8d',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '5px',
-                                fontWeight: 'bold',
-                                cursor: 'pointer'
-                            }}
+                            className="btn btn--cancel"
                         >
                             Cancelar
                         </button>
