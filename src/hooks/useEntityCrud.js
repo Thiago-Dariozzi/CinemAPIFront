@@ -1,16 +1,4 @@
 import { useEffect, useState } from 'react';
-
-// Boilerplate compartido de un dashboard de entidad: lista + loading + error + success,
-// más add/update/delete con actualización optimista de la lista local.
-//
-// messages.addSuccess/updateSuccess/deleteSuccess solo se muestran si se pasa un string
-// explícito (si se omite, esa operación no toca el mensaje de éxito) — reproduce la
-// asimetría que ya existe hoy entre entidades (ej: el update de Movie no muestra mensaje
-// de éxito, el de Screen sí).
-//
-// silentMutationErrors evita que un fallo de add/update/delete pise el mensaje de error
-// de página (error a nivel dashboard); el error real se re-lanza siempre igual, para que
-// quien llamó (EntityForm/EntityCard) lo pueda mostrar en línea.
 export const useEntityCrud = ({
     fetchAll,
     addFn,

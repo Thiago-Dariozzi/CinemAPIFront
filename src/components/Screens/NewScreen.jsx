@@ -14,7 +14,7 @@ const NewScreen = ({ onAddScreen }) => (
             try {
                 await onAddScreen(payload);
             } catch {
-                // ScreenDashboard.jsx ya muestra el error a nivel página (msg-error).
+                // Error is shown at page level by ScreenDashboard.
             }
         }}
     />

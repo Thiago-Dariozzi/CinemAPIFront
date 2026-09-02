@@ -5,6 +5,5 @@ export const initialForm = {
     genreId: "",
     imageUrl: "",
     isActive: false,
-    // Opcional: precarga el precio al armar una función nueva para esta película.
     suggestedPrice: ""
 };

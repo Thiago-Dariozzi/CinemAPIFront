@@ -1,7 +1,4 @@
 import React from 'react';
-
-// Input genérico según field.type, compartido por EntityForm y EntityCard (edición
-// dentro de una card usa compact=true, que agrega form-input--compact).
 const FieldInput = ({ field, value, touched, error, onChange, onBlur, optionsSources = {}, compact = false }) => {
     if (field.type === "select") {
         const options = optionsSources[field.optionsFrom] ?? [];
