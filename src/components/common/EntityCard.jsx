@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { computeErrors } from './fieldValidation';
 import FieldBody from './FieldBody';
-
-// Card con toggle view/edit genérico: view usa renderView (JSX propio de cada entidad),
-// edit usa fields (el mismo config que EntityForm) para los inputs.
 const EntityCard = ({
     id,
     values,

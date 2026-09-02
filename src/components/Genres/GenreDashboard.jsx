@@ -26,8 +26,6 @@ const GenreDashboard = () => {
         updateFn: updateGenreAsync,
         deleteFn: deleteGenreAsync,
         messages: { fetchError: "No se pudo conectar con el servidor. ¿Está corriendo el backend?" },
-        // Los fallos de alta/edición/borrado se muestran en línea (EntityForm/EntityCard),
-        // nunca como banner de página — igual que hoy.
         silentMutationErrors: true,
     });
     const movies = useEntityList(getAllMovies);
