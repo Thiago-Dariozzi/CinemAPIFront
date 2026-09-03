@@ -1,4 +1,3 @@
-import React from 'react';
 import FieldInput from './FieldInput';
 
 // Label + input + error de un campo. El checkbox trae su propio label inline

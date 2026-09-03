@@ -10,51 +10,49 @@ const UserDashboard = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        getAllUsers(
-            (data) => {
+        const loadUsers = async () => {
+            try {
+                const data = await getAllUsers();
                 setUsers(data);
                 setIsLoading(false);
-            },
-            (err) => {
+            } catch (err) {
                 console.error(err);
                 setError("No se pudo conectar con el servidor de usuarios. ¿Está corriendo el backend?");
                 setIsLoading(false);
             }
-        );
+        };
+
+        loadUsers();
     }, []);
 
-    const handleAddUser = (user) => {
-        addUser(
-            user,
-            (created) => setUsers((prev) => [created, ...prev]),
-            (err) => {
-                console.error(err);
-                setError("Error al agregar el usuario");
-            }
-        );
+    const handleAddUser = async (user) => {
+        try {
+            const created = await addUser(user);
+            setUsers((prev) => [created, ...prev]);
+        } catch (err) {
+            console.error(err);
+            setError("Error al agregar el usuario");
+        }
     };
 
-    const handleDeleteUser = (id) => {
-        deleteUser(
-            id,
-            () => setUsers((prev) => prev.filter((user) => user.id !== id)),
-            (err) => {
-                console.error(err);
-                setError("Error al eliminar el usuario");
-            }
-        );
+    const handleDeleteUser = async (id) => {
+        try {
+            await deleteUser(id);
+            setUsers((prev) => prev.filter((user) => user.id !== id));
+        } catch (err) {
+            console.error(err);
+            setError("Error al eliminar el usuario");
+        }
     };
 
-    const handleUpdateUser = (id, user) => {
-        updateUser(
-            id,
-            user,
-            (updated) => setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...updated } : u))),
-            (err) => {
-                console.error(err);
-                setError("Error al actualizar el usuario");
-            }
-        );
+    const handleUpdateUser = async (id, user) => {
+        try {
+            const updated = await updateUser(id, user);
+            setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...updated } : u)));
+        } catch (err) {
+            console.error(err);
+            setError("Error al actualizar el usuario");
+        }
     };
 
     return (

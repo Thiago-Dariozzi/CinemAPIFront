@@ -15,59 +15,46 @@ const mapShowtimeToBackendForCreate = (showtime) => ({
     price: Number(showtime.price) || 0,
 });
 
-export const getShowtimesByMovie = (movieId, onSuccess, onError) => {
-    fetch(`${API_BASE}/movie/${movieId}`, {
+export const getShowtimesByMovie = async (movieId) => {
+    const response = await fetch(`${API_BASE}/movie/${movieId}`, {
         headers: { "Accept": "application/json" },
-    })
-        .then((response) => {
-            if (!response.ok) throw new Error("Error al obtener los horarios");
-            return response.json();
-        })
-        .then((data) => onSuccess(data.map(mapShowtimeFromBackend)))
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) throw new Error("Error al obtener los horarios");
+    const data = await response.json();
+    return data.map(mapShowtimeFromBackend);
 };
 
-export const getOccupiedShowtimesByScreen = (screenId, date, onSuccess, onError) => {
-    fetch(`${API_BASE}/screen/${screenId}?date=${date}`, {
+export const getOccupiedShowtimesByScreen = async (screenId, date) => {
+    const response = await fetch(`${API_BASE}/screen/${screenId}?date=${date}`, {
         headers: { "Accept": "application/json" },
-    })
-        .then((response) => {
-            if (!response.ok) throw new Error("Error al obtener la ocupación de la sala");
-            return response.json();
-        })
-        .then((data) => onSuccess(data.map(mapShowtimeFromBackend)))
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) throw new Error("Error al obtener la ocupación de la sala");
+    const data = await response.json();
+    return data.map(mapShowtimeFromBackend);
 };
 
-export const addShowtime = (showtime, onSuccess, onError) => {
-    fetch(API_BASE, {
+export const addShowtime = async (showtime) => {
+    const response = await fetch(API_BASE, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
         },
         body: JSON.stringify(mapShowtimeToBackendForCreate(showtime)),
-    })
-        .then(async (response) => {
-            if (!response.ok) {
-                const detail = await response.text().catch(() => "");
-                throw new Error(detail || "Error al crear la función");
-            }
-            return response.json();
-        })
-        .then((data) => onSuccess(mapShowtimeFromBackend(data)))
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) {
+        const detail = await response.text().catch(() => "");
+        throw new Error(detail || "Error al crear la función");
+    }
+    const data = await response.json();
+    return mapShowtimeFromBackend(data);
 };
 
-export const deleteShowtime = (id, onSuccess, onError) => {
-    fetch(`${API_BASE}/${id}`, {
+export const deleteShowtime = async (id) => {
+    const response = await fetch(`${API_BASE}/${id}`, {
         method: "DELETE",
-    })
-        .then((response) => {
-            if (!response.ok) throw new Error("Error al eliminar la función");
-            onSuccess(id);
-        })
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) throw new Error("Error al eliminar la función");
 };
 
 export const formatShowtime = (startTime) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Form, Button, Container } from 'react-bootstrap';
 import { login } from './session';
@@ -10,23 +10,19 @@ const Login = () => {
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setError(null);
         setIsSubmitting(true);
 
-        login(
-            email,
-            password,
-            (session) => {
-                setIsSubmitting(false);
-                navigate(session.role === "Admin" ? "/admin" : "/panel");
-            },
-            (err) => {
-                setIsSubmitting(false);
-                setError(err.message || "Email o contraseña incorrectos.");
-            }
-        );
+        try {
+            const session = await login(email, password);
+            setIsSubmitting(false);
+            navigate(session.role === "Admin" ? "/admin" : "/panel");
+        } catch (err) {
+            setIsSubmitting(false);
+            setError(err.message || "Email o contraseña incorrectos.");
+        }
     };
 
     return (

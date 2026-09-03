@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { computeErrors } from './fieldValidation';
 import FieldInput from './FieldInput';
 import FieldBody from './FieldBody';

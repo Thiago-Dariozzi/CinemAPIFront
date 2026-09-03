@@ -124,21 +124,43 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
     useEffect(() => {
         let isMounted = true;
 
-        setIsLoading(true);
-        getShowtimesByMovie(
-            movieId,
-            (data) => { if (isMounted) { setFunctions(data); setIsLoading(false); } },
-            (err) => {
+        // Cada carga es su propia función async, así las 3 salen en paralelo (ninguna
+        // espera a la anterior), igual que antes con los .then() sueltos.
+        const loadFunctions = async () => {
+            setIsLoading(true);
+            try {
+                const data = await getShowtimesByMovie(movieId);
+                if (isMounted) { setFunctions(data); setIsLoading(false); }
+            } catch (err) {
                 if (isMounted) {
                     console.error(err);
                     setError("No se pudieron cargar las funciones de esta película");
                     setIsLoading(false);
                 }
             }
-        );
+        };
 
-        getAllScreens().then((data) => { if (isMounted) setScreens(data); }).catch((err) => console.error(err));
-        getAllMovies().then((data) => { if (isMounted) setMovies(data); }).catch((err) => console.error(err));
+        const loadScreens = async () => {
+            try {
+                const data = await getAllScreens();
+                if (isMounted) setScreens(data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        const loadMovies = async () => {
+            try {
+                const data = await getAllMovies();
+                if (isMounted) setMovies(data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        loadFunctions();
+        loadScreens();
+        loadMovies();
 
         return () => { isMounted = false; };
     }, [movieId]);
@@ -149,13 +171,20 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
             return;
         }
 
-        setIsLoadingOccupied(true);
-        getOccupiedShowtimesByScreen(
-            screenId,
-            toDateOnlyString(selectedDate),
-            (data) => { setOccupied(data); setIsLoadingOccupied(false); },
-            (err) => { console.error(err); setOccupied([]); setIsLoadingOccupied(false); }
-        );
+        const loadOccupied = async () => {
+            setIsLoadingOccupied(true);
+            try {
+                const data = await getOccupiedShowtimesByScreen(screenId, toDateOnlyString(selectedDate));
+                setOccupied(data);
+            } catch (err) {
+                console.error(err);
+                setOccupied([]);
+            } finally {
+                setIsLoadingOccupied(false);
+            }
+        };
+
+        loadOccupied();
     }, [screenId, selectedDate]);
 
     // Estos 4 se recalculan en cada render (antes vivían en useMemo): son variables
@@ -193,7 +222,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         setIsFormOpen(false);
     };
 
-    const handleAdd = (event) => {
+    const handleAdd = async (event) => {
         event.preventDefault();
         setFormError(null);
 
@@ -213,24 +242,25 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
             price: price === "" ? (movieSuggestedPrice ?? 0) : Number(price),
         };
 
-        addShowtime(
-            showtime,
-            (created) => {
-                setFunctions((prev) => [...prev, created].sort((a, b) => a.startTime.localeCompare(b.startTime)));
-                resetForm();
-                setIsFormOpen(false);
-            },
-            (err) => setFormError(err.message || "Error al crear la función")
-        );
+        try {
+            const created = await addShowtime(showtime);
+            setFunctions((prev) => [...prev, created].sort((a, b) => a.startTime.localeCompare(b.startTime)));
+            resetForm();
+            setIsFormOpen(false);
+        } catch (err) {
+            setFormError(err.message || "Error al crear la función");
+        }
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         if (!window.confirm("¿Eliminar esta función?")) return;
-        deleteShowtime(
-            id,
-            () => setFunctions((prev) => prev.filter((f) => f.id !== id)),
-            (err) => { console.error(err); setError("Error al eliminar la función"); }
-        );
+        try {
+            await deleteShowtime(id);
+            setFunctions((prev) => prev.filter((f) => f.id !== id));
+        } catch (err) {
+            console.error(err);
+            setError("Error al eliminar la función");
+        }
     };
 
     const screenName = (id) => screens.find((s) => s.id === id)?.name || id;

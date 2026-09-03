@@ -31,25 +31,26 @@ const TicketCard = ({
             return;
         }
 
-        setIsLoadingShowtimes(true);
-        getShowtimesByMovie(
-            form.movieId,
-            (data) => {
+        const loadShowtimes = async () => {
+            setIsLoadingShowtimes(true);
+            try {
+                const data = await getShowtimesByMovie(form.movieId);
                 setShowtimes(data);
-                setIsLoadingShowtimes(false);
                 const match = data.find(
                     (s) => s.screenId === form.screenId && s.startTime.substring(0, 10) === form.buyDate
                 );
                 if (match) {
                     setForm((prev) => ({ ...prev, showtimeId: match.id, finalPrice: match.price }));
                 }
-            },
-            (err) => {
+            } catch (err) {
                 console.error(err);
                 setShowtimes([]);
+            } finally {
                 setIsLoadingShowtimes(false);
             }
-        );
+        };
+
+        loadShowtimes();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fixedUserId, isEditing, form.movieId]);
 

@@ -15,19 +15,20 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
             return;
         }
 
-        setIsLoadingShowtimes(true);
-        getShowtimesByMovie(
-            form.movieId,
-            (data) => {
+        const loadShowtimes = async () => {
+            setIsLoadingShowtimes(true);
+            try {
+                const data = await getShowtimesByMovie(form.movieId);
                 setShowtimes(data);
-                setIsLoadingShowtimes(false);
-            },
-            (err) => {
+            } catch (err) {
                 console.error(err);
                 setShowtimes([]);
+            } finally {
                 setIsLoadingShowtimes(false);
             }
-        );
+        };
+
+        loadShowtimes();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fixedUserId, form.movieId]);
 

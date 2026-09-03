@@ -9,9 +9,18 @@ export const useEntityList = (fetchAll) => {
 
     useEffect(() => {
         let isMounted = true;
-        fetchAll()
-            .then((data) => { if (isMounted) setList(data); })
-            .catch((err) => console.error(err));
+
+        const load = async () => {
+            try {
+                const data = await fetchAll();
+                if (isMounted) setList(data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        load();
+
         return () => { isMounted = false; };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

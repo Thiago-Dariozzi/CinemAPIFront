@@ -1,4 +1,3 @@
-
 const API_BASE = "http://localhost:5288/api/genre";
 
 const mapGenreFromBackend = (genre) => ({
@@ -7,67 +6,54 @@ const mapGenreFromBackend = (genre) => ({
     isActive: genre.isActive,
 });
 
-export const getAllGenres = (onSuccess, onError) => {
-    fetch(API_BASE, {
+export const getAllGenres = async () => {
+    const response = await fetch(API_BASE, {
         headers: { "Accept": "application/json" },
-    })
-        .then((response) => {
-            if (!response.ok) throw new Error("Error al obtener los géneros");
-            return response.json();
-        })
-        .then((data) => onSuccess(data.map(mapGenreFromBackend)))
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) throw new Error("Error al obtener los géneros");
+    const data = await response.json();
+    return data.map(mapGenreFromBackend);
 };
 
-export const addGenre = (genre, onSuccess, onError) => {
-    fetch(API_BASE, {
+export const addGenre = async (genre) => {
+    const response = await fetch(API_BASE, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
         },
         body: JSON.stringify({ name: genre.name }),
-    })
-        .then(async (response) => {
-            if (!response.ok) {
-                const detail = await response.text().catch(() => "");
-                throw new Error(detail || "Error al crear el género");
-            }
-            return response.json();
-        })
-        .then((data) => onSuccess(mapGenreFromBackend(data)))
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) {
+        const detail = await response.text().catch(() => "");
+        throw new Error(detail || "Error al crear el género");
+    }
+    const data = await response.json();
+    return mapGenreFromBackend(data);
 };
 
-export const updateGenre = (id, genre, onSuccess, onError) => {
-    fetch(`${API_BASE}/${id}`, {
+export const updateGenre = async (id, genre) => {
+    const response = await fetch(`${API_BASE}/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
         },
         body: JSON.stringify({ id, name: genre.name, isActive: true }),
-    })
-        .then(async (response) => {
-            if (!response.ok) {
-                const detail = await response.text().catch(() => "");
-                throw new Error(detail || "Error al actualizar el género");
-            }
-            onSuccess({ id, name: genre.name, isActive: true });
-        })
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) {
+        const detail = await response.text().catch(() => "");
+        throw new Error(detail || "Error al actualizar el género");
+    }
+    return { id, name: genre.name, isActive: true };
 };
 
-export const deleteGenre = (id, onSuccess, onError) => {
-    fetch(`${API_BASE}/${id}`, {
+export const deleteGenre = async (id) => {
+    const response = await fetch(`${API_BASE}/${id}`, {
         method: "DELETE",
-    })
-        .then(async (response) => {
-            if (!response.ok) {
-                const detail = await response.text().catch(() => "");
-                throw new Error(detail || "Error al eliminar el género");
-            }
-            onSuccess(id);
-        })
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) {
+        const detail = await response.text().catch(() => "");
+        throw new Error(detail || "Error al eliminar el género");
+    }
 };

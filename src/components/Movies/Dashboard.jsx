@@ -3,11 +3,8 @@ import { useEntityCrud } from '../../hooks/useEntityCrud';
 import { useEntityList } from '../../hooks/useEntityList';
 import { getAllMovies, addMovie, deleteMovie, updateMovie } from '../../api/movieApi';
 import { getAllGenres } from '../../api/genreApi';
-import { promisify } from '../../utils/promisify';
 import NewMovie from './NewMovie';
 import MovieContainer from './MovieContainer';
-
-const fetchAllGenres = promisify(getAllGenres);
 
 const Dashboard = ({ readOnly = false }) => {
     const { list: movies, loading, error, success, handleAdd, handleUpdate, handleDelete } = useEntityCrud({
@@ -23,7 +20,7 @@ const Dashboard = ({ readOnly = false }) => {
             deleteError: "Error al eliminar la película",
         },
     });
-    const genres = useEntityList(fetchAllGenres);
+    const genres = useEntityList(getAllGenres);
 
     if (loading) return <p className="msg-loading">Cargando películas...</p>;
 

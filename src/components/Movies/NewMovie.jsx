@@ -4,12 +4,9 @@ import { movieFormFields } from './movieFields';
 import { initialForm } from './NewMovieData';
 import { useEntityList } from '../../hooks/useEntityList';
 import { getAllGenres } from '../../api/genreApi';
-import { promisify } from '../../utils/promisify';
-
-const fetchAllGenres = promisify(getAllGenres);
 
 const NewMovie = ({ onAddMovie }) => {
-    const genres = useEntityList(fetchAllGenres);
+    const genres = useEntityList(getAllGenres);
 
     return (
         <EntityForm

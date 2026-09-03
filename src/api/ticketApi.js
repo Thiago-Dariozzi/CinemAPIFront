@@ -28,82 +28,63 @@ const mapTicketToBackendForUpdate = (id, ticket) => ({
     isActive: true,
 });
 
-export const getAllTickets = (onSuccess, onError) => {
-    fetch(API_BASE, {
+export const getAllTickets = async () => {
+    const response = await fetch(API_BASE, {
         headers: { "Accept": "application/json" },
-    })
-        .then((response) => {
-            if (!response.ok) throw new Error("Error al obtener los tickets");
-            return response.json();
-        })
-        .then((data) => onSuccess(data.map(mapTicketFromBackend)))
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) throw new Error("Error al obtener los tickets");
+    const data = await response.json();
+    return data.map(mapTicketFromBackend);
 };
 
-export const getTicketById = (id, onSuccess, onError) => {
-    fetch(`${API_BASE}/${id}`, {
+export const getTicketById = async (id) => {
+    const response = await fetch(`${API_BASE}/${id}`, {
         headers: { "Accept": "application/json" },
-    })
-        .then((response) => {
-            if (!response.ok) throw new Error("Error al obtener el ticket");
-            return response.json();
-        })
-        .then((data) => onSuccess(mapTicketFromBackend(data)))
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) throw new Error("Error al obtener el ticket");
+    const data = await response.json();
+    return mapTicketFromBackend(data);
 };
 
-export const getTicketsByUser = (userId, onSuccess, onError) => {
-    fetch(`${API_BASE}/user/${userId}`, {
+export const getTicketsByUser = async (userId) => {
+    const response = await fetch(`${API_BASE}/user/${userId}`, {
         headers: { "Accept": "application/json" },
-    })
-        .then((response) => {
-            if (!response.ok) throw new Error("Error al obtener los tickets del usuario");
-            return response.json();
-        })
-        .then((data) => onSuccess(data.map(mapTicketFromBackend)))
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) throw new Error("Error al obtener los tickets del usuario");
+    const data = await response.json();
+    return data.map(mapTicketFromBackend);
 };
 
-export const addTicket = (ticket, onSuccess, onError) => {
-    fetch(API_BASE, {
+export const addTicket = async (ticket) => {
+    const response = await fetch(API_BASE, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
         },
         body: JSON.stringify(mapTicketToBackendForCreate(ticket)),
-    })
-        .then((response) => {
-            if (!response.ok) throw new Error("Error al crear el ticket");
-            return response.json();
-        })
-        .then((data) => onSuccess(mapTicketFromBackend(data)))
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) throw new Error("Error al crear el ticket");
+    const data = await response.json();
+    return mapTicketFromBackend(data);
 };
 
-export const updateTicket = (id, ticket, onSuccess, onError) => {
-    fetch(`${API_BASE}/${id}`, {
+export const updateTicket = async (id, ticket) => {
+    const response = await fetch(`${API_BASE}/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
         },
         body: JSON.stringify(mapTicketToBackendForUpdate(id, ticket)),
-    })
-        .then((response) => {
-            if (!response.ok) throw new Error("Error al actualizar el ticket");
-            onSuccess({ id, ...ticket, isActive: true });
-        })
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) throw new Error("Error al actualizar el ticket");
+    return { id, ...ticket, isActive: true };
 };
 
-export const deleteTicket = (id, onSuccess, onError) => {
-    fetch(`${API_BASE}/${id}`, {
+export const deleteTicket = async (id) => {
+    const response = await fetch(`${API_BASE}/${id}`, {
         method: "DELETE",
-    })
-        .then((response) => {
-            if (!response.ok) throw new Error("Error al eliminar el ticket");
-            onSuccess(id);
-        })
-        .catch((error) => onError(error));
+    });
+    if (!response.ok) throw new Error("Error al eliminar el ticket");
 };

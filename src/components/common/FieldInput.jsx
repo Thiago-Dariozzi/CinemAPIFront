@@ -1,4 +1,3 @@
-import React from 'react';
 
 // Input genérico según field.type, compartido por EntityForm y EntityCard (edición
 // dentro de una card usa compact=true, que agrega form-input--compact).

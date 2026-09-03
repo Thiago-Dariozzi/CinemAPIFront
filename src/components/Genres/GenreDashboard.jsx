@@ -3,14 +3,8 @@ import { useEntityCrud } from '../../hooks/useEntityCrud';
 import { useEntityList } from '../../hooks/useEntityList';
 import { getAllGenres, addGenre, updateGenre, deleteGenre } from '../../api/genreApi';
 import { getAllMovies } from '../../api/movieApi';
-import { promisify } from '../../utils/promisify';
 import NewGenre from './NewGenre';
 import GenreContainer from './GenreContainer';
-
-const fetchAllGenres = promisify(getAllGenres);
-const addGenreAsync = promisify(addGenre);
-const updateGenreAsync = promisify(updateGenre);
-const deleteGenreAsync = promisify(deleteGenre);
 
 const GenreDashboard = () => {
     const {
@@ -21,10 +15,10 @@ const GenreDashboard = () => {
         handleUpdate,
         handleDelete,
     } = useEntityCrud({
-        fetchAll: fetchAllGenres,
-        addFn: addGenreAsync,
-        updateFn: updateGenreAsync,
-        deleteFn: deleteGenreAsync,
+        fetchAll: getAllGenres,
+        addFn: addGenre,
+        updateFn: updateGenre,
+        deleteFn: deleteGenre,
         messages: { fetchError: "No se pudo conectar con el servidor. ¿Está corriendo el backend?" },
         // Los fallos de alta/edición/borrado se muestran en línea (EntityForm/EntityCard),
         // nunca como banner de página — igual que hoy.

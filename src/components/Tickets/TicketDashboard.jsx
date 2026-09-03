@@ -16,69 +16,80 @@ const TicketDashboard = ({ scopeUserId }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const onTicketsSuccess = (data) => {
-            setTickets(data);
-            setIsLoading(false);
+        const loadTickets = async () => {
+            try {
+                const data = scopeUserId ? await getTicketsByUser(scopeUserId) : await getAllTickets();
+                setTickets(data);
+                setIsLoading(false);
+            } catch (err) {
+                console.error(err);
+                setError("No se pudo conectar con el servidor de tickets. ¿Está corriendo el backend?");
+                setIsLoading(false);
+            }
         };
-        const onTicketsError = (err) => {
-            console.error(err);
-            setError("No se pudo conectar con el servidor de tickets. ¿Está corriendo el backend?");
-            setIsLoading(false);
+
+        const loadMovies = async () => {
+            try {
+                setMovies(await getAllMovies());
+            } catch (err) {
+                console.error(err);
+            }
         };
 
-        if (scopeUserId) {
-            getTicketsByUser(scopeUserId, onTicketsSuccess, onTicketsError);
-        } else {
-            getAllTickets(onTicketsSuccess, onTicketsError);
-        }
+        const loadScreens = async () => {
+            try {
+                setScreens(await getAllScreens());
+            } catch (err) {
+                console.error(err);
+            }
+        };
 
-        getAllMovies()
-            .then(setMovies)
-            .catch((err) => console.error(err));
-
-        getAllScreens()
-            .then(setScreens)
-            .catch((err) => console.error(err));
+        loadTickets();
+        loadMovies();
+        loadScreens();
 
         if (!scopeUserId) {
-            getAllUsers(setUsers, (err) => console.error(err));
+            const loadUsers = async () => {
+                try {
+                    setUsers(await getAllUsers());
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            loadUsers();
         }
     }, [scopeUserId]);
 
-    const handleAddTicket = (ticket) => {
+    const handleAddTicket = async (ticket) => {
         const ticketToSend = scopeUserId ? { ...ticket, userId: scopeUserId } : ticket;
-        addTicket(
-            ticketToSend,
-            (created) => setTickets((prev) => [created, ...prev]),
-            (err) => {
-                console.error(err);
-                setError("Error al agregar el ticket");
-            }
-        );
+        try {
+            const created = await addTicket(ticketToSend);
+            setTickets((prev) => [created, ...prev]);
+        } catch (err) {
+            console.error(err);
+            setError("Error al agregar el ticket");
+        }
     };
 
-    const handleDeleteTicket = (id) => {
-        deleteTicket(
-            id,
-            () => setTickets((prev) => prev.filter((ticket) => ticket.id !== id)),
-            (err) => {
-                console.error(err);
-                setError("Error al eliminar el ticket");
-            }
-        );
+    const handleDeleteTicket = async (id) => {
+        try {
+            await deleteTicket(id);
+            setTickets((prev) => prev.filter((ticket) => ticket.id !== id));
+        } catch (err) {
+            console.error(err);
+            setError("Error al eliminar el ticket");
+        }
     };
 
-    const handleUpdateTicket = (id, ticket) => {
+    const handleUpdateTicket = async (id, ticket) => {
         const ticketToSend = scopeUserId ? { ...ticket, userId: scopeUserId } : ticket;
-        updateTicket(
-            id,
-            ticketToSend,
-            (updated) => setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, ...updated } : t))),
-            (err) => {
-                console.error(err);
-                setError("Error al actualizar el ticket");
-            }
-        );
+        try {
+            const updated = await updateTicket(id, ticketToSend);
+            setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, ...updated } : t)));
+        } catch (err) {
+            console.error(err);
+            setError("Error al actualizar el ticket");
+        }
     };
 
     return (

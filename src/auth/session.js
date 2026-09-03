@@ -14,38 +14,32 @@ const DEMO_CLIENT_PROFILE = {
     role: "Client",
 };
 
-const saveSession = (email, role, userId, onSuccess) => {
+const saveSession = (email, role, userId) => {
     const session = { email, role, userId: userId ?? null };
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-    onSuccess(session);
+    return session;
 };
 
-export const login = (email, password, onSuccess, onError) => {
+export const login = async (email, password) => {
     const account = ACCOUNTS.find(
         (acc) => acc.email.toLowerCase() === email.trim().toLowerCase() && acc.password === password
     );
 
     if (!account) {
-        onError(new Error("Email o contraseña incorrectos."));
-        return;
+        throw new Error("Email o contraseña incorrectos.");
     }
 
     if (account.role !== "Client") {
-        saveSession(account.email, account.role, null, onSuccess);
-        return;
+        return saveSession(account.email, account.role, null);
     }
 
-    getUserByEmail(
-        account.email,
-        (user) => saveSession(account.email, account.role, user.id, onSuccess),
-        () => {
-            addUser(
-                DEMO_CLIENT_PROFILE,
-                (created) => saveSession(account.email, account.role, created.id, onSuccess),
-                (err) => onError(err)
-            );
-        }
-    );
+    try {
+        const user = await getUserByEmail(account.email);
+        return saveSession(account.email, account.role, user.id);
+    } catch {
+        const created = await addUser(DEMO_CLIENT_PROFILE);
+        return saveSession(account.email, account.role, created.id);
+    }
 };
 
 export const logout = () => {
