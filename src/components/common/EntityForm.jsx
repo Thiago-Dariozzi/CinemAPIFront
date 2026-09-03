@@ -12,8 +12,6 @@ const buildPayload = (fields, form) => {
     return payload;
 };
 
-// Agrupa campos consecutivos que comparten field.group en una misma fila (.form-row),
-// para casos como imageUrl + durationMinutes lado a lado.
 const groupFields = (fields) => {
     const rows = [];
     let openGroup = null;

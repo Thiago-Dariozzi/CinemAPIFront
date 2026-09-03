@@ -19,7 +19,7 @@ const NewMovie = ({ onAddMovie }) => {
                 try {
                     await onAddMovie(payload);
                 } catch {
-                    // Dashboard.jsx ya muestra el error a nivel página (msg-error).
+                    // Error is shown at page level by Dashboard.
                 }
             }}
         />

@@ -1,9 +1,4 @@
 import { useEffect, useState } from 'react';
-
-// Fetch de una lista secundaria de solo lectura (ej: géneros para el Dashboard de
-// películas, películas para GenreDashboard). A propósito no expone loading/error: hoy
-// ninguna de estas listas secundarias bloquea la pantalla ni muestra un error propio,
-// solo se loguean en consola si fallan.
 export const useEntityList = (fetchAll) => {
     const [list, setList] = useState([]);
 
