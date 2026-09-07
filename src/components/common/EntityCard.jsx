@@ -117,6 +117,7 @@ const EntityCard = ({
             )}
         </div>
     );
+
 };
 
 export default EntityCard;
