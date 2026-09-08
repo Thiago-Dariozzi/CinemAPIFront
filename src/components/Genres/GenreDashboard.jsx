@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { useEntityCrud } from '../../hooks/useEntityCrud';
 import { useEntityList } from '../../hooks/useEntityList';
 import { getAllGenres, addGenre, updateGenre, deleteGenre } from '../../api/genreApi';
@@ -24,13 +23,10 @@ const GenreDashboard = () => {
     });
     const movies = useEntityList(getAllMovies);
 
-    const movieCounts = useMemo(() => {
-        const counts = {};
-        movies.forEach((m) => {
-            counts[m.genreId] = (counts[m.genreId] ?? 0) + 1;
-        });
-        return counts;
-    }, [movies]);
+    const movieCounts = {};
+    movies.forEach((m) => {
+        movieCounts[m.genreId] = (movieCounts[m.genreId] ?? 0) + 1;
+    });
 
     if (isLoading) return <p className="msg-loading">Cargando géneros...</p>;
 
