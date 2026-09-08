@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 import { initialForm } from './NewTicket.data';
 import { getShowtimesByMovie, formatShowtime } from '../../api/showtimeApi';
@@ -10,12 +10,12 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
     const [isLoadingShowtimes, setIsLoadingShowtimes] = useState(false);
 
     useEffect(() => {
-        if (!fixedUserId || !form.movieId) {
-            setShowtimes([]);
-            return;
-        }
-
         const loadShowtimes = async () => {
+            if (!fixedUserId || !form.movieId) {
+                setShowtimes([]);
+                return;
+            }
+
             setIsLoadingShowtimes(true);
             try {
                 const data = await getShowtimesByMovie(form.movieId);
@@ -29,7 +29,6 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
         };
 
         loadShowtimes();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fixedUserId, form.movieId]);
 
     const handleChangeValue = (event, inputKey) => {
