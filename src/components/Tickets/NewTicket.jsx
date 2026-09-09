@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 import { initialForm } from './NewTicket.data';
 import { getShowtimesByMovie, formatShowtime } from '../../api/showtimeApi';
@@ -9,29 +9,6 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
     const [showtimes, setShowtimes] = useState([]);
     const [isLoadingShowtimes, setIsLoadingShowtimes] = useState(false);
 
-    useEffect(() => {
-        if (!fixedUserId || !form.movieId) {
-            setShowtimes([]);
-            return;
-        }
-
-        const loadShowtimes = async () => {
-            setIsLoadingShowtimes(true);
-            try {
-                const data = await getShowtimesByMovie(form.movieId);
-                setShowtimes(data);
-            } catch (err) {
-                console.error(err);
-                setShowtimes([]);
-            } finally {
-                setIsLoadingShowtimes(false);
-            }
-        };
-
-        loadShowtimes();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fixedUserId, form.movieId]);
-
     const handleChangeValue = (event, inputKey) => {
         setForm((prevForm) => ({
             ...prevForm,
@@ -39,9 +16,24 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
         }));
     }
 
-    const handleChangeMovie = (event) => {
+    const handleChangeMovie = async (event) => {
         const movieId = event.target.value;
         setForm((prevForm) => ({ ...prevForm, movieId, showtimeId: "", screenId: "", buyDate: "", finalPrice: 0 }));
+
+        if (movieId && fixedUserId) {
+            setIsLoadingShowtimes(true);
+            try {
+                const data = await getShowtimesByMovie(movieId);
+                setShowtimes(data);
+            } catch (err) {
+                console.error(err);
+                setShowtimes([]);
+            } finally {
+                setIsLoadingShowtimes(false);
+            }
+        } else {
+            setShowtimes([]);
+        }
     }
 
     const handleChangeShowtime = (event) => {

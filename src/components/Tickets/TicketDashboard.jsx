@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import { getAllTickets, getTicketsByUser, addTicket, updateTicket, deleteTicket } from '../../api/ticketApi';
-import { getAllMovies } from '../../api/movieApi';
-import { getAllScreens } from '../../api/screenApi';
 import { getAllUsers } from '../../api/userApi';
 import NewTicket from './NewTicket';
 import TicketContainer from './TicketContainer';
 
 const TicketDashboard = ({ scopeUserId }) => {
     const [tickets, setTickets] = useState([]);
-    const [movies, setMovies] = useState([]);
-    const [screens, setScreens] = useState([]);
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -28,26 +24,9 @@ const TicketDashboard = ({ scopeUserId }) => {
             }
         };
 
-        const loadMovies = async () => {
-            try {
-                setMovies(await getAllMovies());
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-        const loadScreens = async () => {
-            try {
-                setScreens(await getAllScreens());
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
         loadTickets();
-        loadMovies();
-        loadScreens();
 
+        // EN DUDA !!! Preguntar al profe si esto hay que sacarlo tambien
         if (!scopeUserId) {
             const loadUsers = async () => {
                 try {
@@ -96,12 +75,10 @@ const TicketDashboard = ({ scopeUserId }) => {
         <Container className="py-4">
             <h1 className="accent-title mb-4">🎟️ {scopeUserId ? "Mis Tickets" : "Tickets"}</h1>
             {error && <p className="text-danger">{error}</p>}
-            <NewTicket onAddTicket={handleAddTicket} movies={movies} screens={screens} users={users} fixedUserId={scopeUserId} />
+            <NewTicket onAddTicket={handleAddTicket} users={users} fixedUserId={scopeUserId} />
             <TicketContainer
                 isLoading={isLoading}
                 tickets={tickets}
-                movies={movies}
-                screens={screens}
                 users={users}
                 fixedUserId={scopeUserId}
                 onDelete={handleDeleteTicket}
