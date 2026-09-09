@@ -1,4 +1,3 @@
-import React from 'react';
 import { useEntityCrud } from '../../hooks/useEntityCrud';
 import { useEntityList } from '../../hooks/useEntityList';
 import { getAllGenres, addGenre, updateGenre, deleteGenre } from '../../api/genreApi';

@@ -27,6 +27,7 @@ export const useEntityCrud = ({
     };
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch al montar: loading se activa a propósito antes del await
         refetch();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
