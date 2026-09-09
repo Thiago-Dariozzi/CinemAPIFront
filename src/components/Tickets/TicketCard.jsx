@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 import { getShowtimesByMovie, formatShowtime } from '../../api/showtimeApi';
 
