@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 import { initialForm } from './NewTicket.data';
 import { getShowtimesByMovie, formatShowtime } from '../../api/showtimeApi';
+import { getAllMovies } from '../../api/movieApi';
+import { getAllScreens } from '../../api/screenApi';
 
-const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUserId }) => {
+const NewTicket = ({ onAddTicket, users = [], fixedUserId }) => {
 
     const [form, setForm] = useState(initialForm);
+    const [movies, setMovies] = useState([]);
+    const [screens, setScreens] = useState([]);
     const [showtimes, setShowtimes] = useState([]);
     const [isLoadingShowtimes, setIsLoadingShowtimes] = useState(false);
+
+    // Carga inicial de películas y salas (datos que necesita el formulario)
+    useEffect(() => {
+        getAllMovies().then(setMovies).catch(console.error);
+        if (!fixedUserId) {
+            getAllScreens().then(setScreens).catch(console.error);
+        }
+    }, [fixedUserId]);
 
     const handleChangeValue = (event, inputKey) => {
         setForm((prevForm) => ({
