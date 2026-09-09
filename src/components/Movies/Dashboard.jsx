@@ -26,6 +26,7 @@ const Dashboard = ({ readOnly = false }) => {
 
     return (
         <main className="dashboard">
+            <h1 className="section-title">{readOnly ? '🎬 Cartelera' : '🎬 Películas'}</h1>
             {error && <p className="msg-error">{error}</p>}
             {success && <p className="msg-success">{success}</p>}
             {!readOnly && <NewMovie onAddMovie={handleAdd} />}

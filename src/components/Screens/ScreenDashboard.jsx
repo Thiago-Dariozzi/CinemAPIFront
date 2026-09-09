@@ -24,6 +24,7 @@ const ScreenDashboard = () => {
 
     return (
         <main className="dashboard">
+            <h1 className="section-title">🏛️ Salas</h1>
             {error && <p className="msg-error">{error}</p>}
             {success && <p className="msg-success">{success}</p>}
             <NewScreen onAddScreen={handleAdd} />

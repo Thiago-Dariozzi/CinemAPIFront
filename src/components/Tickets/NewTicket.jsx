@@ -1,35 +1,25 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 import { initialForm } from './NewTicket.data';
 import { getShowtimesByMovie, formatShowtime } from '../../api/showtimeApi';
+import { getAllMovies } from '../../api/movieApi';
+import { getAllScreens } from '../../api/screenApi';
 
-const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUserId }) => {
+const NewTicket = ({ onAddTicket, users = [], fixedUserId }) => {
 
     const [form, setForm] = useState(initialForm);
+    const [movies, setMovies] = useState([]);
+    const [screens, setScreens] = useState([]);
     const [showtimes, setShowtimes] = useState([]);
     const [isLoadingShowtimes, setIsLoadingShowtimes] = useState(false);
 
+    // Carga inicial de películas y salas (datos que necesita el formulario)
     useEffect(() => {
-        const loadShowtimes = async () => {
-            if (!fixedUserId || !form.movieId) {
-                setShowtimes([]);
-                return;
-            }
-
-            setIsLoadingShowtimes(true);
-            try {
-                const data = await getShowtimesByMovie(form.movieId);
-                setShowtimes(data);
-            } catch (err) {
-                console.error(err);
-                setShowtimes([]);
-            } finally {
-                setIsLoadingShowtimes(false);
-            }
-        };
-
-        loadShowtimes();
-    }, [fixedUserId, form.movieId]);
+        getAllMovies().then(setMovies).catch(console.error);
+        if (!fixedUserId) {
+            getAllScreens().then(setScreens).catch(console.error);
+        }
+    }, [fixedUserId]);
 
     const handleChangeValue = (event, inputKey) => {
         setForm((prevForm) => ({
@@ -38,9 +28,24 @@ const NewTicket = ({ onAddTicket, movies = [], screens = [], users = [], fixedUs
         }));
     }
 
-    const handleChangeMovie = (event) => {
+    const handleChangeMovie = async (event) => {
         const movieId = event.target.value;
         setForm((prevForm) => ({ ...prevForm, movieId, showtimeId: "", screenId: "", buyDate: "", finalPrice: 0 }));
+
+        if (movieId && fixedUserId) {
+            setIsLoadingShowtimes(true);
+            try {
+                const data = await getShowtimesByMovie(movieId);
+                setShowtimes(data);
+            } catch (err) {
+                console.error(err);
+                setShowtimes([]);
+            } finally {
+                setIsLoadingShowtimes(false);
+            }
+        } else {
+            setShowtimes([]);
+        }
     }
 
     const handleChangeShowtime = (event) => {
