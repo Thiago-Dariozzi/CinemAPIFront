@@ -18,14 +18,12 @@ const mapTicketToBackendForCreate = (ticket) => ({
     finalPrice: Number(ticket.finalPrice) || 0,
 });
 
-const mapTicketToBackendForUpdate = (id, ticket) => ({
-    id,
+const mapTicketToBackendForUpdate = (ticket) => ({
     movieId: ticket.movieId,
     screenId: ticket.screenId,
     userId: ticket.userId,
     buyDate: ticket.buyDate,
     finalPrice: Number(ticket.finalPrice) || 0,
-    isActive: true,
 });
 
 export const getAllTickets = async () => {
@@ -76,7 +74,7 @@ export const updateTicket = async (id, ticket) => {
             "Content-Type": "application/json",
             "Accept": "application/json",
         },
-        body: JSON.stringify(mapTicketToBackendForUpdate(id, ticket)),
+        body: JSON.stringify(mapTicketToBackendForUpdate(ticket)),
     });
     if (!response.ok) throw new Error("Error al actualizar el ticket");
     return { id, ...ticket, isActive: true };

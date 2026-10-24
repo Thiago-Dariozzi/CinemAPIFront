@@ -39,7 +39,7 @@ export const updateGenre = async (id, genre) => {
             "Content-Type": "application/json",
             "Accept": "application/json",
         },
-        body: JSON.stringify({ id, name: genre.name, isActive: true }),
+        body: JSON.stringify({ name: genre.name }),
     });
     if (!response.ok) {
         const detail = await response.text().catch(() => "");

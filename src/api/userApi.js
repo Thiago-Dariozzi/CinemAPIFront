@@ -15,13 +15,10 @@ const mapUserToBackendForCreate = (user) => ({
     role: user.role,
 });
 
-const mapUserToBackendForUpdate = (id, user) => ({
-    id,
+const mapUserToBackendForUpdate = (user) => ({
     name: user.name,
     email: user.email,
-    password: user.password,
     role: user.role,
-    isActive: true,
 });
 
 export const getAllUsers = async () => {
@@ -72,7 +69,7 @@ export const updateUser = async (id, user) => {
             "Content-Type": "application/json",
             "Accept": "application/json",
         },
-        body: JSON.stringify(mapUserToBackendForUpdate(id, user)),
+        body: JSON.stringify(mapUserToBackendForUpdate(user)),
     });
     if (!response.ok) throw new Error("Error al actualizar el usuario");
     return { id, name: user.name, email: user.email, role: user.role, isActive: true };

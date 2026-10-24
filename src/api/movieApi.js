@@ -1,5 +1,15 @@
 const API_BASE = "http://localhost:5288/api/movie";
 
+const mapMovieToBackend = (movie) => ({
+    title: movie.title,
+    synopsis: movie.synopsis,
+    durationMinutes: Number(movie.durationMinutes) || 0,
+    genreId: movie.genreId,
+    imageUrl: movie.imageUrl,
+    releaseDate: movie.releaseDate,
+    suggestedPrice: movie.suggestedPrice === "" || movie.suggestedPrice == null ? null : Number(movie.suggestedPrice),
+});
+
 export const getAllMovies = async () => {
     const response = await fetch(API_BASE);
     if (!response.ok) throw new Error("Error al obtener películas");
@@ -22,7 +32,7 @@ export const addMovie = async (movie) => {
     const response = await fetch(API_BASE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(movie),
+        body: JSON.stringify(mapMovieToBackend(movie)),
     });
     if (!response.ok) throw new Error("Error al crear la película");
     return await response.json();
@@ -32,7 +42,7 @@ export const updateMovie = async (id, movie) => {
     const response = await fetch(`${API_BASE}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(movie),
+        body: JSON.stringify(mapMovieToBackend(movie)),
     });
     if (!response.ok) throw new Error("Error al actualizar la película");
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 
 const UserCard = ({
@@ -10,7 +10,7 @@ const UserCard = ({
     onEdit
 }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [form, setForm] = useState({ name, email, role, password: "" });
+    const [form, setForm] = useState({ name, email, role });
 
     const handleChangeValue = (event, inputKey) => {
         setForm((prevForm) => ({
@@ -45,18 +45,6 @@ const UserCard = ({
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Contraseña</Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    value={form.password}
-                                    onChange={(event) => handleChangeValue(event, "password")}
-                                    placeholder="Requerida para guardar los cambios"
-                                    required
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group className="mb-2">
                                 <Form.Label>Rol</Form.Label>
                                 <Form.Select value={form.role} onChange={(event) => handleChangeValue(event, "role")}>
                                     <option value="Client">Cliente</option>
@@ -69,7 +57,6 @@ const UserCard = ({
                         variant="success"
                         className="me-2"
                         onClick={handleSave}
-                        disabled={!form.password}
                     >
                         Guardar
                     </Button>
