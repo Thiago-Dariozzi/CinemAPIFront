@@ -1,3 +1,5 @@
+import { readApiError } from "./apiError";
+
 const API_BASE = "http://localhost:5288/api/genre";
 
 const mapGenreFromBackend = (genre) => ({
@@ -25,8 +27,7 @@ export const addGenre = async (genre) => {
         body: JSON.stringify({ name: genre.name }),
     });
     if (!response.ok) {
-        const detail = await response.text().catch(() => "");
-        throw new Error(detail || "Error al crear el género");
+        throw new Error(await readApiError(response, "Error al crear el género"));
     }
     const data = await response.json();
     return mapGenreFromBackend(data);
@@ -42,8 +43,7 @@ export const updateGenre = async (id, genre) => {
         body: JSON.stringify({ name: genre.name }),
     });
     if (!response.ok) {
-        const detail = await response.text().catch(() => "");
-        throw new Error(detail || "Error al actualizar el género");
+        throw new Error(await readApiError(response, "Error al actualizar el género"));
     }
     return { id, name: genre.name, isActive: true };
 };
@@ -53,7 +53,6 @@ export const deleteGenre = async (id) => {
         method: "DELETE",
     });
     if (!response.ok) {
-        const detail = await response.text().catch(() => "");
-        throw new Error(detail || "Error al eliminar el género");
+        throw new Error(await readApiError(response, "Error al eliminar el género"));
     }
 };

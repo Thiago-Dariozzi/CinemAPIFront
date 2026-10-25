@@ -1,3 +1,5 @@
+import { readApiError } from "./apiError";
+
 const API_BASE = "http://localhost:5288/api/showtime";
 
 const mapShowtimeFromBackend = (showtime) => ({
@@ -43,8 +45,7 @@ export const addShowtime = async (showtime) => {
         body: JSON.stringify(mapShowtimeToBackendForCreate(showtime)),
     });
     if (!response.ok) {
-        const detail = await response.text().catch(() => "");
-        throw new Error(detail || "Error al crear la función");
+        throw new Error(await readApiError(response, "Error al crear la función"));
     }
     const data = await response.json();
     return mapShowtimeFromBackend(data);

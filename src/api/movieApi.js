@@ -1,3 +1,5 @@
+import { readApiError } from "./apiError";
+
 const API_BASE = "http://localhost:5288/api/movie";
 
 const mapMovieToBackend = (movie) => ({
@@ -52,7 +54,7 @@ export const deleteMovie = async (id) => {
         method: "DELETE",
     });
     if (!response.ok) {
-        const detail = await response.text().catch(() => "");
+        const detail = await readApiError(response, "");
         throw new Error(`Error al eliminar la película (status ${response.status})${detail ? `: ${detail}` : ""}`);
     }
 };
