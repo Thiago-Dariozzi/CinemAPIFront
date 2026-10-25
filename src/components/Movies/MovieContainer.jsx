@@ -18,7 +18,7 @@ const MovieContainer = ({ movies, genres = [], onDeleteMovie, onEditMovie }) => 
                 imageUrl={movie.imageUrl}
                 releaseDate={movie.releaseDate}
                 suggestedPrice={movie.suggestedPrice}
-                isActive={movie.isActive}
+                isShowing={movie.isShowing}
                 onDelete={onDeleteMovie}
                 onEdit={onEditMovie}
             />

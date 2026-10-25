@@ -47,7 +47,7 @@ export const movieFormFields = [
         validate: (v) => v !== "" && Number(v) < 0 ? "El precio sugerido no puede ser negativo" : null,
     },
     {
-        key: "isActive",
+        key: "isShowing",
         label: "¿Está en cartelera disponible?",
         type: "checkbox",
     },

@@ -4,6 +4,6 @@ export const initialForm = {
     durationMinutes: 0,
     genreId: "",
     imageUrl: "",
-    isActive: false,
+    isShowing: true,
     suggestedPrice: ""
 };

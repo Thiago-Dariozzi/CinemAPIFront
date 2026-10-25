@@ -10,6 +10,7 @@ const mapMovieToBackend = (movie) => ({
     imageUrl: movie.imageUrl,
     releaseDate: movie.releaseDate,
     suggestedPrice: movie.suggestedPrice === "" || movie.suggestedPrice == null ? null : Number(movie.suggestedPrice),
+    isShowing: movie.isShowing ?? true,
 });
 
 export const getAllMovies = async () => {

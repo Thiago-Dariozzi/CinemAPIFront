@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import MovieFunctionsPanel from '../Showtimes/MovieFunctionsPanel';
 
 const MovieCard = ({
@@ -11,7 +11,7 @@ const MovieCard = ({
     imageUrl,
     releaseDate,
     suggestedPrice,
-    isActive,
+    isShowing,
     onDelete,
     onEdit
 }) => {
@@ -20,7 +20,7 @@ const MovieCard = ({
     const [form, setForm] = useState({
         title, synopsis, durationMinutes, genreId, imageUrl, releaseDate,
         suggestedPrice: suggestedPrice ?? "",
-        isActive
+        isShowing
     });
 
     const genreName = genres.find((g) => g.id === genreId)?.name ?? "Sin género";
@@ -34,7 +34,7 @@ const MovieCard = ({
 
     const handleSave = () => {
         const suggestedPriceToSend = form.suggestedPrice === "" ? null : Number(form.suggestedPrice);
-        onEdit(id, { ...form, suggestedPrice: suggestedPriceToSend, id, isActive });
+        onEdit(id, { ...form, suggestedPrice: suggestedPriceToSend, id });
         setIsEditing(false);
     };
 
@@ -73,6 +73,17 @@ const MovieCard = ({
                         placeholder="Precio de referencia para sus funciones"
                     />
 
+                    <div className="form-checkbox-row">
+                        <input
+                            type="checkbox"
+                            id={`isShowing-${id}`}
+                            checked={form.isShowing}
+                            onChange={(e) => setForm((prevForm) => ({ ...prevForm, isShowing: e.target.checked }))}
+                            className="form-checkbox"
+                        />
+                        <label htmlFor={`isShowing-${id}`}>¿Está en cartelera disponible?</label>
+                    </div>
+
                     <button
                         onClick={handleSave}
                         className="btn btn--save btn-group"
@@ -106,8 +117,8 @@ const MovieCard = ({
 
                 <p className="movie-synopsis">{synopsis}</p>
 
-                <div className={`status-badge ${isActive ? 'status-active' : 'status-inactive'}`}>
-                    {isActive ? "🎬 En Cartelera" : "❌ Fuera de Cartelera"}
+                <div className={`status-badge ${isShowing ? 'status-active' : 'status-inactive'}`}>
+                    {isShowing ? "🎬 En Cartelera" : "❌ Fuera de Cartelera"}
                 </div>
 
                 {onEdit && (
