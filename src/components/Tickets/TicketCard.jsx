@@ -32,28 +32,32 @@ const TicketCard = ({
             return;
         }
 
+        let ignore = false;
+
         const loadShowtimes = async () => {
             setIsLoadingShowtimes(true);
             try {
                 const data = await getShowtimesByMovie(form.movieId);
+                if (ignore) return;
                 setShowtimes(data);
+                if (form.movieId !== movieId) return;
                 const match = data.find(
-                    (s) => s.screenId === form.screenId && s.startTime.substring(0, 10) === form.buyDate
+                    (s) => s.screenId === screenId && s.startTime.substring(0, 10) === buyDate?.substring(0, 10)
                 );
                 if (match) {
                     setForm((prev) => ({ ...prev, showtimeId: match.id, finalPrice: match.price }));
                 }
             } catch (err) {
                 console.error(err);
-                setShowtimes([]);
+                if (!ignore) setShowtimes([]);
             } finally {
-                setIsLoadingShowtimes(false);
+                if (!ignore) setIsLoadingShowtimes(false);
             }
         };
 
         loadShowtimes();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fixedUserId, isEditing, form.movieId]);
+        return () => { ignore = true; };
+    }, [fixedUserId, isEditing, form.movieId, movieId, screenId, buyDate]);
 
     const handleChangeValue = (event, inputKey) => {
         setForm((prevForm) => ({

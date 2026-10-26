@@ -12,25 +12,26 @@ export const useEntityCrud = ({
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
-    const refetch = async () => {
-        try {
-            setLoading(true);
-            const data = await fetchAll();
-            setList(data);
-            setError(null);
-        } catch (err) {
-            setError(messages.fetchError ?? "No se pudo conectar con el servidor.");
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetchErrorMessage = messages.fetchError ?? "No se pudo conectar con el servidor.";
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch al montar: loading se activa a propósito antes del await
-        refetch();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        let ignore = false;
+        fetchAll()
+            .then((data) => {
+                if (ignore) return;
+                setList(data);
+                setError(null);
+            })
+            .catch((err) => {
+                if (ignore) return;
+                console.error(err);
+                setError(fetchErrorMessage);
+            })
+            .finally(() => {
+                if (!ignore) setLoading(false);
+            });
+        return () => { ignore = true; };
+    }, [fetchAll, fetchErrorMessage]);
 
     const handleAdd = addFn && (async (payload) => {
         try {
@@ -77,5 +78,5 @@ export const useEntityCrud = ({
         }
     });
 
-    return { list, loading, error, success, refetch, handleAdd, handleUpdate, handleDelete };
+    return { list, loading, error, success, handleAdd, handleUpdate, handleDelete };
 };

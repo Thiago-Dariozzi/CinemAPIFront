@@ -39,6 +39,8 @@ const toDateOnlyString = (date) => `${date.getFullYear()}-${pad(date.getMonth() 
 
 const toLocalIsoString = (date) => `${toDateOnlyString(date)}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
 
+const buildOccupancyKey = (screenId, date) => `${screenId}|${toDateOnlyString(date)}`;
+
 const formatRange = (range) => {
     const opts = { hour: '2-digit', minute: '2-digit' };
     return `${range.start.toLocaleTimeString('es-AR', opts)} a ${range.end.toLocaleTimeString('es-AR', opts)}`;
@@ -83,6 +85,16 @@ const findConflict = (pendingRange, occupiedRanges) => {
     return occupiedRanges.find((r) => pendingRange.start < r.end && r.start < pendingRange.end) || null;
 };
 
+const describeOccupancy = ({ isLoading, error, hasTime, conflict, occupiedRanges }) => {
+    if (isLoading) return "Consultando horarios ocupados...";
+    if (error) return `⚠️ ${error}. No se puede verificar si la sala está libre; el servidor lo valida al guardar.`;
+
+    const busy = occupiedRanges.map(formatRange).join(", ");
+    if (!hasTime) return busy ? `Ocupados ese día: ${busy}` : "Sala libre ese día";
+    if (conflict) return `⚠️ Se superpone con "${conflict.title}" (${formatRange(conflict)})`;
+    return busy ? `✅ Libre. Ocupados ese día: ${busy}` : "✅ Sala libre ese día";
+};
+
 const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPrice, isListOpen, onToggleList }) => {
     const [functions, setFunctions] = useState([]);
     const [screens, setScreens] = useState([]);
@@ -96,8 +108,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
     const [price, setPrice] = useState(movieSuggestedPrice ?? "");
-    const [occupied, setOccupied] = useState([]);
-    const [isLoadingOccupied, setIsLoadingOccupied] = useState(false);
+    const [occupancy, setOccupancy] = useState({ key: null, list: [], error: null });
 
     const [touched, setTouched] = useState({});
 
@@ -147,33 +158,38 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         return () => { isMounted = false; };
     }, [movieId]);
 
+    const occupancyKey = screenId && selectedDate ? buildOccupancyKey(screenId, selectedDate) : null;
+
     useEffect(() => {
         if (!screenId || !selectedDate) return;
 
-        const loadOccupied = async () => {
-            setIsLoadingOccupied(true);
-            try {
-                const data = await getOccupiedShowtimesByScreen(screenId, toDateOnlyString(selectedDate));
-                setOccupied(data);
-            } catch (err) {
-                console.error(err);
-                setOccupied([]);
-            } finally {
-                setIsLoadingOccupied(false);
-            }
-        };
+        const key = buildOccupancyKey(screenId, selectedDate);
+        let ignore = false;
 
-        loadOccupied();
+        getOccupiedShowtimesByScreen(screenId, toDateOnlyString(selectedDate))
+            .then((data) => {
+                if (!ignore) setOccupancy({ key, list: data, error: null });
+            })
+            .catch((err) => {
+                console.error(err);
+                if (!ignore) setOccupancy({ key, list: [], error: err.message || "No se pudo consultar la ocupación de la sala" });
+            });
+
+        return () => { ignore = true; };
     }, [screenId, selectedDate]);
 
+    const isOccupancyCurrent = occupancyKey !== null && occupancy.key === occupancyKey;
+    const isLoadingOccupied = occupancyKey !== null && !isOccupancyCurrent;
+    const occupancyError = isOccupancyCurrent ? occupancy.error : null;
+
     const moviesById = buildMoviesById(movies);
-    const occupiedRanges = screenId && selectedDate ? buildOccupiedRanges(occupied, moviesById) : [];
+    const occupiedRanges = isOccupancyCurrent ? buildOccupiedRanges(occupancy.list, moviesById) : [];
     const pendingRange = buildPendingRange(selectedDate, selectedTime, movieDurationMinutes);
     const conflict = findConflict(pendingRange, occupiedRanges);
 
     const errors = validate({ screenId, selectedDate, selectedTime, price });
     const isFieldsValid = Object.values(errors).every((e) => e === null);
-    const isFormValid = isFieldsValid && !conflict;
+    const isFormValid = isFieldsValid && !conflict && !isLoadingOccupied;
 
     const handleBlur = (field) => {
         setTouched((prev) => ({ ...prev, [field]: true }));
@@ -184,7 +200,6 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         setSelectedDate(null);
         setSelectedTime(null);
         setPrice(movieSuggestedPrice ?? "");
-        setOccupied([]);
         setTouched({});
     };
 
@@ -338,18 +353,8 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
                     {touched.selectedTime && errors.selectedTime && <p className="functions-field-error">{errors.selectedTime}</p>}
 
                     {screenId && selectedDate && (
-                        <p className={`functions-status ${isLoadingOccupied ? 'functions-status--loading' : conflict ? 'functions-status--conflict' : 'functions-status--ok'}`}>
-                            {isLoadingOccupied
-                                ? "Consultando horarios ocupados..."
-                                : !selectedTime
-                                    ? (occupiedRanges.length > 0
-                                        ? `Ocupados ese día: ${occupiedRanges.map(formatRange).join(", ")}`
-                                        : "Sala libre ese día")
-                                    : conflict
-                                        ? `⚠️ Se superpone con "${conflict.title}" (${formatRange(conflict)})`
-                                        : occupiedRanges.length > 0
-                                            ? `✅ Libre. Ocupados ese día: ${occupiedRanges.map(formatRange).join(", ")}`
-                                            : "✅ Sala libre ese día"}
+                        <p className={`functions-status ${isLoadingOccupied ? 'functions-status--loading' : conflict || occupancyError ? 'functions-status--conflict' : 'functions-status--ok'}`}>
+                            {describeOccupancy({ isLoading: isLoadingOccupied, error: occupancyError, hasTime: Boolean(selectedTime), conflict, occupiedRanges })}
                         </p>
                     )}
 
