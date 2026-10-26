@@ -12,11 +12,9 @@ const ScreenDashboard = () => {
         messages: {
             fetchError: "No se pudo conectar con el servidor. ¿Está corriendo el backend?",
             addSuccess: "Sala creada correctamente",
-            addError: "Error al agregar la sala",
             updateSuccess: "Sala actualizada correctamente",
-            updateError: "Error al actualizar la sala",
-            deleteError: "Error al eliminar la sala",
         },
+        silentMutationErrors: true,
     });
 
     if (loading) return <p className="msg-loading">Cargando salas...</p>;

@@ -1,6 +1,4 @@
-import { readApiError } from "./apiError";
-
-const API_BASE = "http://localhost:5288/api/genre";
+import { request } from "./httpClient";
 
 const mapGenreFromBackend = (genre) => ({
     id: genre.id,
@@ -9,50 +7,27 @@ const mapGenreFromBackend = (genre) => ({
 });
 
 export const getAllGenres = async () => {
-    const response = await fetch(API_BASE, {
-        headers: { "Accept": "application/json" },
-    });
-    if (!response.ok) throw new Error("Error al obtener los géneros");
-    const data = await response.json();
+    const data = await request("/genre", { errorMessage: "Error al obtener los géneros" });
     return data.map(mapGenreFromBackend);
 };
 
 export const addGenre = async (genre) => {
-    const response = await fetch(API_BASE, {
+    const data = await request("/genre", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-        body: JSON.stringify({ name: genre.name }),
+        body: { name: genre.name },
+        errorMessage: "Error al crear el género",
     });
-    if (!response.ok) {
-        throw new Error(await readApiError(response, "Error al crear el género"));
-    }
-    const data = await response.json();
     return mapGenreFromBackend(data);
 };
 
 export const updateGenre = async (id, genre) => {
-    const response = await fetch(`${API_BASE}/${id}`, {
+    await request(`/genre/${id}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-        body: JSON.stringify({ name: genre.name }),
+        body: { name: genre.name },
+        errorMessage: "Error al actualizar el género",
     });
-    if (!response.ok) {
-        throw new Error(await readApiError(response, "Error al actualizar el género"));
-    }
     return { id, name: genre.name, isActive: true };
 };
 
-export const deleteGenre = async (id) => {
-    const response = await fetch(`${API_BASE}/${id}`, {
-        method: "DELETE",
-    });
-    if (!response.ok) {
-        throw new Error(await readApiError(response, "Error al eliminar el género"));
-    }
-};
+export const deleteGenre = (id) =>
+    request(`/genre/${id}`, { method: "DELETE", errorMessage: "Error al eliminar el género" });

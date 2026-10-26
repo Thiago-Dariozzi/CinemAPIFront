@@ -13,10 +13,14 @@ const NewUser = ({ onAddUser }) => {
         }));
     }
 
-    const handleAddUser = (event) => {
+    const handleAddUser = async (event) => {
         event.preventDefault();
-        onAddUser(form);
-        setForm(initialForm);
+        try {
+            await onAddUser(form);
+            setForm(initialForm);
+        } catch {
+            // The dashboard shows the error; keep the user's input.
+        }
     }
 
     return (

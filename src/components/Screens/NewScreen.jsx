@@ -9,13 +9,7 @@ const NewScreen = ({ onAddScreen }) => (
         submitLabel="Guardar Sala"
         fields={screenFields}
         initialValues={initialForm}
-        onSubmit={async (payload) => {
-            try {
-                await onAddScreen(payload);
-            } catch {
-                // Error is shown at page level by ScreenDashboard.
-            }
-        }}
+        onSubmit={onAddScreen}
     />
 );
 

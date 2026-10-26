@@ -17,6 +17,8 @@ const MovieCard = ({
 }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [isFunctionsListOpen, setIsFunctionsListOpen] = useState(false);
+    const [saveError, setSaveError] = useState(null);
+    const [deleteError, setDeleteError] = useState(null);
     const [form, setForm] = useState({
         title, synopsis, durationMinutes, genreId, imageUrl, releaseDate,
         suggestedPrice: suggestedPrice ?? "",
@@ -32,16 +34,38 @@ const MovieCard = ({
         }));
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        setSaveError(null);
         const suggestedPriceToSend = form.suggestedPrice === "" ? null : Number(form.suggestedPrice);
-        onEdit(id, { ...form, suggestedPrice: suggestedPriceToSend, id });
+        try {
+            await onEdit(id, { ...form, suggestedPrice: suggestedPriceToSend, id });
+            setIsEditing(false);
+        } catch (err) {
+            setSaveError(err?.message || "Error al actualizar la película");
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!window.confirm("¿Estás seguro de eliminar esta pelicula?")) return;
+        setDeleteError(null);
+        try {
+            await onDelete(id);
+        } catch (err) {
+            setDeleteError(err?.message || "Error al eliminar la película");
+        }
+    };
+
+    const cancelEditing = () => {
         setIsEditing(false);
+        setSaveError(null);
     };
 
     if (isEditing) {
         return (
             <div className="movie-card">
                 <div className="movie-info">
+                    {saveError && <p className="msg-inline-error--sm">{saveError}</p>}
+
                     <label>Título</label>
                     <input className="form-input form-input--compact" value={form.title} onChange={(e) => handleChangeValue(e, "title")} />
 
@@ -91,7 +115,7 @@ const MovieCard = ({
                         Guardar
                     </button>
                     <button
-                        onClick={() => setIsEditing(false)}
+                        onClick={cancelEditing}
                         className="btn btn--cancel btn-group"
                     >
                         Cancelar
@@ -121,6 +145,8 @@ const MovieCard = ({
                     {isShowing ? "🎬 En Cartelera" : "❌ Fuera de Cartelera"}
                 </div>
 
+                {deleteError && <p className="msg-inline-error--sm">{deleteError}</p>}
+
                 {onEdit && (
                     <button
                         onClick={() => setIsEditing(true)}
@@ -132,9 +158,7 @@ const MovieCard = ({
 
                 {onDelete && (
                     <button
-                        onClick={() =>{
-                            if (window.confirm("¿Estás seguro de eliminar esta pelicula?"))
-                         onDelete(id)}}
+                        onClick={handleDelete}
                         className="btn btn--delete btn-group"
                     >
                         Eliminar

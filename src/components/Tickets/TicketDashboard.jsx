@@ -49,9 +49,11 @@ const TicketDashboard = ({ scopeUserId }) => {
         try {
             const created = await addTicket(ticketToSend);
             setTickets((prev) => [created, ...prev]);
+            setError(null);
         } catch (err) {
             console.error(err);
-            setError("Error al agregar el ticket");
+            setError(err?.message || "Error al agregar el ticket");
+            throw err;
         }
     };
 
@@ -59,9 +61,10 @@ const TicketDashboard = ({ scopeUserId }) => {
         try {
             await deleteTicket(id);
             setTickets((prev) => prev.filter((ticket) => ticket.id !== id));
+            setError(null);
         } catch (err) {
             console.error(err);
-            setError("Error al eliminar el ticket");
+            setError(err?.message || "Error al eliminar el ticket");
         }
     };
 
@@ -70,9 +73,11 @@ const TicketDashboard = ({ scopeUserId }) => {
         try {
             const updated = await updateTicket(id, ticketToSend);
             setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, ...updated } : t)));
+            setError(null);
         } catch (err) {
             console.error(err);
-            setError("Error al actualizar el ticket");
+            setError(err?.message || "Error al actualizar el ticket");
+            throw err;
         }
     };
 

@@ -19,9 +19,13 @@ const UserCard = ({
         }));
     }
 
-    const handleSave = () => {
-        onEdit(id, form);
-        setIsEditing(false);
+    const handleSave = async () => {
+        try {
+            await onEdit(id, form);
+            setIsEditing(false);
+        } catch {
+            // The dashboard shows the error; keep the user's input.
+        }
     }
 
     if (isEditing) {

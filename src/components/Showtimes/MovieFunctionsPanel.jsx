@@ -9,8 +9,8 @@ import {
     getOccupiedShowtimesByScreen,
     addShowtime,
     deleteShowtime,
-    formatShowtime,
 } from '../../api/showtimeApi';
+import { formatShowtime } from '../../utils/formatShowtime';
 
 const CLEANING_BUFFER_MINUTES = 15;
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
-import { getShowtimesByMovie, formatShowtime } from '../../api/showtimeApi';
+import { getShowtimesByMovie } from '../../api/showtimeApi';
+import { formatShowtime } from '../../utils/formatShowtime';
 
 const findLabel = (list, id, field) => {
     const found = list.find((item) => item.id === id);
@@ -78,9 +79,13 @@ const TicketCard = ({
         }));
     }
 
-    const handleSave = () => {
-        onEdit(id, fixedUserId ? { ...form, userId: fixedUserId } : form);
-        setIsEditing(false);
+    const handleSave = async () => {
+        try {
+            await onEdit(id, fixedUserId ? { ...form, userId: fixedUserId } : form);
+            setIsEditing(false);
+        } catch {
+            // The dashboard shows the error; keep the user's input.
+        }
     }
 
     if (isEditing) {

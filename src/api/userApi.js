@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5288/api/user";
+import { request } from "./httpClient";
 
 const mapUserFromBackend = (user) => ({
     id: user.id,
@@ -22,62 +22,37 @@ const mapUserToBackendForUpdate = (user) => ({
 });
 
 export const getAllUsers = async () => {
-    const response = await fetch(API_BASE, {
-        headers: { "Accept": "application/json" },
-    });
-    if (!response.ok) throw new Error("Error al obtener los usuarios");
-    const data = await response.json();
+    const data = await request("/user", { errorMessage: "Error al obtener los usuarios" });
     return data.map(mapUserFromBackend);
 };
 
 export const getUserById = async (id) => {
-    const response = await fetch(`${API_BASE}/${id}`, {
-        headers: { "Accept": "application/json" },
-    });
-    if (!response.ok) throw new Error("Error al obtener el usuario");
-    const data = await response.json();
+    const data = await request(`/user/${id}`, { errorMessage: "Error al obtener el usuario" });
     return mapUserFromBackend(data);
 };
 
 export const getUserByEmail = async (email) => {
-    const response = await fetch(`${API_BASE}/email/${email}`, {
-        headers: { "Accept": "application/json" },
-    });
-    if (!response.ok) throw new Error("Error al obtener el usuario por email");
-    const data = await response.json();
+    const data = await request(`/user/email/${encodeURIComponent(email)}`, { errorMessage: "Error al obtener el usuario por email" });
     return mapUserFromBackend(data);
 };
 
 export const addUser = async (user) => {
-    const response = await fetch(API_BASE, {
+    const data = await request("/user", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-        body: JSON.stringify(mapUserToBackendForCreate(user)),
+        body: mapUserToBackendForCreate(user),
+        errorMessage: "Error al crear el usuario",
     });
-    if (!response.ok) throw new Error("Error al crear el usuario");
-    const data = await response.json();
     return mapUserFromBackend(data);
 };
 
 export const updateUser = async (id, user) => {
-    const response = await fetch(`${API_BASE}/${id}`, {
+    await request(`/user/${id}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-        body: JSON.stringify(mapUserToBackendForUpdate(user)),
+        body: mapUserToBackendForUpdate(user),
+        errorMessage: "Error al actualizar el usuario",
     });
-    if (!response.ok) throw new Error("Error al actualizar el usuario");
     return { id, name: user.name, email: user.email, role: user.role, isActive: true };
 };
 
-export const deleteUser = async (id) => {
-    const response = await fetch(`${API_BASE}/${id}`, {
-        method: "DELETE",
-    });
-    if (!response.ok) throw new Error("Error al eliminar el usuario");
-};
+export const deleteUser = (id) =>
+    request(`/user/${id}`, { method: "DELETE", errorMessage: "Error al eliminar el usuario" });

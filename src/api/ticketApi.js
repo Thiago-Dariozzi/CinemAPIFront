@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5288/api/ticket";
+import { request } from "./httpClient";
 
 const mapTicketFromBackend = (ticket) => ({
     id: ticket.id,
@@ -10,15 +10,7 @@ const mapTicketFromBackend = (ticket) => ({
     isActive: ticket.isActive,
 });
 
-const mapTicketToBackendForCreate = (ticket) => ({
-    movieId: ticket.movieId,
-    screenId: ticket.screenId,
-    userId: ticket.userId,
-    buyDate: ticket.buyDate,
-    finalPrice: Number(ticket.finalPrice) || 0,
-});
-
-const mapTicketToBackendForUpdate = (ticket) => ({
+const mapTicketToBackend = (ticket) => ({
     movieId: ticket.movieId,
     screenId: ticket.screenId,
     userId: ticket.userId,
@@ -27,62 +19,34 @@ const mapTicketToBackendForUpdate = (ticket) => ({
 });
 
 export const getAllTickets = async () => {
-    const response = await fetch(API_BASE, {
-        headers: { "Accept": "application/json" },
-    });
-    if (!response.ok) throw new Error("Error al obtener los tickets");
-    const data = await response.json();
+    const data = await request("/ticket", { errorMessage: "Error al obtener los tickets" });
     return data.map(mapTicketFromBackend);
 };
 
 export const getTicketById = async (id) => {
-    const response = await fetch(`${API_BASE}/${id}`, {
-        headers: { "Accept": "application/json" },
-    });
-    if (!response.ok) throw new Error("Error al obtener el ticket");
-    const data = await response.json();
+    const data = await request(`/ticket/${id}`, { errorMessage: "Error al obtener el ticket" });
     return mapTicketFromBackend(data);
 };
 
 export const getTicketsByUser = async (userId) => {
-    const response = await fetch(`${API_BASE}/user/${userId}`, {
-        headers: { "Accept": "application/json" },
-    });
-    if (!response.ok) throw new Error("Error al obtener los tickets del usuario");
-    const data = await response.json();
+    const data = await request(`/ticket/user/${userId}`, { errorMessage: "Error al obtener los tickets del usuario" });
     return data.map(mapTicketFromBackend);
 };
 
 export const addTicket = async (ticket) => {
-    const response = await fetch(API_BASE, {
+    const data = await request("/ticket", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-        body: JSON.stringify(mapTicketToBackendForCreate(ticket)),
+        body: mapTicketToBackend(ticket),
+        errorMessage: "Error al crear el ticket",
     });
-    if (!response.ok) throw new Error("Error al crear el ticket");
-    const data = await response.json();
     return mapTicketFromBackend(data);
 };
 
 export const updateTicket = async (id, ticket) => {
-    const response = await fetch(`${API_BASE}/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-        body: JSON.stringify(mapTicketToBackendForUpdate(ticket)),
-    });
-    if (!response.ok) throw new Error("Error al actualizar el ticket");
-    return { id, ...ticket, isActive: true };
+    const body = mapTicketToBackend(ticket);
+    await request(`/ticket/${id}`, { method: "PUT", body, errorMessage: "Error al actualizar el ticket" });
+    return { id, ...body, isActive: true };
 };
 
-export const deleteTicket = async (id) => {
-    const response = await fetch(`${API_BASE}/${id}`, {
-        method: "DELETE",
-    });
-    if (!response.ok) throw new Error("Error al eliminar el ticket");
-};
+export const deleteTicket = (id) =>
+    request(`/ticket/${id}`, { method: "DELETE", errorMessage: "Error al eliminar el ticket" });

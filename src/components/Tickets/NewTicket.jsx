@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 import { initialForm } from './NewTicket.data';
-import { getShowtimesByMovie, formatShowtime } from '../../api/showtimeApi';
+import { getShowtimesByMovie } from '../../api/showtimeApi';
+import { formatShowtime } from '../../utils/formatShowtime';
 import { getAllMovies } from '../../api/movieApi';
 import { getAllScreens } from '../../api/screenApi';
 
@@ -60,10 +61,14 @@ const NewTicket = ({ onAddTicket, users = [], fixedUserId }) => {
         }));
     }
 
-    const handleAddTicket = (event) => {
+    const handleAddTicket = async (event) => {
         event.preventDefault();
-        onAddTicket(fixedUserId ? { ...form, userId: fixedUserId } : form);
-        setForm(initialForm);
+        try {
+            await onAddTicket(fixedUserId ? { ...form, userId: fixedUserId } : form);
+            setForm(initialForm);
+        } catch {
+            // The dashboard shows the error; keep the user's input.
+        }
     }
 
     return (

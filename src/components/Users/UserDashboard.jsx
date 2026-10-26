@@ -29,9 +29,11 @@ const UserDashboard = () => {
         try {
             const created = await addUser(user);
             setUsers((prev) => [created, ...prev]);
+            setError(null);
         } catch (err) {
             console.error(err);
-            setError("Error al agregar el usuario");
+            setError(err?.message || "Error al agregar el usuario");
+            throw err;
         }
     };
 
@@ -39,9 +41,10 @@ const UserDashboard = () => {
         try {
             await deleteUser(id);
             setUsers((prev) => prev.filter((user) => user.id !== id));
+            setError(null);
         } catch (err) {
             console.error(err);
-            setError("Error al eliminar el usuario");
+            setError(err?.message || "Error al eliminar el usuario");
         }
     };
 
@@ -49,9 +52,11 @@ const UserDashboard = () => {
         try {
             const updated = await updateUser(id, user);
             setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...updated } : u)));
+            setError(null);
         } catch (err) {
             console.error(err);
-            setError("Error al actualizar el usuario");
+            setError(err?.message || "Error al actualizar el usuario");
+            throw err;
         }
     };
 

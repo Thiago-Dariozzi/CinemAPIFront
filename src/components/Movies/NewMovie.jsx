@@ -14,13 +14,7 @@ const NewMovie = ({ onAddMovie }) => {
             fields={movieFormFields}
             initialValues={initialForm}
             optionsSources={{ genres }}
-            onSubmit={async (payload) => {
-                try {
-                    await onAddMovie(payload);
-                } catch {
-                    // Error is shown at page level by Dashboard.
-                }
-            }}
+            onSubmit={onAddMovie}
         />
     );
 };

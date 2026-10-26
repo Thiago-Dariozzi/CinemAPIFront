@@ -14,10 +14,8 @@ const Dashboard = ({ readOnly = false }) => {
         messages: {
             fetchError: "No se pudo conectar con el servidor. ¿Está corriendo el backend?",
             addSuccess: "Película creada correctamente",
-            addError: "Error al agregar la película",
-            updateError: "Error al actualizar la película",
-            deleteError: "Error al eliminar la película",
         },
+        silentMutationErrors: true,
     });
     const genres = useEntityList(getAllGenres);
 

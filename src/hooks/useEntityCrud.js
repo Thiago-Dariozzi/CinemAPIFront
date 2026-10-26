@@ -40,7 +40,7 @@ export const useEntityCrud = ({
             if (!silentMutationErrors) setError(null);
             return created;
         } catch (err) {
-            if (!silentMutationErrors) setError(messages.addError ?? "Error al agregar");
+            if (!silentMutationErrors) setError(err?.message || messages.addError || "Error al agregar");
             console.error(err);
             throw err;
         }
@@ -58,7 +58,7 @@ export const useEntityCrud = ({
             if (!silentMutationErrors) setError(null);
             return result;
         } catch (err) {
-            if (!silentMutationErrors) setError(messages.updateError ?? "Error al actualizar");
+            if (!silentMutationErrors) setError(err?.message || messages.updateError || "Error al actualizar");
             console.error(err);
             throw err;
         }
@@ -71,7 +71,7 @@ export const useEntityCrud = ({
             if (messages.deleteSuccess !== undefined) setSuccess(messages.deleteSuccess);
             if (!silentMutationErrors) setError(null);
         } catch (err) {
-            if (!silentMutationErrors) setError(messages.deleteError ?? "Error al eliminar");
+            if (!silentMutationErrors) setError(err?.message || messages.deleteError || "Error al eliminar");
             console.error(err);
             throw err;
         }

@@ -1,6 +1,4 @@
-import { readApiError } from "./apiError";
-
-const API_BASE = "http://localhost:5288/api/showtime";
+import { request } from "./httpClient";
 
 const mapShowtimeFromBackend = (showtime) => ({
     id: showtime.id,
@@ -18,51 +16,25 @@ const mapShowtimeToBackendForCreate = (showtime) => ({
 });
 
 export const getShowtimesByMovie = async (movieId) => {
-    const response = await fetch(`${API_BASE}/movie/${movieId}`, {
-        headers: { "Accept": "application/json" },
-    });
-    if (!response.ok) throw new Error("Error al obtener los horarios");
-    const data = await response.json();
+    const data = await request(`/showtime/movie/${movieId}`, { errorMessage: "Error al obtener los horarios" });
     return data.map(mapShowtimeFromBackend);
 };
 
 export const getOccupiedShowtimesByScreen = async (screenId, date) => {
-    const response = await fetch(`${API_BASE}/screen/${screenId}?date=${date}`, {
-        headers: { "Accept": "application/json" },
+    const data = await request(`/showtime/screen/${screenId}?date=${encodeURIComponent(date)}`, {
+        errorMessage: "Error al obtener la ocupación de la sala",
     });
-    if (!response.ok) throw new Error("Error al obtener la ocupación de la sala");
-    const data = await response.json();
     return data.map(mapShowtimeFromBackend);
 };
 
 export const addShowtime = async (showtime) => {
-    const response = await fetch(API_BASE, {
+    const data = await request("/showtime", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-        body: JSON.stringify(mapShowtimeToBackendForCreate(showtime)),
+        body: mapShowtimeToBackendForCreate(showtime),
+        errorMessage: "Error al crear la función",
     });
-    if (!response.ok) {
-        throw new Error(await readApiError(response, "Error al crear la función"));
-    }
-    const data = await response.json();
     return mapShowtimeFromBackend(data);
 };
 
-export const deleteShowtime = async (id) => {
-    const response = await fetch(`${API_BASE}/${id}`, {
-        method: "DELETE",
-    });
-    if (!response.ok) throw new Error("Error al eliminar la función");
-};
-
-export const formatShowtime = (startTime) => {
-    const date = new Date(startTime);
-    if (Number.isNaN(date.getTime())) return startTime;
-
-    const datePart = date.toLocaleDateString('es-AR', { weekday: 'short', day: '2-digit', month: 'short' });
-    const timePart = date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-    return `${datePart} · ${timePart}`;
-};
+export const deleteShowtime = (id) =>
+    request(`/showtime/${id}`, { method: "DELETE", errorMessage: "Error al eliminar la función" });
