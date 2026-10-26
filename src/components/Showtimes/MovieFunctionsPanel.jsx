@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { es } from 'date-fns/locale/es';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -148,10 +148,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
     }, [movieId]);
 
     useEffect(() => {
-        if (!screenId || !selectedDate) {
-            setOccupied([]);
-            return;
-        }
+        if (!screenId || !selectedDate) return;
 
         const loadOccupied = async () => {
             setIsLoadingOccupied(true);
@@ -170,7 +167,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
     }, [screenId, selectedDate]);
 
     const moviesById = buildMoviesById(movies);
-    const occupiedRanges = buildOccupiedRanges(occupied, moviesById);
+    const occupiedRanges = screenId && selectedDate ? buildOccupiedRanges(occupied, moviesById) : [];
     const pendingRange = buildPendingRange(selectedDate, selectedTime, movieDurationMinutes);
     const conflict = findConflict(pendingRange, occupiedRanges);
 

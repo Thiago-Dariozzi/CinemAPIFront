@@ -1,4 +1,3 @@
-import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { getSession, logout } from '../auth/session';
 import TicketDashboard from '../components/Tickets/TicketDashboard';

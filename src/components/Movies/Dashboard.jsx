@@ -1,4 +1,3 @@
-import React from 'react';
 import { useEntityCrud } from '../../hooks/useEntityCrud';
 import { useEntityList } from '../../hooks/useEntityList';
 import { getAllMovies, addMovie, deleteMovie, updateMovie } from '../../api/movieApi';

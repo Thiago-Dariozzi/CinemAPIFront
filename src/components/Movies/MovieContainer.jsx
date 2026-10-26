@@ -1,4 +1,3 @@
-import React from 'react';
 import EntityGrid from '../common/EntityGrid';
 import MovieCard from './MovieCard';
 

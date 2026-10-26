@@ -1,4 +1,3 @@
-import React from 'react';
 import { useEntityCrud } from '../../hooks/useEntityCrud';
 import { getAllScreens, addNewScreen, updateScreen, deleteScreen } from '../../api/screenApi';
 import NewScreen from './NewScreen';

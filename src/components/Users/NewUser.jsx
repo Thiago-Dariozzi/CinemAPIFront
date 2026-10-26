@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 import { initialForm } from './NewUser.data';
 

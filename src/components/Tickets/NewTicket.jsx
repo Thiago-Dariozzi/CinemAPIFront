@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 import { initialForm } from './NewTicket.data';
 import { getShowtimesByMovie, formatShowtime } from '../../api/showtimeApi';

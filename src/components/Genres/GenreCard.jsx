@@ -1,4 +1,3 @@
-import React from 'react';
 import EntityCard from '../common/EntityCard';
 import { genreFields, genreConfirmDeleteMessage, renderGenreView } from './genreFields';
 

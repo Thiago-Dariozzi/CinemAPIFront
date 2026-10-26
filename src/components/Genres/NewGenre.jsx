@@ -1,4 +1,3 @@
-import React from 'react';
 import EntityForm from '../common/EntityForm';
 import { genreFields } from './genreFields';
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './auth/Login'
 import ProtectedRoute from './auth/ProtectedRoute'
