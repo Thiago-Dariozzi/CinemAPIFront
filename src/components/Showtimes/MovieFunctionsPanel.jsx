@@ -87,7 +87,7 @@ const findConflict = (pendingRange, occupiedRanges) => {
 
 const describeOccupancy = ({ isLoading, error, hasTime, conflict, occupiedRanges }) => {
     if (isLoading) return "Consultando horarios ocupados...";
-    if (error) return `⚠️ ${error}. No se puede verificar si la sala está libre; el servidor lo valida al guardar.`;
+    if (error) return `⚠️ ${error.replace(/\.$/, "")}. No se puede verificar si la sala está libre; el servidor lo valida al guardar.`;
 
     const busy = occupiedRanges.map(formatRange).join(", ");
     if (!hasTime) return busy ? `Ocupados ese día: ${busy}` : "Sala libre ese día";
@@ -251,7 +251,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
             setFunctions((prev) => prev.filter((f) => f.id !== id));
         } catch (err) {
             console.error(err);
-            setError("Error al eliminar la función");
+            setError(err.message || "Error al eliminar la función");
         }
     };
 

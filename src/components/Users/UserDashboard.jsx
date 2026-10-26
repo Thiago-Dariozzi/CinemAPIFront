@@ -10,19 +10,24 @@ const UserDashboard = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        let ignore = false;
+
         const loadUsers = async () => {
             try {
                 const data = await getAllUsers();
+                if (ignore) return;
                 setUsers(data);
                 setIsLoading(false);
             } catch (err) {
                 console.error(err);
+                if (ignore) return;
                 setError("No se pudo conectar con el servidor de usuarios. ¿Está corriendo el backend?");
                 setIsLoading(false);
             }
         };
 
         loadUsers();
+        return () => { ignore = true; };
     }, []);
 
     const handleAddUser = async (user) => {

@@ -17,13 +17,17 @@ const TicketDashboard = ({ scopeUserId }) => {
     const screens = useEntityList(getAllScreens);
 
     useEffect(() => {
+        let ignore = false;
+
         const loadTickets = async () => {
             try {
                 const data = scopeUserId ? await getTicketsByUser(scopeUserId) : await getAllTickets();
+                if (ignore) return;
                 setTickets(data);
                 setIsLoading(false);
             } catch (err) {
                 console.error(err);
+                if (ignore) return;
                 setError("No se pudo conectar con el servidor de tickets. ¿Está corriendo el backend?");
                 setIsLoading(false);
             }
@@ -35,13 +39,16 @@ const TicketDashboard = ({ scopeUserId }) => {
         if (!scopeUserId) {
             const loadUsers = async () => {
                 try {
-                    setUsers(await getAllUsers());
+                    const data = await getAllUsers();
+                    if (!ignore) setUsers(data);
                 } catch (err) {
                     console.error(err);
                 }
             };
             loadUsers();
         }
+
+        return () => { ignore = true; };
     }, [scopeUserId]);
 
     const handleAddTicket = async (ticket) => {

@@ -1,4 +1,3 @@
-
 export const genreFields = [
     {
         key: "name",
