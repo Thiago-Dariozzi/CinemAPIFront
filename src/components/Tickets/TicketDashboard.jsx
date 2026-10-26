@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import { getAllTickets, getTicketsByUser, addTicket, updateTicket, deleteTicket } from '../../api/ticketApi';
 import { getAllUsers } from '../../api/userApi';
+import { getAllMovies } from '../../api/movieApi';
+import { getAllScreens } from '../../api/screenApi';
+import { useEntityList } from '../../hooks/useEntityList';
 import NewTicket from './NewTicket';
 import TicketContainer from './TicketContainer';
 
@@ -10,6 +13,8 @@ const TicketDashboard = ({ scopeUserId }) => {
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const movies = useEntityList(getAllMovies);
+    const screens = useEntityList(getAllScreens);
 
     useEffect(() => {
         const loadTickets = async () => {
@@ -79,6 +84,8 @@ const TicketDashboard = ({ scopeUserId }) => {
             <TicketContainer
                 isLoading={isLoading}
                 tickets={tickets}
+                movies={movies}
+                screens={screens}
                 users={users}
                 fixedUserId={scopeUserId}
                 onDelete={handleDeleteTicket}
