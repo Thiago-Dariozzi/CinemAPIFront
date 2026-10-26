@@ -7,7 +7,7 @@ Contrato verificado contra `../CinemAPI` (rama `refactor/buenas-practicas`, `735
 
 | Comando | Resultado |
 |---|---|
-| `npm run lint` | ❌ 25 errores: 24 `'React' is defined but never used` + 1 `react-hooks/set-state-in-effect` (`MovieFunctionsPanel.jsx:152`) |
+| `npm run lint` | ❌ 25 errores (✅ 0 desde `784c47a`): 24 `'React' is defined but never used` + 1 `react-hooks/set-state-in-effect` (`MovieFunctionsPanel.jsx:152`) |
 | `npm run build` | ✅ (JS 472 kB / gzip 137 kB) |
 | `npm run test` | No existe (sin Vitest) |
 
@@ -83,17 +83,35 @@ Cada lote: `npm run lint` + `npm run build` (+ `npm run test -- --run` desde el 
 
 | Lote | Contenido | Ítems | Cambia lo visible | Estado |
 |---|---|---|---|---|
-| 1 | Lint en verde sin desactivar reglas + comentarios en español de los archivos tocados | 2, 23 | No | ⏳ |
-| 2 | Tickets: nombres de película/sala (bug crítico) | 1 | Sí (arreglo) | ⏳ |
-| 3 | Capa api: `httpClient` + `VITE_API_URL` + `.env.example`; errores del backend; `formatShowtime` a utils | 3, 4, 25, 26, 27 | Textos de error (D6) | ⏳ |
-| 4 | Hooks: dependencias sin `eslint-disable`, limpieza de efectos, `useEntityList` con error, el hook propaga el mensaje; altas de Screens/Movies que pierden datos | 4, 5, 6, 7, 13 | Errores visibles (D6) | ⏳ |
-| 5 | Cartelera con `getActiveMovies` | 15 | Sí (D1) | ⏳ |
-| 11 → antes del 6 | Vitest + tests de `fieldValidation`, `EntityForm`, `EntityCard`, `useEntityCrud`, `httpClient` | 21 | No (D5) | ⏳ |
-| 6 | Users → genéricos + `useEntityCrud` | 7–10, 14, 18, 28 | Estilo de Users + confirm al borrar | ⏳ |
-| 7 | Tickets → genéricos (extender `EntityForm`/`EntityCard` con opciones dependientes y `onFieldChange`) | 7–10, 12, 14, 18 | Estilo de Tickets + confirm al borrar | ⏳ |
-| 8 | Movies: `MovieCard` → `EntityCard`; `MovieFunctionsPanel` → `useMovieShowtimes` + subcomponentes, sin N+1; fecha de estreno | 8, 10, 11, 13, 16 | D2 | ⏳ |
-| 9 | Estilos y estructura: `Login` sin inline, `<main>` anidado, páginas muertas, rol de `/panel` | 17, 19, 20, 22 | D3, D4 | ⏳ |
-| 10 | Accesibilidad (labels asociados) y estados de carga/vacío/error restantes | 18, 24 | No | ⏳ |
-| 12 | README + `globalIgnores` de `CinemapiPhone` en ESLint | 29, 30 | No | ⏳ |
+| 1 | Lint en verde sin desactivar reglas + comentarios en español de los archivos tocados | 2, 23 | No | ✅ `784c47a` (#2). #23 no: por pedido del usuario no se borran comentarios en español en esta tanda |
+| 2 | Tickets: nombres de película/sala (bug crítico) | 1 | Sí (arreglo) | ✅ `f415852` |
+| 3 | Capa api: `httpClient` + `VITE_API_URL` + `.env.example`; errores del backend; `formatShowtime` a utils | 3, 4, 25, 26, 27 | Textos de error (D6) | ✅ `aedee74` (+ #7 y #8: el formulario no se borra y la card no se cierra si falla, en las 4 entidades) |
+| 4 | Hooks: dependencias sin `eslint-disable`, limpieza de efectos, `useEntityList` con error, el hook propaga el mensaje; altas de Screens/Movies que pierden datos | 4, 5, 6, 7, 13 | Errores visibles (D6) | ✅ `b4d7065` (#5, #6, #13 solo en MovieFunctionsPanel). `useEntityList` con error: ⏸️ Pospuesto para la entrega final (Tarea 5) |
+| 5 | Cartelera con `getActiveMovies` | 15 | Sí (D1) | ⏸️ Pospuesto para la entrega final (Tarea 4) |
+| 11 → antes del 6 | Vitest + tests de `fieldValidation`, `EntityForm`, `EntityCard`, `useEntityCrud`, `httpClient` | 21 | No (D5) | ⏸️ Pospuesto para la entrega final (Tarea 6) |
+| 6 | Users → genéricos + `useEntityCrud` | 7–10, 14, 18, 28 | Estilo de Users + confirm al borrar | ⏸️ Pospuesto para la entrega final (Tarea 5) |
+| 7 | Tickets → genéricos (extender `EntityForm`/`EntityCard` con opciones dependientes y `onFieldChange`) | 7–10, 12, 14, 18 | Estilo de Tickets + confirm al borrar | ⏸️ Pospuesto para la entrega final (Tarea 5: Tickets se reemplaza por Compras) |
+| 8 | Movies: `MovieCard` → `EntityCard`; `MovieFunctionsPanel` → `useMovieShowtimes` + subcomponentes, sin N+1; fecha de estreno | 8, 10, 11, 13, 16 | D2 | ⏸️ Pospuesto para la entrega final (Tarea 5) |
+| 9 | Estilos y estructura: `Login` sin inline, `<main>` anidado, páginas muertas, rol de `/panel` | 17, 19, 20, 22 | D3, D4 | ⏸️ Pospuesto para la entrega final (#19, #20, #22 en Tarea 4; #17 en Tarea 7) |
+| 10 | Accesibilidad (labels asociados) y estados de carga/vacío/error restantes | 18, 24 | No | ⏸️ Pospuesto para la entrega final (Tarea 7) |
+| 12 | README + `globalIgnores` de `CinemapiPhone` en ESLint | 29, 30 | No | ⏸️ Pospuesto para la entrega final (Tarea 7) |
 
 Si D5 es "no", el lote de tests se saltea y los lotes 6–8 se verifican solo con lint, build y prueba manual.
+
+## Fase 2 — versión reducida (26/10/2026)
+
+Por decisión del usuario se hicieron solo los lotes 1 a 4; el resto quedó **pospuesto para la entrega final** y está asignado a una tarea en `../CinemAPI/docs/plan-entrega.md` (§6). Decisiones D1–D6 tomadas: todas "sí", salvo D5 (Vitest en la Tarea 6).
+
+| Commit | Qué |
+|---|---|
+| `784c47a` | Lint en verde: sin `import React`, `occupied` vacío calculado en el render |
+| `f415852` | Tickets: el dashboard carga películas y salas y se las pasa a las cards (#1) |
+| `aedee74` | `httpClient` + `VITE_API_URL` (`.env.development`, `.env.example`) + `readApiError` en las 6 apis; `formatShowtime` a `src/utils`; `useEntityCrud` muestra el mensaje del backend; si un alta o edición falla, el formulario conserva los datos y la card sigue en edición (Screens, Movies, Users, Tickets) |
+| `b4d7065` | Sin `eslint-disable` en hooks; efectos con `ignore`; `MovieFunctionsPanel`: ocupación asociada a sala+fecha (descarta respuestas viejas), error visible en lugar de "Sala libre ese día", no se guarda mientras consulta; `TicketCard` preselecciona el horario comparando solo la fecha |
+| `1273e56` | Revisión (`revisor-frontend`): error de red con el mensaje de la operación en vez de "Failed to fetch", limpieza de la carga inicial en Users/Tickets, borrar función muestra el mensaje del backend |
+
+Cambios visibles: los errores muestran el texto del backend (D6); en Películas y Salas aparecen en el formulario o la card (como en Géneros), no arriba de la página; en Users y Tickets siguen arriba de la página pero el formulario ya no se borra.
+
+Comentarios en español: **no se tocaron** (pedido del usuario). El de `Tickets/TicketDashboard.jsx` ("EN DUDA !!! Preguntar al profe") espera la decisión del usuario.
+
+Pendientes que dejó la revisión: `useEntityList` sigue sin exponer el error (selects vacíos sin aviso, Tarea 5); `UserCard`/`TicketCard` muestran el error arriba de la página y no en la card (se resuelve al pasarlos a genéricos, Tarea 5); estilos inline en `Login.jsx` y páginas muertas (Tarea 4); labels sin asociar (Tarea 7).
