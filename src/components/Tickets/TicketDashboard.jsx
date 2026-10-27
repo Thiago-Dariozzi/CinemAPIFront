@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import { getAllTickets, getTicketsByUser, addTicket, updateTicket, deleteTicket } from '../../api/ticketApi';
 import { getAllUsers } from '../../api/userApi';
+import { ROLES } from '../../auth/roles';
 import { getAllMovies } from '../../api/movieApi';
 import { getAllScreens } from '../../api/screenApi';
 import { useEntityList } from '../../hooks/useEntityList';
@@ -39,7 +40,7 @@ const TicketDashboard = ({ scopeUserId }) => {
         if (!scopeUserId) {
             const loadUsers = async () => {
                 try {
-                    const data = await getAllUsers();
+                    const data = await getAllUsers(ROLES.client);
                     if (!ignore) setUsers(data);
                 } catch (err) {
                     console.error(err);

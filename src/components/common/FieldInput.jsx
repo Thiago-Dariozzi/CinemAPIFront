@@ -43,6 +43,7 @@ const FieldInput = ({ field, value, touched, error, onChange, onBlur, optionsSou
             onBlur={() => onBlur(field.key)}
             className={`form-input ${compact ? 'form-input--compact' : ''} ${touched && error ? 'form-input--error' : ''}`}
             placeholder={field.placeholder}
+            autoComplete={field.autoComplete}
         />
     );
 };

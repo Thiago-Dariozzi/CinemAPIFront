@@ -1,71 +1,35 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, Form, Button, Container } from 'react-bootstrap';
-import { login } from './session';
+import { Link, Navigate } from 'react-router-dom';
+import EntityForm from '../components/common/EntityForm';
+import { useSession } from '../hooks/useSession';
+import { loginFields } from './authFields';
+import { homePathFor } from './roles';
+import { isSessionExpiredNotice, login } from './session';
+
+const initialForm = { email: "", password: "" };
 
 const Login = () => {
-    const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const session = useSession();
+    const [showExpiredNotice] = useState(isSessionExpiredNotice);
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setError(null);
-        setIsSubmitting(true);
-
-        try {
-            const session = await login(email, password);
-            setIsSubmitting(false);
-            navigate(session.role === "Admin" ? "/admin" : "/panel");
-        } catch (err) {
-            setIsSubmitting(false);
-            setError(err.message || "Email o contraseña incorrectos.");
-        }
-    };
+    if (session) return <Navigate to={homePathFor(session.role)} replace />;
 
     return (
-        <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
-            <Card bg="dark" text="white" style={{ width: '380px' }}>
-                <Card.Body>
-                    <Card.Title className="accent-title mb-3">🎥 CinemAPI - Ingresar</Card.Title>
-
-                    {error && <p className="text-danger">{error}</p>}
-
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control
-                                type="email"
-                                value={email}
-                                onChange={(event) => setEmail(event.target.value)}
-                                placeholder="admin@admin.com / user@user.com"
-                                required
-                            />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Contraseña</Form.Label>
-                            <Form.Control
-                                type="password"
-                                value={password}
-                                onChange={(event) => setPassword(event.target.value)}
-                                required
-                            />
-                        </Form.Group>
-
-                        <Button type="submit" disabled={isSubmitting} className="btn-accent w-100">
-                            {isSubmitting ? "Ingresando..." : "Ingresar"}
-                        </Button>
-                    </Form>
-
-                    <p className="text-muted mt-3 mb-0 login-hint">
-                        Demo: admin@admin.com / admin (panel Admin) — user@user.com / user (panel Usuario)
-                    </p>
-                </Card.Body>
-            </Card>
-        </Container>
+        <main className="auth-page">
+            <div className="auth-page__card">
+                {showExpiredNotice && <p className="msg-error">Tu sesión venció. Volvé a ingresar.</p>}
+                <EntityForm
+                    title="🎥 CinemAPI - Ingresar"
+                    submitLabel="Ingresar"
+                    fields={loginFields}
+                    initialValues={initialForm}
+                    onSubmit={login}
+                />
+                <p className="auth-page__footer">
+                    ¿No tenés cuenta? <Link to="/registro">Registrate</Link>
+                </p>
+            </div>
+        </main>
     );
 };
 

@@ -12,11 +12,11 @@ Las reglas detalladas viven en `.claude/skills/` y se cargan cuando el tema lo r
 | UI | `react-bootstrap` + Bootstrap 5 + clases propias en `src/index.css` |
 | Ruteo | `react-router-dom` 7 (`BrowserRouter` en `App.jsx`; rutas `/admin/*` y `/panel/*`) |
 | Fechas | `date-fns`, `react-datepicker` |
-| Datos | Funciones `fetch` en `src/api/<entidad>Api.js`; errores del backend (ProblemDetails) con `readApiError` de `src/api/apiError.js`; hooks `useEntityCrud` y `useEntityList` en `src/hooks` |
+| Datos | `request()` de `src/api/httpClient.js` (URL en `VITE_API_URL`, header `Authorization`, errores ProblemDetails con `readApiError`) usado por `src/api/<entidad>Api.js`; hooks `useEntityCrud`, `useEntityList` y `useSession` en `src/hooks` |
 | Componentes genéricos | `EntityForm`, `EntityCard`, `EntityGrid`, `FieldInput`, `FieldBody` en `src/components/common` |
-| Sesión | `src/auth/session.js` (login de demo con `localStorage`) |
+| Sesión | JWT del backend (`POST /api/auth/login`). `src/auth/session.js` guarda `{ token, expiresAt, userId, name, email, role }` en `localStorage` y avisa a los suscriptores; los componentes la leen con `useSession()`. Ante un 401 la sesión se cierra y `ProtectedRoute` manda al login |
 | Lint | ESLint 10 (`eslint.config.js`, reglas de `react-hooks` y `react-refresh`) |
-| Backend | `http://localhost:5288/api` en desarrollo |
+| Backend | `http://localhost:5288/api` en desarrollo (`.env.development`) |
 | `CinemapiPhone/` | App móvil Expo separada, con su propio `AGENTS.md`. **No aplicar estas reglas ahí** ni tocarla salvo pedido explícito |
 
 ## Estructura y decisiones (feedback del profesor — no revertir)
@@ -39,7 +39,7 @@ src/
 - **API separada de componentes**: los componentes nunca llaman a `fetch`.
 - **Reutilizar los genéricos**: una entidad nueva usa `EntityForm` + `EntityCard` + `EntityGrid` + `useEntityCrud` con un archivo de configuración de campos, en lugar de copiar componentes.
 - Identificadores en inglés; textos visibles para el usuario en español.
-- Autenticación real: todavía no se vio en la materia. No implementarla sin pedido explícito.
+- Autenticación y roles: `SuperAdmin`, `Admin` y `Client` (`src/auth/roles.js`). Rutas `/admin/*` para staff (Administradores y Cargos solo SuperAdmin) y `/panel/*` solo clientes, con `ProtectedRoute roles={[...]}`; el Sidebar arma el menú por rol. La capa `api/` no lee `localStorage`: `session.js` le inyecta el token con `configureHttpClient`. Login, Registro y Perfil usan `EntityForm`.
 - No migrar a TypeScript ni agregar librerías (TanStack Query, Redux, Tailwind, etc.) sin pedido explícito.
 
 ## Definition of Done

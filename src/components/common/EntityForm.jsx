@@ -26,10 +26,11 @@ const groupFields = (fields) => {
     return rows;
 };
 
-const EntityForm = ({ title, submitLabel = "Guardar", fields, initialValues, optionsSources = {}, onSubmit }) => {
+const EntityForm = ({ title, submitLabel = "Guardar", fields, initialValues, optionsSources = {}, resetOnSuccess = true, onSubmit }) => {
     const [form, setForm] = useState(initialValues);
     const [touched, setTouched] = useState({});
     const [submitError, setSubmitError] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const errors = computeErrors(fields, form);
     const isFormValid = Object.values(errors).every((e) => e == null);
@@ -46,12 +47,15 @@ const EntityForm = ({ title, submitLabel = "Guardar", fields, initialValues, opt
             return;
         }
 
+        setIsSubmitting(true);
         try {
             await onSubmit(buildPayload(fields, form));
-            setForm(initialValues);
+            if (resetOnSuccess) setForm(initialValues);
             setTouched({});
         } catch (err) {
             setSubmitError(err?.message || "Ocurrió un error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -92,8 +96,8 @@ const EntityForm = ({ title, submitLabel = "Guardar", fields, initialValues, opt
 
                 <button
                     type="submit"
-                    disabled={!isFormValid}
-                    className={`btn btn--submit ${!isFormValid ? 'btn--disabled' : ''}`}
+                    disabled={!isFormValid || isSubmitting}
+                    className={`btn btn--submit ${!isFormValid || isSubmitting ? 'btn--disabled' : ''}`}
                 >
                     {submitLabel}
                 </button>

@@ -1,39 +1,47 @@
-import { NavLink, useNavigate } from 'react-router-dom';
-import { getSession, logout } from '../../auth/session';
+import { NavLink } from 'react-router-dom';
+import { logout } from '../../auth/session';
+import { ROLES, ROLE_LABELS, isStaff } from '../../auth/roles';
+import { useSession } from '../../hooks/useSession';
 
-const adminItems = [
+const staffItems = [
     { path: '/admin/peliculas', label: 'Películas', icon: '🎬' },
     { path: '/admin/generos', label: 'Géneros', icon: '🎭' },
     { path: '/admin/salas', label: 'Salas', icon: '🏛️' },
     { path: '/admin/tickets', label: 'Tickets', icon: '🎟️' },
-    { path: '/admin/usuarios', label: 'Usuarios', icon: '👤' },
+    { path: '/admin/clientes', label: 'Clientes', icon: '👥' },
 ];
 
-const userItems = [
+const superAdminItems = [
+    { path: '/admin/administradores', label: 'Administradores', icon: '🛡️' },
+    { path: '/admin/cargos', label: 'Cargos', icon: '🧾' },
+];
+
+const clientItems = [
     { path: '/panel/cartelera', label: 'Cartelera', icon: '🎬' },
     { path: '/panel/mis-tickets', label: 'Mis Tickets', icon: '🎟️' },
 ];
 
-const Sidebar = () => {
-    const navigate = useNavigate();
-    const session = getSession();
-    const isAdmin = session?.role === 'Admin';
-    const items = isAdmin ? adminItems : userItems;
+const profileItem = (basePath) => ({ path: `${basePath}/perfil`, label: 'Mi perfil', icon: '👤' });
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
+const itemsFor = (role) => {
+    if (role === ROLES.superAdmin) return [...staffItems, ...superAdminItems, profileItem('/admin')];
+    if (isStaff(role)) return [...staffItems, profileItem('/admin')];
+    return [...clientItems, profileItem('/panel')];
+};
+
+const Sidebar = () => {
+    const session = useSession();
+    if (!session) return null;
 
     return (
         <aside className="sidebar">
             <div className="sidebar__header">
                 <h2 className="sidebar__title">🎥 CinemAPI</h2>
-                <span className="sidebar__role">{isAdmin ? 'Admin' : 'Usuario'}</span>
+                <span className="sidebar__role">{ROLE_LABELS[session.role] ?? session.role}</span>
             </div>
 
             <nav className="sidebar__nav">
-                {items.map((item) => (
+                {itemsFor(session.role).map((item) => (
                     <NavLink
                         key={item.path}
                         to={item.path}
@@ -48,8 +56,9 @@ const Sidebar = () => {
             </nav>
 
             <div className="sidebar__footer">
-                <span className="sidebar__email">{session?.email}</span>
-                <button className="sidebar__logout" onClick={handleLogout}>
+                <span className="sidebar__email">{session.name}</span>
+                <span className="sidebar__email">{session.email}</span>
+                <button className="sidebar__logout" onClick={logout}>
                     Cerrar sesión
                 </button>
             </div>

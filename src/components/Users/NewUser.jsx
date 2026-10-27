@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Card, Form, Row, Col, Button } from 'react-bootstrap';
 import { initialForm } from './NewUser.data';
 
-const NewUser = ({ onAddUser }) => {
+const NewUser = ({ title, role, onAddUser }) => {
 
-    const [form, setForm] = useState(initialForm);
+    const [form, setForm] = useState({ ...initialForm, role });
 
     const handleChangeValue = (event, inputKey) => {
         setForm((prevForm) => ({
@@ -17,7 +17,7 @@ const NewUser = ({ onAddUser }) => {
         event.preventDefault();
         try {
             await onAddUser(form);
-            setForm(initialForm);
+            setForm({ ...initialForm, role });
         } catch {
             // The dashboard shows the error; keep the user's input.
         }
@@ -26,7 +26,7 @@ const NewUser = ({ onAddUser }) => {
     return (
         <Card bg="dark" text="white" className="mb-4">
             <Card.Body>
-                <Card.Title className="accent-title">Agregar Nuevo Usuario</Card.Title>
+                <Card.Title className="accent-title">{title}</Card.Title>
 
                 <Form onSubmit={handleAddUser}>
                     <Row>
@@ -64,21 +64,10 @@ const NewUser = ({ onAddUser }) => {
                                     type="password"
                                     value={form.password}
                                     onChange={(event) => handleChangeValue(event, "password")}
-                                    placeholder="Contraseña"
+                                    placeholder="Mínimo 8 caracteres"
+                                    minLength={8}
                                     required
                                 />
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Rol</Form.Label>
-                                <Form.Select
-                                    value={form.role}
-                                    onChange={(event) => handleChangeValue(event, "role")}
-                                >
-                                    <option value="Client">Cliente</option>
-                                    <option value="Admin">Admin</option>
-                                </Form.Select>
                             </Form.Group>
                         </Col>
                     </Row>

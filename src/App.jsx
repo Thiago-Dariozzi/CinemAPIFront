@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './auth/Login'
+import Register from './auth/Register'
 import ProtectedRoute from './auth/ProtectedRoute'
-import { getSession } from './auth/session'
+import { ROLES, STAFF_ROLES, homePathFor } from './auth/roles'
+import { useSession } from './hooks/useSession'
 import AppLayout from './components/Layout/AppLayout'
 
 // Admin pages (cada dashboard existente)
@@ -10,15 +12,16 @@ import GenreDashboard from './components/Genres/GenreDashboard'
 import ScreenDashboard from './components/Screens/ScreenDashboard'
 import TicketDashboard from './components/Tickets/TicketDashboard'
 import UserDashboard from './components/Users/UserDashboard'
+import FeesPage from './pages/FeesPage'
+import Profile from './pages/Profile'
 
 // User pages
 import UserCartelera from './pages/UserCartelera'
 import UserTickets from './pages/UserTickets'
 
 const HomeRedirect = () => {
-  const session = getSession()
-  if (!session) return <Navigate to="/login" replace />
-  return <Navigate to={session.role === "Admin" ? "/admin/peliculas" : "/panel/cartelera"} replace />
+  const session = useSession()
+  return <Navigate to={session ? homePathFor(session.role) : "/login"} replace />
 }
 
 const App = () => {
@@ -26,22 +29,30 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Register />} />
 
         {/* Rutas Admin */}
-        <Route path="/admin" element={<ProtectedRoute role="Admin"><AppLayout /></ProtectedRoute>}>
+        <Route path="/admin" element={<ProtectedRoute roles={STAFF_ROLES}><AppLayout /></ProtectedRoute>}>
           <Route index element={<Navigate to="peliculas" replace />} />
           <Route path="peliculas" element={<Dashboard />} />
           <Route path="generos" element={<GenreDashboard />} />
           <Route path="salas" element={<ScreenDashboard />} />
           <Route path="tickets" element={<TicketDashboard />} />
-          <Route path="usuarios" element={<UserDashboard />} />
+          <Route path="clientes" element={<UserDashboard key={ROLES.client} role={ROLES.client} />} />
+          <Route
+            path="administradores"
+            element={<ProtectedRoute roles={[ROLES.superAdmin]}><UserDashboard key={ROLES.admin} role={ROLES.admin} /></ProtectedRoute>}
+          />
+          <Route path="cargos" element={<ProtectedRoute roles={[ROLES.superAdmin]}><FeesPage /></ProtectedRoute>} />
+          <Route path="perfil" element={<Profile />} />
         </Route>
 
         {/* Rutas Usuario */}
-        <Route path="/panel" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+        <Route path="/panel" element={<ProtectedRoute roles={[ROLES.client]}><AppLayout /></ProtectedRoute>}>
           <Route index element={<Navigate to="cartelera" replace />} />
           <Route path="cartelera" element={<UserCartelera />} />
           <Route path="mis-tickets" element={<UserTickets />} />
+          <Route path="perfil" element={<Profile />} />
         </Route>
 
         <Route path="/" element={<HomeRedirect />} />

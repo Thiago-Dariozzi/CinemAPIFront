@@ -1,16 +1,6 @@
-import { Navigate } from 'react-router-dom';
-import { getSession, logout } from '../auth/session';
+import { getActiveMovies } from '../api/movieApi';
 import Dashboard from '../components/Movies/Dashboard';
 
-const UserCartelera = () => {
-    const session = getSession();
-
-    if (session && session.role === "Client" && !session.userId) {
-        logout();
-        return <Navigate to="/login" replace />;
-    }
-
-    return <Dashboard readOnly />;
-};
+const UserCartelera = () => <Dashboard readOnly fetchAll={getActiveMovies} />;
 
 export default UserCartelera;

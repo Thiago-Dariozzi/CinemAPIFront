@@ -46,17 +46,6 @@ const UserCard = ({
                             </Form.Group>
                         </Col>
                     </Row>
-                    <Row>
-                        <Col md={6}>
-                            <Form.Group className="mb-2">
-                                <Form.Label>Rol</Form.Label>
-                                <Form.Select value={form.role} onChange={(event) => handleChangeValue(event, "role")}>
-                                    <option value="Client">Cliente</option>
-                                    <option value="Admin">Admin</option>
-                                </Form.Select>
-                            </Form.Group>
-                        </Col>
-                    </Row>
                     <Button
                         variant="success"
                         className="me-2"
@@ -76,7 +65,6 @@ const UserCard = ({
                 <Card.Title>👤 {name}</Card.Title>
                 <Card.Text as="div">
                     <div>Email: {email}</div>
-                    <div>Rol: {role}</div>
                 </Card.Text>
                 <Button variant="outline-warning" className="me-2" onClick={() => setIsEditing(true)}>Editar</Button>
                 <Button variant="outline-danger" onClick={() => onDelete(id)}>Eliminar</Button>

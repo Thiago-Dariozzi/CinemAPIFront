@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import { getAllUsers, addUser, updateUser, deleteUser } from '../../api/userApi';
+import { ROLES } from '../../auth/roles';
 import NewUser from './NewUser';
 import UserContainer from './UserContainer';
 
-const UserDashboard = () => {
+const TITLES = {
+    [ROLES.client]: { page: "👥 Clientes", form: "Agregar Nuevo Cliente" },
+    [ROLES.admin]: { page: "🛡️ Administradores", form: "Agregar Nuevo Administrador" },
+};
+
+const UserDashboard = ({ role }) => {
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,7 +20,7 @@ const UserDashboard = () => {
 
         const loadUsers = async () => {
             try {
-                const data = await getAllUsers();
+                const data = await getAllUsers(role);
                 if (ignore) return;
                 setUsers(data);
                 setIsLoading(false);
@@ -28,7 +34,7 @@ const UserDashboard = () => {
 
         loadUsers();
         return () => { ignore = true; };
-    }, []);
+    }, [role]);
 
     const handleAddUser = async (user) => {
         try {
@@ -67,9 +73,9 @@ const UserDashboard = () => {
 
     return (
         <Container className="py-4">
-            <h1 className="accent-title mb-4">👤 Usuarios</h1>
+            <h1 className="accent-title mb-4">{TITLES[role].page}</h1>
             {error && <p className="text-danger">{error}</p>}
-            <NewUser onAddUser={handleAddUser} />
+            <NewUser title={TITLES[role].form} role={role} onAddUser={handleAddUser} />
             <UserContainer
                 isLoading={isLoading}
                 users={users}

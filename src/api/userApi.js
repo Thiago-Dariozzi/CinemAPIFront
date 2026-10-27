@@ -21,18 +21,14 @@ const mapUserToBackendForUpdate = (user) => ({
     role: user.role,
 });
 
-export const getAllUsers = async () => {
-    const data = await request("/user", { errorMessage: "Error al obtener los usuarios" });
+export const getAllUsers = async (role) => {
+    const query = role ? `?role=${encodeURIComponent(role)}` : "";
+    const data = await request(`/user${query}`, { errorMessage: "Error al obtener los usuarios" });
     return data.map(mapUserFromBackend);
 };
 
 export const getUserById = async (id) => {
     const data = await request(`/user/${id}`, { errorMessage: "Error al obtener el usuario" });
-    return mapUserFromBackend(data);
-};
-
-export const getUserByEmail = async (email) => {
-    const data = await request(`/user/email/${encodeURIComponent(email)}`, { errorMessage: "Error al obtener el usuario por email" });
     return mapUserFromBackend(data);
 };
 

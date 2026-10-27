@@ -1,15 +1,16 @@
 import { Navigate } from 'react-router-dom';
-import { getSession } from './session';
+import { useSession } from '../hooks/useSession';
+import { homePathFor } from './roles';
 
-const ProtectedRoute = ({ children, role }) => {
-    const session = getSession();
+const ProtectedRoute = ({ children, roles }) => {
+    const session = useSession();
 
     if (!session) {
         return <Navigate to="/login" replace />;
     }
 
-    if (role && session.role !== role) {
-        return <Navigate to="/login" replace />;
+    if (roles && !roles.includes(session.role)) {
+        return <Navigate to={homePathFor(session.role)} replace />;
     }
 
     return children;
