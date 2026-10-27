@@ -58,7 +58,7 @@ export const getSession = () => {
 export const subscribe = (listener) => {
     listeners.add(listener);
     const onStorage = (event) => {
-        if (event.key === SESSION_KEY) listener();
+        if (event.key === SESSION_KEY || event.key === null) listener();
     };
     window.addEventListener("storage", onStorage);
     return () => {
