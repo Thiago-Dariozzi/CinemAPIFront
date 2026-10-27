@@ -28,9 +28,9 @@ src/
     common/     Componentes genéricos reutilizables (EntityForm, EntityCard, EntityGrid...)
     <Entidad>/  Dashboard, Card, Container, New<Entidad>, <entidad>Fields
     Layout/     AppLayout, Sidebar
-  hooks/        Hooks reutilizables (useEntityCrud, useEntityList)
-  pages/        Pantallas compuestas por rol (AdminPanel, UserPanel, UserCartelera...)
-  auth/         Login, ProtectedRoute, session
+  hooks/        Hooks reutilizables (useEntityCrud, useEntityList, useSession)
+  pages/        Pantallas compuestas por rol (UserCartelera, UserTickets, Profile, FeesPage)
+  auth/         Login, Register, ProtectedRoute, session, roles, authFields
   index.css     Estilos compartidos (clases BEM-like: .form-panel, .btn--primary, .entity-card...)
 ```
 
