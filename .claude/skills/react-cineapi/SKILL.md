@@ -15,12 +15,18 @@ import { readApiError } from "./apiError";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5288/api";
 
-export const request = async (path, { method = "GET", body, errorMessage = "Error de comunicación con el servidor" } = {}) => {
+export const request = async (path, { method = "GET", body, errorMessage = "Error de comunicación con el servidor", anonymous = false } = {}) => {
+    const token = getToken();                                   // inyectado por session.js
     const response = await fetch(`${API_URL}${path}`, {
         method,
-        headers: { Accept: "application/json", ...(body !== undefined && { "Content-Type": "application/json" }) },
+        headers: {
+            Accept: "application/json",
+            ...(body !== undefined && { "Content-Type": "application/json" }),
+            ...(token && { Authorization: `Bearer ${token}` }),
+        },
         body: body !== undefined ? JSON.stringify(body) : undefined,
     });
+    if (response.status === 401 && !anonymous) onUnauthorized(); // cierra la sesión
     if (!response.ok) throw new Error(await readApiError(response, errorMessage));
     return response.status === 204 ? null : response.json();
 };
@@ -99,9 +105,10 @@ components/<Entidad>/
 
 ## Ruteo y sesión
 
-- Rutas declaradas solo en `App.jsx`; rutas protegidas con `ProtectedRoute` (y `role` cuando corresponde).
-- Navegación con `<Link>`/`useNavigate`, nunca `window.location` para rutas internas.
-- `session.js` es un login de demo (credenciales en el código): deuda conocida, no extenderla ni copiarla.
+- Rutas declaradas solo en `App.jsx`; rutas protegidas con `<ProtectedRoute roles={[...]}>` (constantes de `src/auth/roles.js`: `ROLES`, `STAFF_ROLES`, `homePathFor`).
+- Navegación con `<Link>`/`useNavigate`, nunca `window.location` para rutas internas. Al cerrarse la sesión no se navega a mano: `ProtectedRoute` lee `useSession()` y redirige solo.
+- Sesión: JWT del backend. `session.js` guarda `{ token, expiresAt, userId, name, email, role }`, la cierra al vencer o ante un 401, y la publica con `subscribe`/`getSession`; los componentes la leen con `useSession()` (`src/hooks`), nunca con `localStorage`.
+- `httpClient` recibe el token con `configureHttpClient` (lo llama `session.js`): `api/` no conoce `localStorage`. Los pedidos sin sesión que pueden dar 401 por credenciales (login, registro) van con `anonymous: true` para no cerrar la sesión.
 
 ## Errores y UX
 
