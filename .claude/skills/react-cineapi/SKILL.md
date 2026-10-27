@@ -114,6 +114,7 @@ components/<Entidad>/
 
 - Cada pantalla muestra estado de carga (`.msg-loading`), vacío (`.msg-empty`) y error (`.msg-error`).
 - `console.error` solo además de mostrar el error al usuario, nunca en su lugar. No dejar `console.log`.
+- `request()` lanza un `Error` con el `detail` del ProblemDetails como mensaje y el código HTTP en `err.status`: para reaccionar a un caso puntual (ej. 409 butaca tomada → recargar el mapa) se mira `err.status`, nunca el texto.
 - Confirmación antes de borrar (`confirmDeleteMessage`).
 - Botones de submit deshabilitados mientras el formulario es inválido o se está enviando.
 
