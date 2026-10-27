@@ -47,7 +47,7 @@ export const addGenre = (genre) => request("/genre", { method: "POST", body: { n
 
 ## Datos en componentes: hooks, nunca `fetch` directo
 
-- ABM de una entidad → `useEntityCrud({ fetchAll, addFn, updateFn, deleteFn, messages })`.
+- ABM de una entidad → `useEntityCrud({ fetchAll, addFn, updateFn, deleteFn, messages })`. Opciones: `restoreFn` (devuelve `handleRestore`, para reactivar), `softDelete` (la baja deja el ítem con `isActive: false` en vez de sacarlo), `reloadAfterMutation` (vuelve a pedir la lista después de cada cambio, ej. al marcar un cargo vigente se desmarca otro) , `reload()` y `refreshing` (true mientras se vuelve a pedir la lista después de la primera carga). `EntityCard` acepta `onRestore`, `deleteLabel` y `restoreLabel`.
 - Lista auxiliar (ej. géneros para un select) → `useEntityList(getAllGenres)`.
 - Si una pantalla necesita algo que los hooks no cubren (ej. funciones por película), crear un hook específico en `src/hooks` (`useMovieShowtimes`) en lugar de meter `useEffect` + `fetch` en el componente.
 - Los hooks deben recibir funciones estables (importadas del módulo `api/`), así sus dependencias pueden declararse sin `eslint-disable`:

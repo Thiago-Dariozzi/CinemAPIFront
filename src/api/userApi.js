@@ -21,8 +21,11 @@ const mapUserToBackendForUpdate = (user) => ({
     role: user.role,
 });
 
-export const getAllUsers = async (role) => {
-    const query = role ? `?role=${encodeURIComponent(role)}` : "";
+export const getAllUsers = async (role, search = "") => {
+    const params = new URLSearchParams();
+    if (role) params.append("role", role);
+    if (search.trim()) params.append("search", search.trim());
+    const query = params.toString() ? `?${params}` : "";
     const data = await request(`/user${query}`, { errorMessage: "Error al obtener los usuarios" });
     return data.map(mapUserFromBackend);
 };
@@ -51,4 +54,7 @@ export const updateUser = async (id, user) => {
 };
 
 export const deleteUser = (id) =>
-    request(`/user/${id}`, { method: "DELETE", errorMessage: "Error al eliminar el usuario" });
+    request(`/user/${id}`, { method: "DELETE", errorMessage: "Error al dar de baja el usuario" });
+
+export const reactivateUser = (id) =>
+    request(`/user/${id}/reactivate`, { method: "POST", errorMessage: "Error al reactivar el usuario" });

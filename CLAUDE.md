@@ -29,7 +29,7 @@ src/
     <Entidad>/  Dashboard, Card, Container, New<Entidad>, <entidad>Fields
     Layout/     AppLayout, Sidebar
   hooks/        Hooks reutilizables (useEntityCrud, useEntityList, useAsyncData, useSession, usePurchaseList, useSeatSelection)
-  pages/        Pantallas compuestas por rol (UserCartelera, MovieShowtimesPage, PurchasePage, MyPurchases, SalesPage, Profile, FeesPage)
+  pages/        Pantallas compuestas por rol (UserCartelera, MovieShowtimesPage, PurchasePage, MyPurchases, SalesPage, Profile)
   auth/         Login, Register, ProtectedRoute, session, roles, authFields
   index.css     Estilos compartidos (clases BEM-like: .form-panel, .btn--primary, .entity-card...)
 ```
@@ -41,6 +41,7 @@ src/
 - Identificadores en inglés; textos visibles para el usuario en español.
 - Autenticación y roles: `SuperAdmin`, `Admin` y `Client` (`src/auth/roles.js`). Rutas `/admin/*` para staff (Administradores y Cargos solo SuperAdmin) y `/panel/*` solo clientes, con `ProtectedRoute roles={[...]}`; el Sidebar arma el menú por rol. La capa `api/` no lee `localStorage`: `session.js` le inyecta el token con `configureHttpClient`. Login, Registro y Perfil usan `EntityForm`.
 - Compra de entradas: cartelera → `/panel/peliculas/:movieId` (funciones próximas) → `/panel/funciones/:showtimeId/comprar` (`SeatMap` + `PurchaseSummary`, máximo 10 butacas) → `/panel/mis-entradas`. El staff ve y cancela todas en `/admin/ventas`. Las butacas se muestran como fila en letra + número (`utils/seats.js`); el subtotal + cargo se calcula igual que el backend (`utils/money.js`), pero el importe que vale es el que devuelve la compra. Los errores de la API llevan `status` (`err.status === 409`: butaca tomada → se recarga el mapa).
+- Usuarios y cargos: Clientes (`/admin/clientes`, staff) y Administradores (`/admin/administradores`, SuperAdmin) usan `Users/UserDashboard` con búsqueda por nombre o email, baja lógica y reactivación (la lista incluye a los dados de baja). Cargos (`/admin/cargos`, SuperAdmin) usa `Fees/FeeDashboard`; marcar uno como vigente desmarca al anterior, por eso la lista se recarga después de cada cambio.
 - No migrar a TypeScript ni agregar librerías (TanStack Query, Redux, Tailwind, etc.) sin pedido explícito.
 
 ## Definition of Done

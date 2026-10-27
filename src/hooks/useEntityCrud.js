@@ -1,16 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+const mergeResult = (item, payload, result) => ({
+    ...item,
+    ...payload,
+    ...(result && typeof result === 'object' ? result : {}),
+});
+
 export const useEntityCrud = ({
     fetchAll,
     addFn,
     updateFn,
     deleteFn,
+    restoreFn,
     messages = {},
     silentMutationErrors = false,
+    softDelete = false,
+    reloadAfterMutation = false,
 }) => {
     const [list, setList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [reloadToken, setReloadToken] = useState(0);
+    const [loadedRequest, setLoadedRequest] = useState(null);
 
     const fetchErrorMessage = messages.fetchError ?? "No se pudo conectar con el servidor.";
 
@@ -28,55 +40,62 @@ export const useEntityCrud = ({
                 setError(fetchErrorMessage);
             })
             .finally(() => {
-                if (!ignore) setLoading(false);
+                if (ignore) return;
+                setLoading(false);
+                setLoadedRequest({ fetchAll, reloadToken });
             });
         return () => { ignore = true; };
-    }, [fetchAll, fetchErrorMessage]);
+    }, [fetchAll, fetchErrorMessage, reloadToken]);
 
-    const handleAdd = addFn && (async (payload) => {
-        try {
-            const created = await addFn(payload);
-            setList((prev) => [created, ...prev]);
-            if (messages.addSuccess !== undefined) setSuccess(messages.addSuccess);
-            if (!silentMutationErrors) setError(null);
-            return created;
-        } catch (err) {
-            if (!silentMutationErrors) setError(err?.message || messages.addError || "Error al agregar");
-            console.error(err);
-            throw err;
-        }
-    });
+    const refreshing = !loading
+        && (loadedRequest?.fetchAll !== fetchAll || loadedRequest?.reloadToken !== reloadToken);
 
-    const handleUpdate = updateFn && (async (id, payload) => {
+    const reload = useCallback(() => setReloadToken((token) => token + 1), []);
+
+    const mutate = async (action, applyToList, successMessage, errorMessage) => {
         try {
-            const result = await updateFn(id, payload);
-            setList((prev) => prev.map((item) => (
-                item.id === id
-                    ? { ...item, ...payload, ...(result && typeof result === 'object' ? result : {}) }
-                    : item
-            )));
-            if (messages.updateSuccess !== undefined) setSuccess(messages.updateSuccess);
+            const result = await action();
+            setList(applyToList(result));
+            if (successMessage !== undefined) setSuccess(successMessage);
             if (!silentMutationErrors) setError(null);
+            if (reloadAfterMutation) reload();
             return result;
         } catch (err) {
-            if (!silentMutationErrors) setError(err?.message || messages.updateError || "Error al actualizar");
+            if (!silentMutationErrors) setError(err?.message || errorMessage);
             console.error(err);
             throw err;
         }
-    });
+    };
 
-    const handleDelete = deleteFn && (async (id) => {
-        try {
-            await deleteFn(id);
-            setList((prev) => prev.filter((item) => item.id !== id));
-            if (messages.deleteSuccess !== undefined) setSuccess(messages.deleteSuccess);
-            if (!silentMutationErrors) setError(null);
-        } catch (err) {
-            if (!silentMutationErrors) setError(err?.message || messages.deleteError || "Error al eliminar");
-            console.error(err);
-            throw err;
-        }
-    });
+    const handleAdd = addFn && ((payload) => mutate(
+        () => addFn(payload),
+        (created) => (prev) => [created, ...prev],
+        messages.addSuccess,
+        messages.addError || "Error al agregar",
+    ));
 
-    return { list, loading, error, success, handleAdd, handleUpdate, handleDelete };
+    const handleUpdate = updateFn && ((id, payload) => mutate(
+        () => updateFn(id, payload),
+        (result) => (prev) => prev.map((item) => (item.id === id ? mergeResult(item, payload, result) : item)),
+        messages.updateSuccess,
+        messages.updateError || "Error al actualizar",
+    ));
+
+    const handleDelete = deleteFn && ((id) => mutate(
+        () => deleteFn(id),
+        () => (prev) => (softDelete
+            ? prev.map((item) => (item.id === id ? { ...item, isActive: false } : item))
+            : prev.filter((item) => item.id !== id)),
+        messages.deleteSuccess,
+        messages.deleteError || "Error al eliminar",
+    ));
+
+    const handleRestore = restoreFn && ((id) => mutate(
+        () => restoreFn(id),
+        () => (prev) => prev.map((item) => (item.id === id ? { ...item, isActive: true } : item)),
+        messages.restoreSuccess,
+        messages.restoreError || "Error al reactivar",
+    ));
+
+    return { list, loading, refreshing, error, success, reload, handleAdd, handleUpdate, handleDelete, handleRestore };
 };

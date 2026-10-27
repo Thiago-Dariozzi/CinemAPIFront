@@ -9,14 +9,18 @@ const EntityCard = ({
     viewExtra = {},
     renderView,
     confirmDeleteMessage,
+    deleteLabel = "Eliminar",
+    restoreLabel = "Reactivar",
     onEdit,
     onDelete,
+    onRestore,
 }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [form, setForm] = useState(values);
     const [touched, setTouched] = useState({});
     const [saveError, setSaveError] = useState(null);
-    const [deleteError, setDeleteError] = useState(null);
+    const [actionError, setActionError] = useState(null);
+    const [isBusy, setIsBusy] = useState(false);
 
     const errors = computeErrors(fields, form);
     const isFormValid = Object.values(errors).every((e) => e == null);
@@ -52,15 +56,21 @@ const EntityCard = ({
         }
     };
 
-    const handleDelete = async () => {
-        if (!window.confirm(confirmDeleteMessage)) return;
-
-        setDeleteError(null);
+    const runAction = async (action, fallbackMessage) => {
+        setActionError(null);
+        setIsBusy(true);
         try {
-            await onDelete(id);
+            await action(id);
         } catch (err) {
-            setDeleteError(err?.message || "Error al eliminar");
+            setActionError(err?.message || fallbackMessage);
+        } finally {
+            setIsBusy(false);
         }
+    };
+
+    const handleDelete = () => {
+        if (!window.confirm(confirmDeleteMessage)) return;
+        runAction(onDelete, "Error al eliminar");
     };
 
     const fieldProps = (field) => ({
@@ -102,7 +112,7 @@ const EntityCard = ({
         <div className="entity-card">
             {renderView({ ...values, ...viewExtra })}
 
-            {deleteError && <p className="msg-inline-error--sm">{deleteError}</p>}
+            {actionError && <p className="msg-inline-error--sm">{actionError}</p>}
 
             {onEdit && (
                 <button onClick={startEditing} className="btn btn--primary btn-group">
@@ -111,8 +121,14 @@ const EntityCard = ({
             )}
 
             {onDelete && (
-                <button onClick={handleDelete} className="btn btn--delete btn-group">
-                    Eliminar
+                <button onClick={handleDelete} disabled={isBusy} className="btn btn--delete btn-group">
+                    {deleteLabel}
+                </button>
+            )}
+
+            {onRestore && (
+                <button onClick={() => runAction(onRestore, "Error al reactivar")} disabled={isBusy} className="btn btn--save btn-group">
+                    {restoreLabel}
                 </button>
             )}
         </div>

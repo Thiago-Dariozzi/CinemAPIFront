@@ -1002,3 +1002,18 @@ body {
   margin-top: 16px;
   color: var(--text-muted);
 }
+
+/* =========================================
+   SEARCH BAR (Clientes, Administradores)
+   ========================================= */
+.search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.search-bar__field {
+  flex: 1 1 240px;
+}

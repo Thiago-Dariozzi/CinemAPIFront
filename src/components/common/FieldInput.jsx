@@ -1,8 +1,9 @@
-const FieldInput = ({ field, value, touched, error, onChange, onBlur, optionsSources = {}, compact = false }) => {
+const FieldInput = ({ id, field, value, touched, error, onChange, onBlur, optionsSources = {}, compact = false }) => {
     if (field.type === "select") {
         const options = optionsSources[field.optionsFrom] ?? [];
         return (
             <select
+                id={id}
                 value={value}
                 onChange={(e) => onChange(field.key, e.target.value)}
                 onBlur={() => onBlur(field.key)}
@@ -20,21 +21,21 @@ const FieldInput = ({ field, value, touched, error, onChange, onBlur, optionsSou
 
     if (field.type === "checkbox") {
         return (
-            <div className="form-checkbox-row">
+            <label className="form-checkbox-row">
                 <input
                     type="checkbox"
-                    id={field.key}
                     checked={value}
                     onChange={(e) => onChange(field.key, e.target.checked)}
                     className="form-checkbox"
                 />
-                <label htmlFor={field.key}>{field.label}</label>
-            </div>
+                <span>{field.label}</span>
+            </label>
         );
     }
 
     return (
         <input
+            id={id}
             type={field.type}
             min={field.min}
             step={field.step}

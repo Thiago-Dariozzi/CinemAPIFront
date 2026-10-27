@@ -11,7 +11,7 @@ import Dashboard from './components/Movies/Dashboard'
 import GenreDashboard from './components/Genres/GenreDashboard'
 import ScreenDashboard from './components/Screens/ScreenDashboard'
 import UserDashboard from './components/Users/UserDashboard'
-import FeesPage from './pages/FeesPage'
+import FeeDashboard from './components/Fees/FeeDashboard'
 import SalesPage from './pages/SalesPage'
 import Profile from './pages/Profile'
 
@@ -45,7 +45,7 @@ const App = () => {
             path="administradores"
             element={<ProtectedRoute roles={[ROLES.superAdmin]}><UserDashboard key={ROLES.admin} role={ROLES.admin} /></ProtectedRoute>}
           />
-          <Route path="cargos" element={<ProtectedRoute roles={[ROLES.superAdmin]}><FeesPage /></ProtectedRoute>} />
+          <Route path="cargos" element={<ProtectedRoute roles={[ROLES.superAdmin]}><FeeDashboard /></ProtectedRoute>} />
           <Route path="perfil" element={<Profile />} />
         </Route>
 

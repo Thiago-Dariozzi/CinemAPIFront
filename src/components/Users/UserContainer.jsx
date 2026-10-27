@@ -1,34 +1,23 @@
-import { Row, Col, Spinner } from 'react-bootstrap';
+import EntityGrid from '../common/EntityGrid';
 import UserCard from './UserCard';
 
-const UserContainer = ({ isLoading, users, onDelete, onEdit }) => {
-
-    if (isLoading) {
-        return (
-            <div className="text-center my-4">
-                <Spinner animation="border" variant="warning" />
-            </div>
-        );
-    }
-
-    const usersMapped = users.map((user) => (
-        <Col md={6} lg={4} key={user.id}>
+const UserContainer = ({ users, onDelete, onEdit, onRestore }) => (
+    <EntityGrid
+        items={users}
+        renderItem={(user) => (
             <UserCard
+                key={user.id}
                 id={user.id}
                 name={user.name}
                 email={user.email}
                 role={user.role}
+                isActive={user.isActive}
                 onDelete={onDelete}
                 onEdit={onEdit}
+                onRestore={onRestore}
             />
-        </Col>
-    ));
-
-    return (
-        <Row>
-            {usersMapped}
-        </Row>
-    );
-};
+        )}
+    />
+);
 
 export default UserContainer;

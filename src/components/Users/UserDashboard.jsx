@@ -1,88 +1,53 @@
-import { useState, useEffect } from 'react';
-import { Container } from 'react-bootstrap';
-import { getAllUsers, addUser, updateUser, deleteUser } from '../../api/userApi';
+import { useCallback, useState } from 'react';
+import { getAllUsers, addUser, updateUser, deleteUser, reactivateUser } from '../../api/userApi';
 import { ROLES } from '../../auth/roles';
+import { useEntityCrud } from '../../hooks/useEntityCrud';
 import NewUser from './NewUser';
 import UserContainer from './UserContainer';
+import UserSearch from './UserSearch';
 
-const TITLES = {
-    [ROLES.client]: { page: "👥 Clientes", form: "Agregar Nuevo Cliente" },
-    [ROLES.admin]: { page: "🛡️ Administradores", form: "Agregar Nuevo Administrador" },
+const TEXTS = {
+    [ROLES.client]: { page: "👥 Clientes", form: "Agregar nuevo cliente", loading: "Cargando clientes...", empty: "No hay clientes" },
+    [ROLES.admin]: { page: "🛡️ Administradores", form: "Agregar nuevo administrador", loading: "Cargando administradores...", empty: "No hay administradores" },
 };
 
 const UserDashboard = ({ role }) => {
-    const [users, setUsers] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [search, setSearch] = useState("");
+    const fetchUsers = useCallback(() => getAllUsers(role, search), [role, search]);
+    const { list: users, loading, refreshing, error, success, handleAdd, handleUpdate, handleDelete, handleRestore } = useEntityCrud({
+        fetchAll: fetchUsers,
+        addFn: addUser,
+        updateFn: updateUser,
+        deleteFn: deleteUser,
+        restoreFn: reactivateUser,
+        messages: {
+            fetchError: "No se pudo conectar con el servidor. ¿Está corriendo el backend?",
+            addSuccess: "Usuario creado correctamente",
+            updateSuccess: "Usuario actualizado correctamente",
+            deleteSuccess: "Usuario dado de baja",
+            restoreSuccess: "Usuario reactivado",
+        },
+        silentMutationErrors: true,
+        softDelete: true,
+        reloadAfterMutation: true,
+    });
+    const texts = TEXTS[role];
 
-    useEffect(() => {
-        let ignore = false;
-
-        const loadUsers = async () => {
-            try {
-                const data = await getAllUsers(role);
-                if (ignore) return;
-                setUsers(data);
-                setIsLoading(false);
-            } catch (err) {
-                console.error(err);
-                if (ignore) return;
-                setError("No se pudo conectar con el servidor de usuarios. ¿Está corriendo el backend?");
-                setIsLoading(false);
-            }
-        };
-
-        loadUsers();
-        return () => { ignore = true; };
-    }, [role]);
-
-    const handleAddUser = async (user) => {
-        try {
-            const created = await addUser(user);
-            setUsers((prev) => [created, ...prev]);
-            setError(null);
-        } catch (err) {
-            console.error(err);
-            setError(err?.message || "Error al agregar el usuario");
-            throw err;
-        }
-    };
-
-    const handleDeleteUser = async (id) => {
-        try {
-            await deleteUser(id);
-            setUsers((prev) => prev.filter((user) => user.id !== id));
-            setError(null);
-        } catch (err) {
-            console.error(err);
-            setError(err?.message || "Error al eliminar el usuario");
-        }
-    };
-
-    const handleUpdateUser = async (id, user) => {
-        try {
-            const updated = await updateUser(id, user);
-            setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...updated } : u)));
-            setError(null);
-        } catch (err) {
-            console.error(err);
-            setError(err?.message || "Error al actualizar el usuario");
-            throw err;
-        }
-    };
+    if (loading) return <p className="msg-loading">{texts.loading}</p>;
 
     return (
-        <Container className="py-4">
-            <h1 className="accent-title mb-4">{TITLES[role].page}</h1>
-            {error && <p className="text-danger">{error}</p>}
-            <NewUser title={TITLES[role].form} role={role} onAddUser={handleAddUser} />
-            <UserContainer
-                isLoading={isLoading}
-                users={users}
-                onDelete={handleDeleteUser}
-                onEdit={handleUpdateUser}
-            />
-        </Container>
+        <main className="dashboard">
+            <h1 className="section-title">{texts.page}</h1>
+            {error && <p className="msg-error">{error}</p>}
+            {success && <p className="msg-success">{success}</p>}
+            <NewUser title={texts.form} role={role} onAddUser={handleAdd} />
+            <UserSearch search={search} onSearch={setSearch} />
+            {refreshing && <p className="msg-loading">Actualizando la lista...</p>}
+            {!refreshing && users.length === 0 && !error && (
+                <p className="msg-empty">{search ? `Nadie coincide con "${search}"` : texts.empty}</p>
+            )}
+            <UserContainer users={users} onDelete={handleDelete} onEdit={handleUpdate} onRestore={handleRestore} />
+        </main>
     );
 };
 
