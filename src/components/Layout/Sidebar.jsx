@@ -56,7 +56,7 @@ const Sidebar = () => {
             </nav>
 
             <div className="sidebar__footer">
-                <span className="sidebar__email">{session.name}</span>
+                <span className="sidebar__name">{session.name}</span>
                 <span className="sidebar__email">{session.email}</span>
                 <button className="sidebar__logout" onClick={logout}>
                     Cerrar sesión

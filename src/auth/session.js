@@ -1,5 +1,6 @@
 import { login as loginRequest, register as registerRequest } from '../api/authApi';
 import { configureHttpClient } from '../api/httpClient';
+import { ROLES } from './roles';
 
 const SESSION_KEY = "cinemapi_session";
 const listeners = new Set();
@@ -7,6 +8,9 @@ const listeners = new Set();
 let cachedRaw;
 let cachedSession = null;
 let expiredNotice = false;
+let expiryTimer;
+
+const KNOWN_ROLES = Object.values(ROLES);
 
 const readStorage = () => {
     try {
@@ -20,13 +24,24 @@ const parseSession = (raw) => {
     if (!raw) return null;
     try {
         const session = JSON.parse(raw);
-        return session?.token ? session : null;
+        return session?.token && KNOWN_ROLES.includes(session.role) ? session : null;
     } catch {
         return null;
     }
 };
 
 const notify = () => listeners.forEach((listener) => listener());
+
+const expireSession = () => {
+    expiredNotice = true;
+    logout();
+};
+
+const scheduleExpiry = () => {
+    clearTimeout(expiryTimer);
+    const session = getSession();
+    if (session) expiryTimer = setTimeout(expireSession, Math.max(new Date(session.expiresAt) - Date.now(), 0));
+};
 
 const writeSession = (session) => {
     try {
@@ -35,6 +50,7 @@ const writeSession = (session) => {
     } catch {
         // Storage blocked (private mode): the session cannot persist, listeners still update.
     }
+    scheduleExpiry();
     notify();
 };
 
@@ -82,8 +98,7 @@ export const isSessionExpiredNotice = () => expiredNotice;
 
 configureHttpClient({
     tokenProvider: () => getSession()?.token ?? null,
-    unauthorizedHandler: () => {
-        expiredNotice = true;
-        logout();
-    },
+    unauthorizedHandler: expireSession,
 });
+
+scheduleExpiry();

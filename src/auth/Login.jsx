@@ -21,6 +21,7 @@ const Login = () => {
                 <EntityForm
                     title="🎥 CinemAPI - Ingresar"
                     submitLabel="Ingresar"
+                    submittingLabel="Ingresando..."
                     fields={loginFields}
                     initialValues={initialForm}
                     onSubmit={login}

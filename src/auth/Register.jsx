@@ -18,6 +18,7 @@ const Register = () => {
                 <EntityForm
                     title="🎥 CinemAPI - Crear cuenta"
                     submitLabel="Registrarme"
+                    submittingLabel="Creando cuenta..."
                     fields={registerFields}
                     initialValues={initialForm}
                     onSubmit={register}

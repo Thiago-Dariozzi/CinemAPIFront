@@ -26,7 +26,7 @@ const groupFields = (fields) => {
     return rows;
 };
 
-const EntityForm = ({ title, submitLabel = "Guardar", fields, initialValues, optionsSources = {}, resetOnSuccess = true, onSubmit }) => {
+const EntityForm = ({ title, submitLabel = "Guardar", submittingLabel = submitLabel, fields, initialValues, optionsSources = {}, resetOnSuccess = true, onSubmit }) => {
     const [form, setForm] = useState(initialValues);
     const [touched, setTouched] = useState({});
     const [submitError, setSubmitError] = useState(null);
@@ -99,7 +99,7 @@ const EntityForm = ({ title, submitLabel = "Guardar", fields, initialValues, opt
                     disabled={!isFormValid || isSubmitting}
                     className={`btn btn--submit ${!isFormValid || isSubmitting ? 'btn--disabled' : ''}`}
                 >
-                    {submitLabel}
+                    {isSubmitting ? submittingLabel : submitLabel}
                 </button>
             </form>
         </div>
