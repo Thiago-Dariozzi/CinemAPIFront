@@ -31,7 +31,7 @@ src/
     Layout/     AppLayout + Sidebar (staff), PublicLayout (cartelera y cliente), LazyOutlet (Suspense + error boundary)
     routes/     Redirecciones de rutas viejas
   hooks/        Hooks reutilizables (useEntityCrud, useEntityList, useAsyncData, useSession, usePurchaseList, useSeatSelection)
-  pages/        Pantallas compuestas por rol (BillboardPage, MovieDetailPage, PurchasePage, MyPurchases, SalesPage, Profile)
+  pages/        Pantallas compuestas por rol (BillboardPage, MovieDetailPage, PurchasePage, MyPurchases, SalesPage, ReportsPage, Profile)
   utils/        Formato y cálculos sin estado (dates, money, seats, formatShowtime)
   auth/         Login, Register, ProtectedRoute, session, roles, authFields
   index.css     Estilos compartidos (clases BEM-like: .form-panel, .btn--primary, .entity-card...)
@@ -46,6 +46,7 @@ src/
 - Cartelera pública: `/cartelera` (`pages/BillboardPage`, filtros `?genero=&fecha=` en la URL) → `/cartelera/:movieId` (`pages/MovieDetailPage`, horarios por día con butacas libres; "Comprar" sin sesión va al login con `state.from` y vuelve). Componentes en `components/Billboard/`, estados con `components/common/LoadState`, fechas con `utils/dates.js`.
 - Compra de entradas: `/cartelera/:movieId` → `/panel/funciones/:showtimeId/comprar` (`SeatMap` + `PurchaseSummary`, máximo 10 butacas) → `/panel/mis-entradas`. El staff ve y cancela todas en `/admin/ventas`. Las butacas se muestran como fila en letra + número (`utils/seats.js`); el subtotal + cargo se calcula igual que el backend (`utils/money.js`), pero el importe que vale es el que devuelve la compra. Los errores de la API llevan `status` (`err.status === 409`: butaca tomada → se recarga el mapa).
 - Usuarios y cargos: Clientes (`/admin/clientes`, staff) y Administradores (`/admin/administradores`, SuperAdmin) usan `Users/UserDashboard` con búsqueda por nombre o email, baja lógica y reactivación (la lista incluye a los dados de baja). Cargos (`/admin/cargos`, SuperAdmin) usa `Fees/FeeDashboard`; marcar uno como vigente desmarca al anterior, por eso la lista se recarga después de cada cambio.
+- Reportes (`/admin/reportes`, staff): `pages/ReportsPage` con rango de fechas (atajos y validación de 366 días como el back), tarjetas de totales y tablas por película y por función (`components/Reports/`, `Table` y `ProgressBar` de react-bootstrap; sin librerías de gráficos). Todo lo suma el backend: el front solo muestra.
 - No migrar a TypeScript ni agregar librerías (TanStack Query, Redux, Tailwind, etc.) sin pedido explícito.
 
 ## Definition of Done

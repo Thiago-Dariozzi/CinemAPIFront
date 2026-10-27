@@ -20,6 +20,7 @@ const ScreenDashboard = lazy(() => import('./components/Screens/ScreenDashboard'
 const UserDashboard = lazy(() => import('./components/Users/UserDashboard'))
 const FeeDashboard = lazy(() => import('./components/Fees/FeeDashboard'))
 const SalesPage = lazy(() => import('./pages/SalesPage'))
+const ReportsPage = lazy(() => import('./pages/ReportsPage'))
 const Profile = lazy(() => import('./pages/Profile'))
 
 // User pages
@@ -50,6 +51,7 @@ const App = () => {
           <Route path="generos" element={<GenreDashboard />} />
           <Route path="salas" element={<ScreenDashboard />} />
           <Route path="ventas" element={<SalesPage />} />
+          <Route path="reportes" element={<ReportsPage />} />
           <Route path="clientes" element={<UserDashboard key={ROLES.client} role={ROLES.client} />} />
           <Route
             path="administradores"

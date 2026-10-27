@@ -8,6 +8,7 @@ const staffItems = [
     { path: '/admin/generos', label: 'Géneros', icon: '🎭' },
     { path: '/admin/salas', label: 'Salas', icon: '🏛️' },
     { path: '/admin/ventas', label: 'Ventas', icon: '💰' },
+    { path: '/admin/reportes', label: 'Reportes', icon: '📊' },
     { path: '/admin/clientes', label: 'Clientes', icon: '👥' },
 ];
 
