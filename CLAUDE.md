@@ -16,6 +16,7 @@ Las reglas detalladas viven en `.claude/skills/` y se cargan cuando el tema lo r
 | Componentes genéricos | `EntityForm`, `EntityCard`, `EntityGrid`, `FieldInput`, `FieldBody` en `src/components/common` |
 | Sesión | JWT del backend (`POST /api/auth/login`). `src/auth/session.js` guarda `{ token, expiresAt, userId, name, email, role }` en `localStorage` y avisa a los suscriptores; los componentes la leen con `useSession()`. Ante un 401 la sesión se cierra y `ProtectedRoute` manda al login |
 | Lint | ESLint 10 (`eslint.config.js`, reglas de `react-hooks` y `react-refresh`) |
+| Tests | Vitest + Testing Library + jsdom (`vite.config.js` → `test`, setup en `src/test/setup.js`). Archivos `*.test.jsx` al lado del código; `describe/it/expect/vi` se importan de `vitest` (sin globales) |
 | Backend | `http://localhost:5288/api` en desarrollo (`.env.development`) |
 | `CinemapiPhone/` | App móvil Expo separada, con su propio `AGENTS.md`. **No aplicar estas reglas ahí** ni tocarla salvo pedido explícito |
 
@@ -54,7 +55,7 @@ src/
 ```bash
 npm run lint      # sin errores ni warnings nuevos
 npm run build
-npm run test      # cuando exista Vitest
+npm run test      # Vitest + Testing Library (jsdom), una sola corrida
 ```
 
 Y probar manualmente el flujo tocado con `npm run dev` contra el backend si está disponible.

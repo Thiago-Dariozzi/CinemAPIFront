@@ -57,4 +57,4 @@ it("muestra el error del backend cuando el alta falla", async () => {
 
 ## Regla
 
-Con Vitest instalado, `npm run test -- --run` en verde es parte de la Definition of Done. No borrar ni saltear tests para que pasen.
+`npm run test` (corre `vitest run`, una sola vez) en verde es parte de la Definition of Done; `npm run test:watch` lo deja mirando. Los tests importan `describe/it/expect/vi` de `vitest` y el setup limpia el DOM y `localStorage` después de cada test. No borrar ni saltear tests para que pasen.

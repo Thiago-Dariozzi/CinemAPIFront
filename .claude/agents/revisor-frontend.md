@@ -26,7 +26,7 @@ Sos el revisor de código del front web de CinemAPI. No escribiste el cambio: re
 ## Qué hacer
 
 1. Corregir directamente lo que esté mal **dentro de los archivos del diff** sin cambiar comportamiento visible.
-2. Correr `npm run lint` y `npm run build` (y `npm run test -- --run` si existe); arreglar lo que falle por tus correcciones.
+2. Correr `npm run lint`, `npm run build` y `npm run test`; arreglar lo que falle por tus correcciones.
 3. No tocar archivos fuera del diff: reportarlos.
 
 ## Salida (breve)

@@ -4,7 +4,7 @@ Front web del sistema de gestión de cines: cartelera pública, compra de entrad
 
 ## Requisitos y arranque
 
-- Node.js 20 o superior.
+- Node.js 20.19 o superior (lo pide Vite 8).
 - La API corriendo en `http://localhost:5288` (ver el README de `CinemAPI`). La URL se configura en `.env.development` (`VITE_API_URL`).
 
 ```bash
@@ -71,5 +71,16 @@ Decisiones principales (detalle en `CLAUDE.md`):
 | `npm run dev` | Servidor de desarrollo |
 | `npm run lint` | ESLint (reglas de hooks y de React Refresh) |
 | `npm run build` | Build de producción en `dist/` |
+| `npm run test` | Tests con Vitest + Testing Library (jsdom), una corrida |
+| `npm run test:watch` | Los mismos tests, mirando cambios |
+
+Qué cubren los tests:
+
+| Archivo | Qué verifica |
+|---|---|
+| `src/auth/Login.test.jsx` | Login con credenciales incorrectas muestra el mensaje del backend y no guarda sesión; email inválido no llama a la API; servidor caído da un error claro |
+| `src/auth/ProtectedRoute.test.jsx` | Sin sesión manda al login recordando la ruta; cada rol entra solo a lo suyo (cliente, Admin, SuperAdmin); una sesión vencida cuenta como sin sesión |
+| `src/components/Purchases/SeatMap.test.jsx` | Butacas ocupadas deshabilitadas, marcar y desmarcar, máximo 10 (bloquea el resto y deja desmarcar), una butaca que se vende mientras se elige deja de contar |
+| `src/components/Purchases/PurchaseSummary.test.jsx` | Cálculo de subtotal + cargo (porcentaje, monto fijo por compra, redondeo como el back, sin cargo) y lo que muestra el resumen |
 
 `CinemapiPhone/` es una app móvil Expo separada, con sus propias reglas: el lint de este proyecto la ignora.
