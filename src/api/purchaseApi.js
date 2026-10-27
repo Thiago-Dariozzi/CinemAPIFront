@@ -21,5 +21,8 @@ export const getMyPurchases = () => request("/purchase/mine", { errorMessage: "E
 export const getPurchases = (filters = {}) =>
     request(`/purchase${toQueryString(filters)}`, { errorMessage: "Error al obtener las ventas" });
 
+export const cancelMyPurchase = (id) =>
+    request(`/purchase/mine/${id}/cancel`, { method: "POST", errorMessage: "No se pudo cancelar la compra" });
+
 export const cancelPurchase = (id) =>
     request(`/purchase/${id}/cancel`, { method: "POST", errorMessage: "No se pudo cancelar la compra" });

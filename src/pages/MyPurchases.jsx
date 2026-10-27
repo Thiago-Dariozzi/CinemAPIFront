@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getMyPurchases } from '../api/purchaseApi';
+import { cancelMyPurchase, getMyPurchases } from '../api/purchaseApi';
 import { usePurchaseList } from '../hooks/usePurchaseList';
 import PurchaseList from '../components/Purchases/PurchaseList';
 
@@ -9,7 +9,7 @@ const CANCEL_HINT = "Ya no se puede cancelar: faltan 2 horas o menos para la fun
 const MyPurchases = () => {
     const location = useLocation();
     const [now] = useState(() => Date.now());
-    const { purchases, loading, error, cancel } = usePurchaseList(getMyPurchases, "No se pudieron cargar tus compras.");
+    const { purchases, loading, error, cancel } = usePurchaseList(getMyPurchases, cancelMyPurchase, "No se pudieron cargar tus compras.");
 
     if (loading) return <p className="msg-loading">Cargando tus entradas...</p>;
     if (error) return <p className="msg-error">{error}</p>;

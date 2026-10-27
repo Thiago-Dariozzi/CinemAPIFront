@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { getAllMovies } from '../api/movieApi';
 import { getShowtimesByMovie } from '../api/showtimeApi';
-import { getPurchases } from '../api/purchaseApi';
+import { cancelPurchase, getPurchases } from '../api/purchaseApi';
 import { useEntityList } from '../hooks/useEntityList';
 import { usePurchaseList } from '../hooks/usePurchaseList';
 import { formatMoney } from '../utils/money';
@@ -21,7 +21,7 @@ const SalesPage = () => {
     );
     const showtimes = useEntityList(fetchShowtimes);
     const fetchPurchases = useCallback(() => getPurchases(filters), [filters]);
-    const { purchases, loading, error, cancel } = usePurchaseList(fetchPurchases, "No se pudieron cargar las ventas.");
+    const { purchases, loading, error, cancel } = usePurchaseList(fetchPurchases, cancelPurchase, "No se pudieron cargar las ventas.");
 
     const handleChange = (key, value) => setFilters((prev) => ({
         ...prev,
