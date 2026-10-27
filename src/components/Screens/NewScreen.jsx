@@ -1,7 +1,7 @@
 import EntityForm from '../common/EntityForm';
 import { screenFields } from './screenFields';
 
-const initialForm = { name: "", capacity: 0 };
+const initialForm = { name: "", rows: 10, seatsPerRow: 12 };
 
 const NewScreen = ({ onAddScreen }) => (
     <EntityForm

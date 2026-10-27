@@ -1,7 +1,7 @@
 import EntityGrid from '../common/EntityGrid';
 import MovieCard from './MovieCard';
 
-const MovieContainer = ({ movies, genres = [], onDeleteMovie, onEditMovie }) => (
+const MovieContainer = ({ movies, genres = [], detailPathFor, onDeleteMovie, onEditMovie }) => (
     <EntityGrid
         items={movies}
         className="movies-grid"
@@ -18,6 +18,7 @@ const MovieContainer = ({ movies, genres = [], onDeleteMovie, onEditMovie }) => 
                 releaseDate={movie.releaseDate}
                 suggestedPrice={movie.suggestedPrice}
                 isShowing={movie.isShowing}
+                detailPath={detailPathFor?.(movie.id)}
                 onDelete={onDeleteMovie}
                 onEdit={onEditMovie}
             />

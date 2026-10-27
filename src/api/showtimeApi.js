@@ -38,3 +38,12 @@ export const addShowtime = async (showtime) => {
 
 export const deleteShowtime = (id) =>
     request(`/showtime/${id}`, { method: "DELETE", errorMessage: "Error al eliminar la función" });
+
+export const getUpcomingShowtimes = async (movieId) => {
+    const query = movieId ? `?movieId=${encodeURIComponent(movieId)}` : "";
+    const data = await request(`/showtime/upcoming${query}`, { errorMessage: "Error al obtener las próximas funciones" });
+    return data.map(mapShowtimeFromBackend);
+};
+
+export const getSeatMap = (showtimeId) =>
+    request(`/showtime/${showtimeId}/seats`, { errorMessage: "Error al obtener el mapa de butacas" });

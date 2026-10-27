@@ -1,10 +1,10 @@
 import EntityCard from '../common/EntityCard';
 import { screenFields, screenConfirmDeleteMessage, renderScreenView } from './screenFields';
 
-const ScreenCard = ({ id, name, capacity, isActive, onDelete, onEdit }) => (
+const ScreenCard = ({ id, name, rows, seatsPerRow, isActive, onDelete, onEdit }) => (
     <EntityCard
         id={id}
-        values={{ name, capacity }}
+        values={{ name, rows, seatsPerRow }}
         fields={screenFields}
         payloadExtra={{ isActive }}
         viewExtra={{ isActive }}

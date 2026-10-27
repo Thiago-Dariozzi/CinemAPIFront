@@ -27,6 +27,10 @@ export const request = async (path, { method = "GET", body, errorMessage = "Erro
         throw new Error(errorMessage, { cause: networkError });
     }
     if (response.status === 401 && !anonymous) onUnauthorized();
-    if (!response.ok) throw new Error(await readApiError(response, errorMessage));
+    if (!response.ok) {
+        const error = new Error(await readApiError(response, errorMessage));
+        error.status = response.status;
+        throw error;
+    }
     return response.status === 204 ? null : response.json();
 };

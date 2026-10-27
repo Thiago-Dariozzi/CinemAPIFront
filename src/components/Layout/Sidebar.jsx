@@ -7,7 +7,7 @@ const staffItems = [
     { path: '/admin/peliculas', label: 'Películas', icon: '🎬' },
     { path: '/admin/generos', label: 'Géneros', icon: '🎭' },
     { path: '/admin/salas', label: 'Salas', icon: '🏛️' },
-    { path: '/admin/tickets', label: 'Tickets', icon: '🎟️' },
+    { path: '/admin/ventas', label: 'Ventas', icon: '💰' },
     { path: '/admin/clientes', label: 'Clientes', icon: '👥' },
 ];
 
@@ -18,7 +18,7 @@ const superAdminItems = [
 
 const clientItems = [
     { path: '/panel/cartelera', label: 'Cartelera', icon: '🎬' },
-    { path: '/panel/mis-tickets', label: 'Mis Tickets', icon: '🎟️' },
+    { path: '/panel/mis-entradas', label: 'Mis entradas', icon: '🎟️' },
 ];
 
 const profileItem = (basePath) => ({ path: `${basePath}/perfil`, label: 'Mi perfil', icon: '👤' });

@@ -5,7 +5,7 @@ import { getAllGenres } from '../../api/genreApi';
 import NewMovie from './NewMovie';
 import MovieContainer from './MovieContainer';
 
-const Dashboard = ({ readOnly = false, fetchAll = getAllMovies }) => {
+const Dashboard = ({ readOnly = false, fetchAll = getAllMovies, detailPathFor }) => {
     const { list: movies, loading, error, success, handleAdd, handleUpdate, handleDelete } = useEntityCrud({
         fetchAll,
         addFn: addMovie,
@@ -31,6 +31,7 @@ const Dashboard = ({ readOnly = false, fetchAll = getAllMovies }) => {
             <MovieContainer
                 movies={movies}
                 genres={genres}
+                detailPathFor={detailPathFor}
                 onDeleteMovie={readOnly ? undefined : handleDelete}
                 onEditMovie={readOnly ? undefined : handleUpdate}
             />

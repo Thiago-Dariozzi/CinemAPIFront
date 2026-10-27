@@ -10,14 +10,16 @@ import AppLayout from './components/Layout/AppLayout'
 import Dashboard from './components/Movies/Dashboard'
 import GenreDashboard from './components/Genres/GenreDashboard'
 import ScreenDashboard from './components/Screens/ScreenDashboard'
-import TicketDashboard from './components/Tickets/TicketDashboard'
 import UserDashboard from './components/Users/UserDashboard'
 import FeesPage from './pages/FeesPage'
+import SalesPage from './pages/SalesPage'
 import Profile from './pages/Profile'
 
 // User pages
 import UserCartelera from './pages/UserCartelera'
-import UserTickets from './pages/UserTickets'
+import MovieShowtimesPage from './pages/MovieShowtimesPage'
+import PurchasePage from './pages/PurchasePage'
+import MyPurchases from './pages/MyPurchases'
 
 const HomeRedirect = () => {
   const session = useSession()
@@ -37,7 +39,7 @@ const App = () => {
           <Route path="peliculas" element={<Dashboard />} />
           <Route path="generos" element={<GenreDashboard />} />
           <Route path="salas" element={<ScreenDashboard />} />
-          <Route path="tickets" element={<TicketDashboard />} />
+          <Route path="ventas" element={<SalesPage />} />
           <Route path="clientes" element={<UserDashboard key={ROLES.client} role={ROLES.client} />} />
           <Route
             path="administradores"
@@ -51,7 +53,9 @@ const App = () => {
         <Route path="/panel" element={<ProtectedRoute roles={[ROLES.client]}><AppLayout /></ProtectedRoute>}>
           <Route index element={<Navigate to="cartelera" replace />} />
           <Route path="cartelera" element={<UserCartelera />} />
-          <Route path="mis-tickets" element={<UserTickets />} />
+          <Route path="peliculas/:movieId" element={<MovieShowtimesPage />} />
+          <Route path="funciones/:showtimeId/comprar" element={<PurchasePage />} />
+          <Route path="mis-entradas" element={<MyPurchases />} />
           <Route path="perfil" element={<Profile />} />
         </Route>
 

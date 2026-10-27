@@ -9,7 +9,8 @@ const ScreenContainer = ({ screens, onDeleteScreen, onEditScreen }) => (
                 key={screen.id}
                 id={screen.id}
                 name={screen.name}
-                capacity={screen.capacity}
+                rows={screen.rows}
+                seatsPerRow={screen.seatsPerRow}
                 isActive={screen.isActive}
                 onDelete={onDeleteScreen}
                 onEdit={onEditScreen}
