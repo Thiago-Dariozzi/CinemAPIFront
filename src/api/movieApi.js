@@ -15,7 +15,16 @@ export const getAllMovies = () => request("/movie", { errorMessage: "Error al ob
 
 export const getMovieById = (id) => request(`/movie/${id}`, { errorMessage: "Error al obtener la película" });
 
-export const getActiveMovies = () => request("/movie/active", { errorMessage: "Error al obtener películas activas" });
+export const getActiveMovies = ({ genreId = "", date = "" } = {}) => {
+    const params = new URLSearchParams();
+    if (genreId) params.append("genreId", genreId);
+    if (date) params.append("date", date);
+    const query = params.toString() ? `?${params}` : "";
+    return request(`/movie/active${query}`, { errorMessage: "Error al obtener la cartelera" });
+};
+
+export const getMovieSchedule = (id) =>
+    request(`/movie/${id}/showtimes`, { errorMessage: "Error al obtener los horarios de la película" });
 
 export const addMovie = (movie) =>
     request("/movie", { method: "POST", body: mapMovieToBackend(movie), errorMessage: "Error al crear la película" });

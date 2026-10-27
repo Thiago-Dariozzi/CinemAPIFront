@@ -10,7 +10,7 @@ Las reglas detalladas viven en `.claude/skills/` y se cargan cuando el tema lo r
 | Lenguaje | **JavaScript** (`.js` / `.jsx`), ES modules. No TypeScript |
 | Framework | React 19 + Vite |
 | UI | `react-bootstrap` + Bootstrap 5 + clases propias en `src/index.css` |
-| Ruteo | `react-router-dom` 7 (`BrowserRouter` en `App.jsx`; rutas `/admin/*` y `/panel/*`) |
+| Ruteo | `react-router-dom` 7 (`BrowserRouter` en `App.jsx`; `/cartelera` y `/cartelera/:movieId` públicas, `/admin/*` solo staff y `/panel/*` solo clientes; las pantallas que no son públicas se cargan con `React.lazy` dentro de `LazyOutlet`) |
 | Fechas | `date-fns`, `react-datepicker` |
 | Datos | `request()` de `src/api/httpClient.js` (URL en `VITE_API_URL`, header `Authorization`, errores ProblemDetails con `readApiError`) usado por `src/api/<entidad>Api.js`; hooks `useEntityCrud`, `useEntityList` y `useSession` en `src/hooks`; `useAsyncData` para una carga con error y `reload` |
 | Componentes genéricos | `EntityForm`, `EntityCard`, `EntityGrid`, `FieldInput`, `FieldBody` en `src/components/common` |
@@ -27,9 +27,12 @@ src/
   components/
     common/     Componentes genéricos reutilizables (EntityForm, EntityCard, EntityGrid...)
     <Entidad>/  Dashboard, Card, Container, New<Entidad>, <entidad>Fields
-    Layout/     AppLayout, Sidebar
+    Billboard/  Cartelera pública (PosterCard, MoviePoster, BillboardFilters, ShowtimeSchedule)
+    Layout/     AppLayout + Sidebar (staff), PublicLayout (cartelera y cliente), LazyOutlet (Suspense + error boundary)
+    routes/     Redirecciones de rutas viejas
   hooks/        Hooks reutilizables (useEntityCrud, useEntityList, useAsyncData, useSession, usePurchaseList, useSeatSelection)
-  pages/        Pantallas compuestas por rol (UserCartelera, MovieShowtimesPage, PurchasePage, MyPurchases, SalesPage, Profile)
+  pages/        Pantallas compuestas por rol (BillboardPage, MovieDetailPage, PurchasePage, MyPurchases, SalesPage, Profile)
+  utils/        Formato y cálculos sin estado (dates, money, seats, formatShowtime)
   auth/         Login, Register, ProtectedRoute, session, roles, authFields
   index.css     Estilos compartidos (clases BEM-like: .form-panel, .btn--primary, .entity-card...)
 ```
@@ -39,8 +42,9 @@ src/
 - **API separada de componentes**: los componentes nunca llaman a `fetch`.
 - **Reutilizar los genéricos**: una entidad nueva usa `EntityForm` + `EntityCard` + `EntityGrid` + `useEntityCrud` con un archivo de configuración de campos, en lugar de copiar componentes.
 - Identificadores en inglés; textos visibles para el usuario en español.
-- Autenticación y roles: `SuperAdmin`, `Admin` y `Client` (`src/auth/roles.js`). Rutas `/admin/*` para staff (Administradores y Cargos solo SuperAdmin) y `/panel/*` solo clientes, con `ProtectedRoute roles={[...]}`; el Sidebar arma el menú por rol. La capa `api/` no lee `localStorage`: `session.js` le inyecta el token con `configureHttpClient`. Login, Registro y Perfil usan `EntityForm`.
-- Compra de entradas: cartelera → `/panel/peliculas/:movieId` (funciones próximas) → `/panel/funciones/:showtimeId/comprar` (`SeatMap` + `PurchaseSummary`, máximo 10 butacas) → `/panel/mis-entradas`. El staff ve y cancela todas en `/admin/ventas`. Las butacas se muestran como fila en letra + número (`utils/seats.js`); el subtotal + cargo se calcula igual que el backend (`utils/money.js`), pero el importe que vale es el que devuelve la compra. Los errores de la API llevan `status` (`err.status === 409`: butaca tomada → se recarga el mapa).
+- Autenticación y roles: `SuperAdmin`, `Admin` y `Client` (`src/auth/roles.js`). Rutas `/admin/*` para staff (Administradores y Cargos solo SuperAdmin) y `/panel/*` solo clientes, con `ProtectedRoute roles={[...]}` (sin sesión manda al login con `state.from` y `pathAfterLogin` vuelve ahí si el rol puede). El staff usa `AppLayout` con el Sidebar; la cartelera y el área del cliente usan `PublicLayout` (Navbar de react-bootstrap que se colapsa en celular). La capa `api/` no lee `localStorage`: `session.js` le inyecta el token con `configureHttpClient`. Login, Registro y Perfil usan `EntityForm`.
+- Cartelera pública: `/cartelera` (`pages/BillboardPage`, filtros `?genero=&fecha=` en la URL) → `/cartelera/:movieId` (`pages/MovieDetailPage`, horarios por día con butacas libres; "Comprar" sin sesión va al login con `state.from` y vuelve). Componentes en `components/Billboard/`, estados con `components/common/LoadState`, fechas con `utils/dates.js`.
+- Compra de entradas: `/cartelera/:movieId` → `/panel/funciones/:showtimeId/comprar` (`SeatMap` + `PurchaseSummary`, máximo 10 butacas) → `/panel/mis-entradas`. El staff ve y cancela todas en `/admin/ventas`. Las butacas se muestran como fila en letra + número (`utils/seats.js`); el subtotal + cargo se calcula igual que el backend (`utils/money.js`), pero el importe que vale es el que devuelve la compra. Los errores de la API llevan `status` (`err.status === 409`: butaca tomada → se recarga el mapa).
 - Usuarios y cargos: Clientes (`/admin/clientes`, staff) y Administradores (`/admin/administradores`, SuperAdmin) usan `Users/UserDashboard` con búsqueda por nombre o email, baja lógica y reactivación (la lista incluye a los dados de baja). Cargos (`/admin/cargos`, SuperAdmin) usa `Fees/FeeDashboard`; marcar uno como vigente desmarca al anterior, por eso la lista se recarga después de cada cambio.
 - No migrar a TypeScript ni agregar librerías (TanStack Query, Redux, Tailwind, etc.) sin pedido explícito.
 

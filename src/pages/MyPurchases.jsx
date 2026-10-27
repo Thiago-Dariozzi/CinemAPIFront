@@ -20,14 +20,14 @@ const MyPurchases = () => {
     const justPurchased = location.state?.purchasedId && purchases.some((p) => p.id === location.state.purchasedId);
 
     return (
-        <main className="dashboard">
+        <section className="dashboard">
             <h1 className="section-title">🎟️ Mis entradas</h1>
             {justPurchased && <p className="msg-success">¡Compra confirmada! Tus entradas están en "Próximas".</p>}
 
             <h2 className="purchase-section__title">Próximas</h2>
             {upcoming.length === 0 ? (
                 <p className="msg-empty">
-                    No tenés entradas para funciones próximas. <Link to="/panel/cartelera">Ver la cartelera</Link>
+                    No tenés entradas para funciones próximas. <Link to="/cartelera">Ver la cartelera</Link>
                 </p>
             ) : (
                 <PurchaseList purchases={upcoming} cancelHint={CANCEL_HINT} onCancel={cancel} />
@@ -37,7 +37,7 @@ const MyPurchases = () => {
             {past.length === 0
                 ? <p className="msg-empty">Todavía no fuiste a ninguna función.</p>
                 : <PurchaseList purchases={past} />}
-        </main>
+        </section>
     );
 };
 

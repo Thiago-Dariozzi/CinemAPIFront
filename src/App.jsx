@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './auth/Login'
 import Register from './auth/Register'
@@ -5,25 +6,29 @@ import ProtectedRoute from './auth/ProtectedRoute'
 import { ROLES, STAFF_ROLES, homePathFor } from './auth/roles'
 import { useSession } from './hooks/useSession'
 import AppLayout from './components/Layout/AppLayout'
+import PublicLayout from './components/Layout/PublicLayout'
+import LegacyMovieRedirect from './components/routes/LegacyMovieRedirect'
+
+import BillboardPage from './pages/BillboardPage'
+import MovieDetailPage from './pages/MovieDetailPage'
 
 // Admin pages (cada dashboard existente)
-import Dashboard from './components/Movies/Dashboard'
-import GenreDashboard from './components/Genres/GenreDashboard'
-import ScreenDashboard from './components/Screens/ScreenDashboard'
-import UserDashboard from './components/Users/UserDashboard'
-import FeeDashboard from './components/Fees/FeeDashboard'
-import SalesPage from './pages/SalesPage'
-import Profile from './pages/Profile'
+// Loaded on demand so the public billboard ships a small bundle.
+const Dashboard = lazy(() => import('./components/Movies/Dashboard'))
+const GenreDashboard = lazy(() => import('./components/Genres/GenreDashboard'))
+const ScreenDashboard = lazy(() => import('./components/Screens/ScreenDashboard'))
+const UserDashboard = lazy(() => import('./components/Users/UserDashboard'))
+const FeeDashboard = lazy(() => import('./components/Fees/FeeDashboard'))
+const SalesPage = lazy(() => import('./pages/SalesPage'))
+const Profile = lazy(() => import('./pages/Profile'))
 
 // User pages
-import UserCartelera from './pages/UserCartelera'
-import MovieShowtimesPage from './pages/MovieShowtimesPage'
-import PurchasePage from './pages/PurchasePage'
-import MyPurchases from './pages/MyPurchases'
+const PurchasePage = lazy(() => import('./pages/PurchasePage'))
+const MyPurchases = lazy(() => import('./pages/MyPurchases'))
 
 const HomeRedirect = () => {
   const session = useSession()
-  return <Navigate to={session ? homePathFor(session.role) : "/login"} replace />
+  return <Navigate to={session ? homePathFor(session.role) : "/cartelera"} replace />
 }
 
 const App = () => {
@@ -32,6 +37,11 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Register />} />
+
+        <Route element={<PublicLayout />}>
+          <Route path="/cartelera" element={<BillboardPage />} />
+          <Route path="/cartelera/:movieId" element={<MovieDetailPage />} />
+        </Route>
 
         {/* Rutas Admin */}
         <Route path="/admin" element={<ProtectedRoute roles={STAFF_ROLES}><AppLayout /></ProtectedRoute>}>
@@ -50,10 +60,10 @@ const App = () => {
         </Route>
 
         {/* Rutas Usuario */}
-        <Route path="/panel" element={<ProtectedRoute roles={[ROLES.client]}><AppLayout /></ProtectedRoute>}>
-          <Route index element={<Navigate to="cartelera" replace />} />
-          <Route path="cartelera" element={<UserCartelera />} />
-          <Route path="peliculas/:movieId" element={<MovieShowtimesPage />} />
+        <Route path="/panel" element={<ProtectedRoute roles={[ROLES.client]}><PublicLayout /></ProtectedRoute>}>
+          <Route index element={<Navigate to="/cartelera" replace />} />
+          <Route path="cartelera" element={<Navigate to="/cartelera" replace />} />
+          <Route path="peliculas/:movieId" element={<LegacyMovieRedirect />} />
           <Route path="funciones/:showtimeId/comprar" element={<PurchasePage />} />
           <Route path="mis-entradas" element={<MyPurchases />} />
           <Route path="perfil" element={<Profile />} />

@@ -39,8 +39,8 @@ const PurchaseView = ({ showtimeId }) => {
     if (!map) return <p className="msg-error">{seatMap.error}</p>;
 
     return (
-        <main className="dashboard">
-            <Link to={`/panel/peliculas/${map.movieId}`} className="back-link">← Volver a las funciones</Link>
+        <section className="dashboard">
+            <Link to={`/cartelera/${map.movieId}`} className="back-link">← Volver a las funciones</Link>
             <h1 className="section-title">🎟️ {map.movieTitle}</h1>
             <p className="functions-muted">{formatShowtime(map.startTime)} · {map.screenName}</p>
 
@@ -69,7 +69,7 @@ const PurchaseView = ({ showtimeId }) => {
                     onConfirm={handleConfirm}
                 />
             </div>
-        </main>
+        </section>
     );
 };
 

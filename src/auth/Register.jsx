@@ -1,16 +1,17 @@
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import EntityForm from '../components/common/EntityForm';
 import { useSession } from '../hooks/useSession';
 import { registerFields } from './authFields';
-import { homePathFor } from './roles';
+import { pathAfterLogin } from './roles';
 import { register } from './session';
 
 const initialForm = { name: "", email: "", password: "", confirmPassword: "" };
 
 const Register = () => {
     const session = useSession();
+    const location = useLocation();
 
-    if (session) return <Navigate to={homePathFor(session.role)} replace />;
+    if (session) return <Navigate to={pathAfterLogin(session.role, location.state?.from)} replace />;
 
     return (
         <main className="auth-page">
@@ -24,7 +25,10 @@ const Register = () => {
                     onSubmit={register}
                 />
                 <p className="auth-page__footer">
-                    ¿Ya tenés cuenta? <Link to="/login">Ingresá</Link>
+                    ¿Ya tenés cuenta? <Link to="/login" state={location.state}>Ingresá</Link>
+                </p>
+                <p className="auth-page__footer">
+                    <Link to="/cartelera">← Volver a la cartelera</Link>
                 </p>
             </div>
         </main>

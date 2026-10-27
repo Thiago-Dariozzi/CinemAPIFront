@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import MovieFunctionsPanel from '../Showtimes/MovieFunctionsPanel';
 
 const MovieCard = ({
@@ -13,7 +12,6 @@ const MovieCard = ({
     releaseDate,
     suggestedPrice,
     isShowing,
-    detailPath,
     onDelete,
     onEdit
 }) => {
@@ -148,12 +146,6 @@ const MovieCard = ({
                 </div>
 
                 {deleteError && <p className="msg-inline-error--sm">{deleteError}</p>}
-
-                {detailPath && isShowing && (
-                    <Link to={detailPath} className="btn btn--primary btn-group">
-                        Ver funciones y comprar
-                    </Link>
-                )}
 
                 {onEdit && (
                     <button

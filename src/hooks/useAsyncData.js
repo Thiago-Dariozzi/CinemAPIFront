@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 
 export const useAsyncData = (fetchFn, errorMessage = "No se pudieron cargar los datos.") => {
-    const [state, setState] = useState({ data: null, error: null, source: null });
+    const [state, setState] = useState({ data: null, error: null, errorStatus: null, source: null });
     const [version, setVersion] = useState(0);
 
     useEffect(() => {
         let ignore = false;
         fetchFn()
             .then((data) => {
-                if (!ignore) setState({ data, error: null, source: fetchFn });
+                if (!ignore) setState({ data, error: null, errorStatus: null, source: fetchFn });
             })
             .catch((err) => {
                 if (ignore) return;
@@ -16,6 +16,7 @@ export const useAsyncData = (fetchFn, errorMessage = "No se pudieron cargar los 
                 setState((prev) => ({
                     data: prev.source === fetchFn ? prev.data : null,
                     error: err?.message || errorMessage,
+                    errorStatus: err?.status ?? null,
                     source: fetchFn,
                 }));
             });
@@ -34,6 +35,7 @@ export const useAsyncData = (fetchFn, errorMessage = "No se pudieron cargar los 
     return {
         data: loading ? null : state.data,
         error: loading ? null : state.error,
+        errorStatus: loading ? null : state.errorStatus,
         loading,
         reload,
         setData,

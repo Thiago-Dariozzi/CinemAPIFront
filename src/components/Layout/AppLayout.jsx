@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import LazyOutlet from './LazyOutlet';
 import Sidebar from './Sidebar';
 
 const AppLayout = () => {
@@ -6,7 +6,7 @@ const AppLayout = () => {
         <div className="app-layout">
             <Sidebar />
             <main className="app-layout__content">
-                <Outlet />
+                <LazyOutlet />
             </main>
         </div>
     );

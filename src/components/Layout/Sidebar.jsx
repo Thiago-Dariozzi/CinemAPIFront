@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { logout } from '../../auth/session';
-import { ROLES, ROLE_LABELS, isStaff } from '../../auth/roles';
+import { ROLES, ROLE_LABELS } from '../../auth/roles';
 import { useSession } from '../../hooks/useSession';
 
 const staffItems = [
@@ -16,18 +16,14 @@ const superAdminItems = [
     { path: '/admin/cargos', label: 'Cargos', icon: '🧾' },
 ];
 
-const clientItems = [
-    { path: '/panel/cartelera', label: 'Cartelera', icon: '🎬' },
-    { path: '/panel/mis-entradas', label: 'Mis entradas', icon: '🎟️' },
+const commonItems = [
+    { path: '/cartelera', label: 'Ver cartelera', icon: '🍿' },
+    { path: '/admin/perfil', label: 'Mi perfil', icon: '👤' },
 ];
 
-const profileItem = (basePath) => ({ path: `${basePath}/perfil`, label: 'Mi perfil', icon: '👤' });
-
-const itemsFor = (role) => {
-    if (role === ROLES.superAdmin) return [...staffItems, ...superAdminItems, profileItem('/admin')];
-    if (isStaff(role)) return [...staffItems, profileItem('/admin')];
-    return [...clientItems, profileItem('/panel')];
-};
+const itemsFor = (role) => (role === ROLES.superAdmin
+    ? [...staffItems, ...superAdminItems, ...commonItems]
+    : [...staffItems, ...commonItems]);
 
 const Sidebar = () => {
     const session = useSession();
