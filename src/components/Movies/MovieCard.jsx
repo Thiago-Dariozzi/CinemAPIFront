@@ -2,7 +2,7 @@ import { useState } from 'react';
 import MovieFunctionsPanel from '../Showtimes/MovieFunctionsPanel';
 import MoviePoster from '../Billboard/MoviePoster';
 import FieldBody from '../common/FieldBody';
-import { computeErrors } from '../common/fieldValidation';
+import { computeErrors, invalidFieldLabels } from '../common/fieldValidation';
 import { movieFormFields } from './movieFields';
 
 const toDateInputValue = (value) => (value ? value.slice(0, 10) : "");
@@ -41,6 +41,7 @@ const MovieCard = ({
 
     const errors = computeErrors(movieFormFields, form);
     const isFormValid = Object.values(errors).every((e) => e == null);
+    const missingLabels = invalidFieldLabels(movieFormFields, errors);
 
     const genreName = genres.find((g) => g.id === genreId)?.name ?? "Sin género";
 
@@ -106,6 +107,10 @@ const MovieCard = ({
                             />
                         </div>
                     ))}
+
+                    {missingLabels.length > 0 && (
+                        <p className="msg-inline-error--sm">Para guardar falta completar o corregir: {missingLabels.join(", ")}</p>
+                    )}
 
                     <button
                         onClick={handleSave}

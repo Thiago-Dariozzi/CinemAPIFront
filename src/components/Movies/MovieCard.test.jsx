@@ -55,6 +55,7 @@ describe('MovieCard', () => {
         await user.tab();
 
         expect(screen.getByText('El título es obligatorio')).toBeInTheDocument();
+        expect(screen.getByText('Para guardar falta completar o corregir: Título')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Guardar' })).toBeDisabled();
         expect(onEdit).not.toHaveBeenCalled();
     });
@@ -66,5 +67,16 @@ describe('MovieCard', () => {
         await user.click(screen.getByRole('button', { name: 'Actualizar' }));
 
         expect(screen.getByLabelText('Fecha de estreno')).toHaveValue("2026-03-15");
+        expect(screen.queryByText(/Para guardar falta/)).not.toBeInTheDocument();
+    });
+
+    it('lista todo lo que falta para guardar', async () => {
+        const user = userEvent.setup();
+        render(<MovieCard {...movie} releaseDate="" genres={genres} onEdit={vi.fn()} onDelete={vi.fn()} />);
+
+        await user.click(screen.getByRole('button', { name: 'Actualizar' }));
+        await user.clear(screen.getByLabelText('Título'));
+
+        expect(screen.getByText('Para guardar falta completar o corregir: Título, Fecha de estreno')).toBeInTheDocument();
     });
 });
