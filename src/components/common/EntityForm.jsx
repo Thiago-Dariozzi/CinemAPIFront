@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { computeErrors } from './fieldValidation';
+import { computeErrors, invalidFieldLabels } from './fieldValidation';
 import FieldInput from './FieldInput';
 import FieldBody from './FieldBody';
 
@@ -26,7 +26,7 @@ const groupFields = (fields) => {
     return rows;
 };
 
-const EntityForm = ({ title, submitLabel = "Guardar", submittingLabel = submitLabel, fields, initialValues, optionsSources = {}, resetOnSuccess = true, onSubmit }) => {
+const EntityForm = ({ title, submitLabel = "Guardar", submittingLabel = submitLabel, fields, initialValues, optionsSources = {}, resetOnSuccess = true, showMissingFields = false, onSubmit }) => {
     const [form, setForm] = useState(initialValues);
     const [touched, setTouched] = useState({});
     const [submitError, setSubmitError] = useState(null);
@@ -34,6 +34,7 @@ const EntityForm = ({ title, submitLabel = "Guardar", submittingLabel = submitLa
 
     const errors = computeErrors(fields, form);
     const isFormValid = Object.values(errors).every((e) => e == null);
+    const missingLabels = invalidFieldLabels(fields, errors);
 
     const handleChange = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
     const handleBlur = (key) => setTouched((prev) => ({ ...prev, [key]: true }));
@@ -93,6 +94,10 @@ const EntityForm = ({ title, submitLabel = "Guardar", submittingLabel = submitLa
                         </div>
                     )
                 ))}
+
+                {showMissingFields && missingLabels.length > 0 && (
+                    <p className="msg-inline-error">Para guardar falta completar o corregir: {missingLabels.join(", ")}</p>
+                )}
 
                 <button
                     type="submit"

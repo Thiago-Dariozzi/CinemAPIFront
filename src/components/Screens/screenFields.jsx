@@ -1,5 +1,6 @@
 const MAX_ROWS = 26;
 const MAX_SEATS_PER_ROW = 40;
+const MAX_NAME_LENGTH = 50;
 
 const validateRange = (label, max) => (v) => {
     const value = Number(v);
@@ -12,7 +13,10 @@ export const screenFields = [
         label: "Nombre",
         type: "text",
         placeholder: "Ej: Sala 1, Sala IMAX...",
-        validate: (v) => v.trim() === "" ? "El nombre es obligatorio" : null,
+        validate: (v) => {
+            if (v.trim() === "") return "El nombre es obligatorio";
+            return v.trim().length > MAX_NAME_LENGTH ? `El nombre no puede superar los ${MAX_NAME_LENGTH} caracteres` : null;
+        },
     },
     {
         key: "rows",

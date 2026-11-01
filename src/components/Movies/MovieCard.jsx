@@ -1,5 +1,11 @@
 import { useState } from 'react';
 import MovieFunctionsPanel from '../Showtimes/MovieFunctionsPanel';
+import MoviePoster from '../Billboard/MoviePoster';
+import FieldBody from '../common/FieldBody';
+import { computeErrors, invalidFieldLabels } from '../common/fieldValidation';
+import { movieFormFields } from './movieFields';
+
+const toDateInputValue = (value) => (value ? value.slice(0, 10) : "");
 
 const MovieCard = ({
     id,
@@ -19,23 +25,44 @@ const MovieCard = ({
     const [isFunctionsListOpen, setIsFunctionsListOpen] = useState(false);
     const [saveError, setSaveError] = useState(null);
     const [deleteError, setDeleteError] = useState(null);
-    const [form, setForm] = useState({
-        title, synopsis, durationMinutes, genreId, imageUrl, releaseDate,
+    const buildForm = () => ({
+        title,
+        synopsis: synopsis ?? "",
+        durationMinutes,
+        genreId,
+        imageUrl: imageUrl ?? "",
+        releaseDate: toDateInputValue(releaseDate),
         suggestedPrice: suggestedPrice ?? "",
         isShowing
     });
 
+    const [touched, setTouched] = useState({});
+    const [form, setForm] = useState(buildForm);
+
+    const errors = computeErrors(movieFormFields, form);
+    const isFormValid = Object.values(errors).every((e) => e == null);
+    const missingLabels = invalidFieldLabels(movieFormFields, errors);
+
     const genreName = genres.find((g) => g.id === genreId)?.name ?? "Sin género";
 
-    const handleChangeValue = (event, inputKey) => {
-        setForm((prevForm) => ({
-            ...prevForm,
-            [inputKey]: event.target.value
-        }));
+    const handleChange = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+    const handleBlur = (key) => setTouched((prev) => ({ ...prev, [key]: true }));
+
+    const startEditing = () => {
+        setForm(buildForm());
+        setTouched({});
+        setSaveError(null);
+        setIsEditing(true);
     };
 
     const handleSave = async () => {
         setSaveError(null);
+
+        if (!isFormValid) {
+            setTouched(Object.fromEntries(movieFormFields.map((f) => [f.key, true])));
+            return;
+        }
+
         const suggestedPriceToSend = form.suggestedPrice === "" ? null : Number(form.suggestedPrice);
         try {
             await onEdit(id, { ...form, suggestedPrice: suggestedPriceToSend, id });
@@ -66,51 +93,29 @@ const MovieCard = ({
                 <div className="movie-info">
                     {saveError && <p className="msg-inline-error--sm">{saveError}</p>}
 
-                    <label>Título</label>
-                    <input className="form-input form-input--compact" value={form.title} onChange={(e) => handleChangeValue(e, "title")} />
+                    {movieFormFields.map((field) => (
+                        <div key={field.key}>
+                            <FieldBody
+                                field={field}
+                                value={form[field.key]}
+                                touched={touched[field.key]}
+                                error={errors[field.key]}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                optionsSources={{ genres }}
+                                compact
+                            />
+                        </div>
+                    ))}
 
-                    <label>Género</label>
-                    <select className="form-select form-input--compact" value={form.genreId} onChange={(e) => handleChangeValue(e, "genreId")}>
-                        <option value="">Seleccionar género...</option>
-                        {genres.map((g) => (
-                            <option key={g.id} value={g.id}>{g.name}</option>
-                        ))}
-                    </select>
-
-                    <label>Sinopsis</label>
-                    <input className="form-input form-input--compact" value={form.synopsis} onChange={(e) => handleChangeValue(e, "synopsis")} />
-
-                    <label>URL Imagen</label>
-                    <input className="form-input form-input--compact" value={form.imageUrl} onChange={(e) => handleChangeValue(e, "imageUrl")} />
-
-                    <label>Minutos</label>
-                    <input className="form-input form-input--compact" type="number" value={form.durationMinutes} onChange={(e) => handleChangeValue(e, "durationMinutes")} />
-
-                    <label>Precio sugerido (opcional)</label>
-                    <input
-                        className="form-input form-input--compact"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={form.suggestedPrice}
-                        onChange={(e) => handleChangeValue(e, "suggestedPrice")}
-                        placeholder="Precio de referencia para sus funciones"
-                    />
-
-                    <div className="form-checkbox-row">
-                        <input
-                            type="checkbox"
-                            id={`isShowing-${id}`}
-                            checked={form.isShowing}
-                            onChange={(e) => setForm((prevForm) => ({ ...prevForm, isShowing: e.target.checked }))}
-                            className="form-checkbox"
-                        />
-                        <label htmlFor={`isShowing-${id}`}>¿Está en cartelera disponible?</label>
-                    </div>
+                    {missingLabels.length > 0 && (
+                        <p className="msg-inline-error--sm">Para guardar falta completar o corregir: {missingLabels.join(", ")}</p>
+                    )}
 
                     <button
                         onClick={handleSave}
-                        className="btn btn--save btn-group"
+                        disabled={!isFormValid}
+                        className={`btn ${isFormValid ? 'btn--save' : 'btn--disabled'} btn-group`}
                     >
                         Guardar
                     </button>
@@ -129,7 +134,9 @@ const MovieCard = ({
         <div
             className={`movie-card ${isFunctionsListOpen ? 'movie-card--highlighted' : ''}`}
         >
-            {imageUrl && <img className="movie-image" src={imageUrl} alt={title} />}
+            <div className="movie-image">
+                <MoviePoster key={imageUrl} src={imageUrl} title={title} />
+            </div>
 
             <div className="movie-info">
                 <h2 className="movie-title">{title}</h2>
@@ -149,7 +156,7 @@ const MovieCard = ({
 
                 {onEdit && (
                     <button
-                        onClick={() => setIsEditing(true)}
+                        onClick={startEditing}
                         className="btn btn--primary btn-group"
                     >
                         Actualizar
