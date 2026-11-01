@@ -2,6 +2,7 @@ const MAX_TITLE_LENGTH = 150;
 const MAX_SYNOPSIS_LENGTH = 5000;
 const MAX_IMAGE_URL_LENGTH = 500;
 const MAX_DURATION_MINUTES = 1000;
+const MAX_SUGGESTED_PRICE = 1_000_000;
 const MIN_RELEASE_DATE = "1900-01-01";
 const IMAGE_URL_PATTERN = /^https?:\/\/\S+$/i;
 
@@ -71,12 +72,18 @@ export const movieFormFields = [
         label: "Precio sugerido (opcional)",
         type: "number",
         size: "lg",
-        min: 0,
+        min: 0.01,
         step: 0.01,
         placeholder: "Precio de referencia para precargar sus funciones",
         omitIfEmpty: true,
         coerce: Number,
-        validate: (v) => v !== "" && Number(v) < 0 ? "El precio sugerido no puede ser negativo" : null,
+        validate: (v) => {
+            if (v === "" || v == null) return null;
+            const value = Number(v);
+            return value > 0 && value <= MAX_SUGGESTED_PRICE
+                ? null
+                : `El precio sugerido debe ser mayor a 0 y no superar ${MAX_SUGGESTED_PRICE.toLocaleString('es-AR')}`;
+        },
     },
     {
         key: "isShowing",

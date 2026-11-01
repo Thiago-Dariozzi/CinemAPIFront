@@ -35,6 +35,13 @@ describe('movieFormFields', () => {
         expect(validate("imageUrl", "hola")).toBe("La URL tiene que empezar con http:// o https://");
         expect(validate("imageUrl", "www.example.com/poster.jpg")).toBe("La URL tiene que empezar con http:// o https://");
     });
+
+    it('acepta el precio sugerido vacío o mayor a 0', () => {
+        expect(validate("suggestedPrice", "")).toBeNull();
+        expect(validate("suggestedPrice", "5000")).toBeNull();
+        expect(validate("suggestedPrice", "0")).toBe("El precio sugerido debe ser mayor a 0 y no superar 1.000.000");
+        expect(validate("suggestedPrice", "-1")).toBe("El precio sugerido debe ser mayor a 0 y no superar 1.000.000");
+    });
 });
 
 describe('MovieCard', () => {
