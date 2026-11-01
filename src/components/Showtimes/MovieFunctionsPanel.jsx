@@ -13,6 +13,7 @@ import {
 import { formatShowtime } from '../../utils/formatShowtime';
 
 const CLEANING_BUFFER_MINUTES = 15;
+const MAX_PRICE = 1_000_000;
 
 registerLocale('es', es);
 
@@ -54,7 +55,11 @@ const validate = ({ screenId, selectedDate, selectedTime, price }) => ({
             ? "No se puede elegir una fecha anterior a hoy"
             : null,
     selectedTime: !selectedTime ? "Elegí la hora de inicio" : null,
-    price: price !== "" && Number(price) < 0 ? "El precio no puede ser negativo" : null,
+    price: String(price).trim() === ""
+        ? "El precio es obligatorio"
+        : Number(price) < 0 || Number(price) > MAX_PRICE
+            ? `El precio debe estar entre 0 y ${MAX_PRICE.toLocaleString('es-AR')}`
+            : null,
 });
 
 const buildMoviesById = (movies) => {
@@ -231,7 +236,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
             movieId,
             screenId,
             startTime: toLocalIsoString(start),
-            price: price === "" ? (movieSuggestedPrice ?? 0) : Number(price),
+            price: Number(price),
         };
 
         try {
