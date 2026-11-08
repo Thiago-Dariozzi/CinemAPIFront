@@ -8,10 +8,12 @@ import { useSession } from '../hooks/useSession';
 
 const emptyPasswordForm = { currentPassword: "", newPassword: "", confirmPassword: "" };
 
+// Edit own name and password
 const Profile = () => {
     const session = useSession();
     const [success, setSuccess] = useState(null);
 
+    // Saves the name and updates the session
     const handleUpdateProfile = async (profile) => {
         setSuccess(null);
         await updateProfile(profile);
@@ -19,6 +21,7 @@ const Profile = () => {
         setSuccess("Tus datos se actualizaron.");
     };
 
+    // Changes the password
     const handleChangePassword = async (passwords) => {
         setSuccess(null);
         await changePassword(passwords);

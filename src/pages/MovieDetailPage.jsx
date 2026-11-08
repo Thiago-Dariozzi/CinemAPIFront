@@ -12,6 +12,7 @@ import { EmptyState, ErrorState, LoadingState } from '../components/common/LoadS
 
 const LOGIN_NOTICE = "Ingresá o creá tu cuenta para comprar entradas. Después volvés a esta película.";
 
+// Shows the schedule or its loading, error and empty states
 const MovieSchedule = ({ movie, schedule, today, selectedDate, onSelectDate, onBuy, canBuy, staffHint }) => {
     if (!movie.isShowing) return <EmptyState title="Esta película no está en cartelera." />;
     if (schedule.loading) return <LoadingState message="Buscando funciones..." />;
@@ -39,6 +40,7 @@ const MovieSchedule = ({ movie, schedule, today, selectedDate, onSelectDate, onB
     );
 };
 
+// Movie detail with its showtimes by day
 const MovieDetailPage = () => {
     const { movieId } = useParams();
     const [params, setParams] = useSearchParams();
@@ -48,7 +50,9 @@ const MovieDetailPage = () => {
     const selectedDate = params.get('dia');
     const selectDate = (date) => setParams({ dia: date }, { replace: true });
 
+    // Fetches the movie
     const fetchMovie = useCallback(() => getMovieById(movieId), [movieId]);
+    // Fetches the movie's schedule
     const fetchSchedule = useCallback(() => getMovieSchedule(movieId), [movieId]);
     const movie = useAsyncData(fetchMovie, "No pudimos cargar la película.");
     const schedule = useAsyncData(fetchSchedule, "No pudimos cargar los horarios.");
@@ -73,6 +77,7 @@ const MovieDetailPage = () => {
         ? "Entraste como staff: la compra de entradas es para clientes."
         : null;
 
+    // Goes to login if logged out, otherwise to the purchase
     const handleBuy = (showtime, date) => {
         if (!session) {
             navigate('/login', { state: { from: `/cartelera/${movieId}?dia=${date}`, notice: LOGIN_NOTICE } });

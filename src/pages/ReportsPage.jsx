@@ -10,6 +10,7 @@ import MovieSalesTable from '../components/Reports/MovieSalesTable';
 import OccupancyTable from '../components/Reports/OccupancyTable';
 import { EmptyState, ErrorState, LoadingState } from '../components/common/LoadState';
 
+// Sales report or its loading and error states
 const SalesSection = ({ sales }) => {
     if (sales.loading) return <LoadingState message="Calculando ventas..." />;
     if (sales.error) return <ErrorState message={sales.error} onRetry={sales.reload} />;
@@ -27,6 +28,7 @@ const SalesSection = ({ sales }) => {
     );
 };
 
+// Occupancy report or its loading and error states
 const OccupancySection = ({ occupancy }) => {
     if (occupancy.loading) return <LoadingState message="Calculando ocupación..." />;
     if (occupancy.error) return <ErrorState message={occupancy.error} onRetry={occupancy.reload} />;
@@ -34,6 +36,7 @@ const OccupancySection = ({ occupancy }) => {
     return <OccupancyTable report={occupancy.data} />;
 };
 
+// Sales and occupancy reports
 const ReportsPage = () => {
     const [today] = useState(() => new Date());
     const presets = rangePresets(today);
@@ -43,7 +46,9 @@ const ReportsPage = () => {
     });
     const [occupancyDate, setOccupancyDate] = useState(() => toDateKey(today));
 
+    // Fetches sales for the range
     const fetchSales = useCallback(() => getSalesReport(range), [range]);
+    // Fetches occupancy for the day
     const fetchOccupancy = useCallback(() => getOccupancyReport(occupancyDate), [occupancyDate]);
     const sales = useAsyncData(fetchSales, "No se pudo obtener el reporte de ventas.");
     const occupancy = useAsyncData(fetchOccupancy, "No se pudo obtener el reporte de ocupación.");

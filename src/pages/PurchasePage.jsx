@@ -10,18 +10,22 @@ import { seatKey } from '../utils/seats';
 import SeatMap from '../components/Purchases/SeatMap';
 import PurchaseSummary from '../components/Purchases/PurchaseSummary';
 
+// Seat picking and purchase for one showtime
 const PurchaseView = ({ showtimeId }) => {
     const navigate = useNavigate();
+    // Fetches the seat map
     const fetchSeatMap = useCallback(() => getSeatMap(showtimeId), [showtimeId]);
     const seatMap = useAsyncData(fetchSeatMap, "No se pudo cargar el mapa de butacas.");
     const fee = useAsyncData(getCurrentFee, "No se pudo obtener el cargo por servicio.");
     const map = seatMap.data;
+    // Set of taken seat keys
     const takenKeys = useMemo(() => new Set((map?.takenSeats ?? []).map(seatKey)), [map]);
     const { selected: chosenSeats, toggle, maxSeats } = useSeatSelection(takenKeys);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
     const selectedKeys = new Set(chosenSeats.map(seatKey));
 
+    // Creates the purchase; reloads the map if a seat was taken
     const handleConfirm = async () => {
         setSubmitError(null);
         setIsSubmitting(true);
@@ -73,6 +77,7 @@ const PurchaseView = ({ showtimeId }) => {
     );
 };
 
+// Remounts the view when the showtime changes
 const PurchasePage = () => {
     const { showtimeId } = useParams();
     return <PurchaseView key={showtimeId} showtimeId={showtimeId} />;

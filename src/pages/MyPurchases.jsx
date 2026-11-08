@@ -6,6 +6,7 @@ import PurchaseList from '../components/Purchases/PurchaseList';
 
 const CANCEL_HINT = "Ya no se puede cancelar: faltan 2 horas o menos para la función.";
 
+// Client's purchases split into upcoming and past
 const MyPurchases = () => {
     const location = useLocation();
     const [now] = useState(() => Date.now());

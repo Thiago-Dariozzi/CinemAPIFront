@@ -12,17 +12,21 @@ const EMPTY_FILTERS = { movieId: "", showtimeId: "", from: "", to: "", status: "
 
 const noShowtimes = () => Promise.resolve([]);
 
+// All sales with filters, for staff
 const SalesPage = () => {
     const [filters, setFilters] = useState(EMPTY_FILTERS);
     const movies = useEntityList(getAllMovies);
+    // Fetches showtimes of the chosen movie
     const fetchShowtimes = useCallback(
         () => (filters.movieId ? getShowtimesByMovie(filters.movieId) : noShowtimes()),
         [filters.movieId],
     );
     const showtimes = useEntityList(fetchShowtimes);
+    // Fetches purchases for the filters
     const fetchPurchases = useCallback(() => getPurchases(filters), [filters]);
     const { purchases, loading, error, cancel } = usePurchaseList(fetchPurchases, cancelPurchase, "No se pudieron cargar las ventas.");
 
+    // Updates a filter; resets showtime when the movie changes
     const handleChange = (key, value) => setFilters((prev) => ({
         ...prev,
         [key]: value,

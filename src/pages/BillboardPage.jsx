@@ -11,6 +11,7 @@ import { EmptyState, ErrorState, LoadingState } from '../components/common/LoadS
 const DAYS_AHEAD = 7;
 const GUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+// Public billboard with genre and date filters in the URL
 const BillboardPage = () => {
     const [params, setParams] = useSearchParams();
     const [today] = useState(() => new Date());
@@ -20,10 +21,12 @@ const BillboardPage = () => {
     const genreId = GUID_PATTERN.test(genreParam) ? genreParam : "";
     const date = isDateKey(dateParam) && dateKeys.includes(dateParam) ? dateParam : "";
 
+    // Fetches movies for the current filters
     const fetchMovies = useCallback(() => getActiveMovies({ genreId, date }), [genreId, date]);
     const movies = useAsyncData(fetchMovies, "No pudimos cargar la cartelera.");
     const genres = useAsyncData(getAllGenres, "No pudimos cargar los géneros.");
 
+    // Sets or removes a filter in the URL
     const setFilter = (key, value) => {
         const next = new URLSearchParams(params);
         if (value) next.set(key, value);
@@ -33,6 +36,7 @@ const BillboardPage = () => {
     const clearFilters = () => setParams(new URLSearchParams());
 
     const genreName = (id) => (genres.data ?? []).find((genre) => genre.id === id)?.name;
+    // Builds the movie detail link
     const detailPath = (movieId) => `/cartelera/${movieId}${date ? `?dia=${date}` : ""}`;
     const hasFilters = Boolean(genreId || date);
 
