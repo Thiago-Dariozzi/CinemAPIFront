@@ -3,6 +3,7 @@ import { createUserFields } from './userFields';
 
 const initialForm = { name: "", email: "", password: "" };
 
+// Form to create a user with the given role
 const NewUser = ({ title, role, onAddUser }) => (
     <EntityForm
         title={title}

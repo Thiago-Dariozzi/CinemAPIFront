@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import MovieFunctionsPanel from '../Showtimes/MovieFunctionsPanel';
 
+// Movie card with inline edit and showtimes panel
 const MovieCard = ({
     id,
     title,
@@ -34,6 +35,7 @@ const MovieCard = ({
         }));
     };
 
+    // Saves the edited movie
     const handleSave = async () => {
         setSaveError(null);
         const suggestedPriceToSend = form.suggestedPrice === "" ? null : Number(form.suggestedPrice);
@@ -45,6 +47,7 @@ const MovieCard = ({
         }
     };
 
+    // Confirms and deletes the movie
     const handleDelete = async () => {
         if (!window.confirm("¿Estás seguro de eliminar esta pelicula?")) return;
         setDeleteError(null);
@@ -55,6 +58,7 @@ const MovieCard = ({
         }
     };
 
+    // Leaves edit mode
     const cancelEditing = () => {
         setIsEditing(false);
         setSaveError(null);

@@ -3,6 +3,7 @@ import { getAllFees, addFee, updateFee, deleteFee } from '../../api/feeApi';
 import NewFee from './NewFee';
 import FeeContainer from './FeeContainer';
 
+// Fees CRUD screen
 const FeeDashboard = () => {
     const { list: fees, loading, error, success, handleAdd, handleUpdate, handleDelete } = useEntityCrud({
         fetchAll: getAllFees,

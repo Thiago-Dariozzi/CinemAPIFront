@@ -3,6 +3,7 @@ import { feeFields } from './feeFields';
 
 const initialForm = { name: "", percentage: "", fixedAmount: "0", isCurrent: false };
 
+// Form to create a fee
 const NewFee = ({ onAddFee }) => (
     <EntityForm
         title="Agregar nuevo cargo"

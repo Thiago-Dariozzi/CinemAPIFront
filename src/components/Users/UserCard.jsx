@@ -1,6 +1,7 @@
 import EntityCard from '../common/EntityCard';
 import { editUserFields, renderUserView, userConfirmDeleteMessage } from './userFields';
 
+// Editable card for a user
 const UserCard = ({ id, name, email, role, isActive, onDelete, onEdit, onRestore }) => (
     <EntityCard
         id={id}

@@ -5,6 +5,7 @@ import { getAllGenres } from '../../api/genreApi';
 import NewMovie from './NewMovie';
 import MovieContainer from './MovieContainer';
 
+// Movies CRUD screen
 const Dashboard = () => {
     const { list: movies, loading, error, success, handleAdd, handleUpdate, handleDelete } = useEntityCrud({
         fetchAll: getAllMovies,

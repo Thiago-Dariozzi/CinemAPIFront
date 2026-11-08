@@ -4,6 +4,7 @@ import { initialForm } from './NewMovieData';
 import { useEntityList } from '../../hooks/useEntityList';
 import { getAllGenres } from '../../api/genreApi';
 
+// Form to create a movie
 const NewMovie = ({ onAddMovie }) => {
     const genres = useEntityList(getAllGenres);
 

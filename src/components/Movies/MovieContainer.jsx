@@ -1,6 +1,7 @@
 import EntityGrid from '../common/EntityGrid';
 import MovieCard from './MovieCard';
 
+// Grid of movie cards
 const MovieContainer = ({ movies, genres = [], onDeleteMovie, onEditMovie }) => (
     <EntityGrid
         items={movies}

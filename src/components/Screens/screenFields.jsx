@@ -1,6 +1,7 @@
 const MAX_ROWS = 26;
 const MAX_SEATS_PER_ROW = 40;
 
+// Validates a number between 1 and max
 const validateRange = (label, max) => (v) => {
     const value = Number(v);
     return Number.isInteger(value) && value >= 1 && value <= max ? null : `${label} debe ser un número entero entre 1 y ${max}`;
@@ -38,6 +39,7 @@ export const screenFields = [
 
 export const screenConfirmDeleteMessage = "¿Estás seguro de eliminar esta sala?";
 
+// Read-only view of a screen
 export const renderScreenView = ({ name, rows, seatsPerRow, isActive }) => (
     <>
         <h2 className="entity-card__title">{name}</h2>

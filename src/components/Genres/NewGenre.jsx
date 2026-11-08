@@ -3,6 +3,7 @@ import { genreFields } from './genreFields';
 
 const initialForm = { name: "" };
 
+// Form to create a genre
 const NewGenre = ({ onAddGenre }) => (
     <EntityForm
         title="Agregar Nuevo Género"

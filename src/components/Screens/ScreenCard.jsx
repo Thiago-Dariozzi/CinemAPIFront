@@ -1,6 +1,7 @@
 import EntityCard from '../common/EntityCard';
 import { screenFields, screenConfirmDeleteMessage, renderScreenView } from './screenFields';
 
+// Editable card for a screen
 const ScreenCard = ({ id, name, rows, seatsPerRow, isActive, onDelete, onEdit }) => (
     <EntityCard
         id={id}

@@ -1,6 +1,7 @@
 import EntityCard from '../common/EntityCard';
 import { feeFields, feeConfirmDeleteMessage, renderFeeView } from './feeFields';
 
+// Editable card for a fee
 const FeeCard = ({ id, name, percentage, fixedAmount, isCurrent, onDelete, onEdit }) => (
     <EntityCard
         id={id}

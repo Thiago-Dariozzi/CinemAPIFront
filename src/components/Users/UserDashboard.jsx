@@ -11,8 +11,10 @@ const TEXTS = {
     [ROLES.admin]: { page: "🛡️ Administradores", form: "Agregar nuevo administrador", loading: "Cargando administradores...", empty: "No hay administradores" },
 };
 
+// Users CRUD screen for one role, with search
 const UserDashboard = ({ role }) => {
     const [search, setSearch] = useState("");
+    // Fetches users for the role and search
     const fetchUsers = useCallback(() => getAllUsers(role, search), [role, search]);
     const { list: users, loading, refreshing, error, success, handleAdd, handleUpdate, handleDelete, handleRestore } = useEntityCrud({
         fetchAll: fetchUsers,

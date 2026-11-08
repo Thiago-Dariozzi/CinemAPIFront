@@ -6,6 +6,7 @@ const MAX_NAME_LENGTH = 100;
 
 const hasAtMostTwoDecimals = (value) => /^\d+(\.\d{1,2})?$/.test(String(value).trim());
 
+// Validates an amount between 0 and max
 const validateAmount = (label, max) => (v) => {
     if (String(v).trim() === "") return `${label} es obligatorio (ingresá un número)`;
     const value = Number(v);
@@ -57,6 +58,7 @@ export const feeFields = [
 
 export const feeConfirmDeleteMessage = "¿Eliminar este cargo? Si es el vigente, las compras nuevas quedan sin cargo.";
 
+// Read-only view of a fee
 export const renderFeeView = ({ name, percentage, fixedAmount, isCurrent }) => (
     <>
         <h2 className="entity-card__title">{name}</h2>

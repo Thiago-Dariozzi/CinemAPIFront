@@ -1,6 +1,7 @@
 import EntityGrid from '../common/EntityGrid';
 import UserCard from './UserCard';
 
+// Grid of user cards
 const UserContainer = ({ users, onDelete, onEdit, onRestore }) => (
     <EntityGrid
         items={users}

@@ -1,6 +1,7 @@
 import EntityGrid from '../common/EntityGrid';
 import ScreenCard from './ScreenCard';
 
+// Grid of screen cards
 const ScreenContainer = ({ screens, onDeleteScreen, onEditScreen }) => (
     <EntityGrid
         items={screens}

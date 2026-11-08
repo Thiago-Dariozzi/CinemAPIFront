@@ -46,6 +46,7 @@ export const editUserFields = [nameField, emailField];
 
 export const userConfirmDeleteMessage = "¿Dar de baja a este usuario? No va a poder entrar hasta que lo reactives.";
 
+// Read-only view of a user
 export const renderUserView = ({ name, email, isActive }) => (
     <>
         <h2 className="entity-card__title">👤 {name}</h2>

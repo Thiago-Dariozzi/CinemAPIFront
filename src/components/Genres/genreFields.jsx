@@ -10,6 +10,7 @@ export const genreFields = [
 
 export const genreConfirmDeleteMessage = (name) => `¿Eliminar el género "${name}"?`;
 
+// Read-only view of a genre
 export const renderGenreView = ({ name, movieCount }) => (
     <>
         <h2 className="entity-card__title">{name}</h2>

@@ -1,13 +1,16 @@
 import { useState } from 'react';
 
+// Search box for users
 const UserSearch = ({ search, onSearch }) => {
     const [text, setText] = useState(search);
 
+    // Runs the search
     const handleSubmit = (event) => {
         event.preventDefault();
         onSearch(text.trim());
     };
 
+    // Clears the search
     const handleClear = () => {
         setText("");
         onSearch("");

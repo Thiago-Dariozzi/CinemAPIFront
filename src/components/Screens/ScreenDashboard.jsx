@@ -3,6 +3,7 @@ import { getAllScreens, addNewScreen, updateScreen, deleteScreen } from '../../a
 import NewScreen from './NewScreen';
 import ScreenContainer from './ScreenContainer';
 
+// Screens CRUD screen
 const ScreenDashboard = () => {
     const { list: screens, loading, error, success, handleAdd, handleUpdate, handleDelete } = useEntityCrud({
         fetchAll: getAllScreens,

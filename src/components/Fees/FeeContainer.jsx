@@ -1,6 +1,7 @@
 import EntityGrid from '../common/EntityGrid';
 import FeeCard from './FeeCard';
 
+// Grid of fee cards
 const FeeContainer = ({ fees, onDeleteFee, onEditFee }) => (
     <EntityGrid
         items={fees}

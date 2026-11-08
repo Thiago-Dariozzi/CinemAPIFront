@@ -5,6 +5,7 @@ import { getAllMovies } from '../../api/movieApi';
 import NewGenre from './NewGenre';
 import GenreContainer from './GenreContainer';
 
+// Genres CRUD screen
 const GenreDashboard = () => {
     const {
         list: genres,

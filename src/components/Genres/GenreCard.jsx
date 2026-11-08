@@ -1,6 +1,7 @@
 import EntityCard from '../common/EntityCard';
 import { genreFields, genreConfirmDeleteMessage, renderGenreView } from './genreFields';
 
+// Editable card for a genre
 const GenreCard = ({ id, name, movieCount, onEdit, onDelete }) => (
     <EntityCard
         id={id}

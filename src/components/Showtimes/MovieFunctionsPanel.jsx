@@ -18,6 +18,7 @@ registerLocale('es', es);
 
 const pad = (n) => String(n).padStart(2, '0');
 
+// Today at 00:00
 const startOfToday = () => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -28,6 +29,7 @@ const startOfDay = (date) => new Date(date.getFullYear(), date.getMonth(), date.
 
 const isPastDate = (date) => startOfDay(date) < startOfToday();
 
+// Joins a day and a time into one date
 const combineDateAndTime = (date, timeDate) => {
     if (!date || !timeDate) return null;
     const combined = new Date(date);
@@ -37,15 +39,19 @@ const combineDateAndTime = (date, timeDate) => {
 
 const toDateOnlyString = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
+// Local date-time string for the API
 const toLocalIsoString = (date) => `${toDateOnlyString(date)}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
 
+// Cache key for a screen and day
 const buildOccupancyKey = (screenId, date) => `${screenId}|${toDateOnlyString(date)}`;
 
+// Formats a time range
 const formatRange = (range) => {
     const opts = { hour: '2-digit', minute: '2-digit' };
     return `${range.start.toLocaleTimeString('es-AR', opts)} a ${range.end.toLocaleTimeString('es-AR', opts)}`;
 };
 
+// Validates the new showtime form
 const validate = ({ screenId, selectedDate, selectedTime, price }) => ({
     screenId: !screenId ? "Elegí una sala" : null,
     selectedDate: !selectedDate
@@ -57,12 +63,14 @@ const validate = ({ screenId, selectedDate, selectedTime, price }) => ({
     price: price !== "" && Number(price) < 0 ? "El precio no puede ser negativo" : null,
 });
 
+// Indexes movies by id
 const buildMoviesById = (movies) => {
     const map = {};
     movies.forEach((m) => { map[m.id] = m; });
     return map;
 };
 
+// Busy time ranges, cleaning time included
 const buildOccupiedRanges = (occupied, moviesById) => (
     occupied.map((s) => {
         const otherMovie = moviesById[s.movieId];
@@ -73,6 +81,7 @@ const buildOccupiedRanges = (occupied, moviesById) => (
     })
 );
 
+// Time range of the new showtime
 const buildPendingRange = (selectedDate, selectedTime, movieDurationMinutes) => {
     const start = combineDateAndTime(selectedDate, selectedTime);
     if (!start) return null;
@@ -80,11 +89,13 @@ const buildPendingRange = (selectedDate, selectedTime, movieDurationMinutes) => 
     return { start, end };
 };
 
+// Finds a busy range that overlaps
 const findConflict = (pendingRange, occupiedRanges) => {
     if (!pendingRange) return null;
     return occupiedRanges.find((r) => pendingRange.start < r.end && r.start < pendingRange.end) || null;
 };
 
+// Message about the screen availability
 const describeOccupancy = ({ isLoading, error, hasTime, conflict, occupiedRanges }) => {
     if (isLoading) return "Consultando horarios ocupados...";
     if (error) return `⚠️ ${error.replace(/\.$/, "")}. No se puede verificar si la sala está libre; el servidor lo valida al guardar.`;
@@ -95,6 +106,7 @@ const describeOccupancy = ({ isLoading, error, hasTime, conflict, occupiedRanges
     return busy ? `✅ Libre. Ocupados ese día: ${busy}` : "✅ Sala libre ese día";
 };
 
+// Lists a movie's showtimes and lets staff add or delete them
 const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPrice, isListOpen, onToggleList }) => {
     const [functions, setFunctions] = useState([]);
     const [screens, setScreens] = useState([]);
@@ -114,11 +126,10 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
 
     const todayDate = startOfToday();
 
+    // Loads showtimes, screens and movies in parallel
     useEffect(() => {
         let isMounted = true;
 
-        // Cada carga es su propia función async, así las 3 salen en paralelo (ninguna
-        // espera a la anterior), igual que antes con los .then() sueltos.
         const loadFunctions = async () => {
             setIsLoading(true);
             try {
@@ -160,6 +171,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
 
     const occupancyKey = screenId && selectedDate ? buildOccupancyKey(screenId, selectedDate) : null;
 
+    // Fetches the screen's busy slots for the day
     useEffect(() => {
         if (!screenId || !selectedDate) return;
 
@@ -195,6 +207,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         setTouched((prev) => ({ ...prev, [field]: true }));
     };
 
+    // Clears the form fields
     const resetForm = () => {
         setScreenId("");
         setSelectedDate(null);
@@ -214,6 +227,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         setIsFormOpen(false);
     };
 
+    // Validates and creates the showtime
     const handleAdd = async (event) => {
         event.preventDefault();
         setFormError(null);
@@ -244,6 +258,7 @@ const MovieFunctionsPanel = ({ movieId, movieDurationMinutes, movieSuggestedPric
         }
     };
 
+    // Confirms and deletes a showtime
     const handleDelete = async (id) => {
         if (!window.confirm("¿Eliminar esta función?")) return;
         try {
