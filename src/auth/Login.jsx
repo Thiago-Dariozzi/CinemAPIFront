@@ -8,6 +8,7 @@ import { isSessionExpiredNotice, login } from './session';
 
 const initialForm = { email: "", password: "" };
 
+// Login screen; redirects if already logged in
 const Login = () => {
     const session = useSession();
     const location = useLocation();

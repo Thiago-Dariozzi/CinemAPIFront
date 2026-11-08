@@ -7,6 +7,7 @@ import { register } from './session';
 
 const initialForm = { name: "", email: "", password: "", confirmPassword: "" };
 
+// Sign-up screen; redirects if already logged in
 const Register = () => {
     const session = useSession();
     const location = useLocation();

@@ -1,13 +1,16 @@
 const MIN_PASSWORD_LENGTH = 8;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Builds a required-field validator
 const required = (message) => (value) => (value.trim() === "" ? message : null);
 
+// Checks email is filled and valid
 const validateEmail = (value) => {
     if (value.trim() === "") return "El email es obligatorio";
     return EMAIL_PATTERN.test(value.trim()) ? null : "El email no tiene un formato válido";
 };
 
+// Checks minimum password length
 const validateNewPassword = (value) =>
     value.length < MIN_PASSWORD_LENGTH ? `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres` : null;
 

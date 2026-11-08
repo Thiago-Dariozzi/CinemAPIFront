@@ -19,8 +19,10 @@ export const homePathFor = (role) => (isStaff(role) ? "/admin/peliculas" : "/car
 const INTERNAL_PATH = /^\/(?![/\\])/;
 const AUTH_PATHS = ["/login", "/registro"];
 
+// True if path is the section or inside it
 const isUnder = (path, section) => path === section || path.startsWith(`${section}/`) || path.startsWith(`${section}?`);
 
+// Whether the role may open that path
 const canVisit = (role, path) => {
     if (AUTH_PATHS.some((authPath) => isUnder(path, authPath))) return false;
     if (isStaff(role)) return isUnder(path, "/admin");
@@ -28,5 +30,6 @@ const canVisit = (role, path) => {
     return true;
 };
 
+// Picks where to go after login
 export const pathAfterLogin = (role, from) =>
     typeof from === "string" && INTERNAL_PATH.test(from) && canVisit(role, from) ? from : homePathFor(role);

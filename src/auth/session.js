@@ -12,6 +12,7 @@ let expiryTimer;
 
 const KNOWN_ROLES = Object.values(ROLES);
 
+// Reads the raw session from storage
 const readStorage = () => {
     try {
         return localStorage.getItem(SESSION_KEY);
@@ -20,6 +21,7 @@ const readStorage = () => {
     }
 };
 
+// Parses and validates the stored session
 const parseSession = (raw) => {
     if (!raw) return null;
     try {
@@ -30,19 +32,23 @@ const parseSession = (raw) => {
     }
 };
 
+// Tells subscribers the session changed
 const notify = () => listeners.forEach((listener) => listener());
 
+// Logs out and flags the expired notice
 const expireSession = () => {
     expiredNotice = true;
     logout();
 };
 
+// Sets a timer to log out at expiry
 const scheduleExpiry = () => {
     clearTimeout(expiryTimer);
     const session = getSession();
     if (session) expiryTimer = setTimeout(expireSession, Math.max(new Date(session.expiresAt) - Date.now(), 0));
 };
 
+// Saves or clears the session and notifies
 const writeSession = (session) => {
     try {
         if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
@@ -54,6 +60,7 @@ const writeSession = (session) => {
     notify();
 };
 
+// Builds and saves the session from the login response
 const startSession = ({ token, expiresAt, user }) => {
     expiredNotice = false;
     const session = { token, expiresAt, userId: user.id, name: user.name, email: user.email, role: user.role };
@@ -61,6 +68,7 @@ const startSession = ({ token, expiresAt, user }) => {
     return session;
 };
 
+// Returns the cached session, or null if expired
 export const getSession = () => {
     const raw = readStorage();
     if (raw !== cachedRaw) {
@@ -71,6 +79,7 @@ export const getSession = () => {
     return cachedSession;
 };
 
+// Listens to session changes, also from other tabs
 export const subscribe = (listener) => {
     listeners.add(listener);
     const onStorage = (event) => {
@@ -89,6 +98,7 @@ export const register = async (account) => startSession(await registerRequest(ac
 
 export const logout = () => writeSession(null);
 
+// Updates the name in the saved session
 export const updateSessionName = (name) => {
     const session = getSession();
     if (session) writeSession({ ...session, name });

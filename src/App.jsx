@@ -12,8 +12,7 @@ import LegacyMovieRedirect from './components/routes/LegacyMovieRedirect'
 import BillboardPage from './pages/BillboardPage'
 import MovieDetailPage from './pages/MovieDetailPage'
 
-// Admin pages (cada dashboard existente)
-// Loaded on demand so the public billboard ships a small bundle.
+// Staff pages, loaded on demand to keep the billboard bundle small
 const Dashboard = lazy(() => import('./components/Movies/Dashboard'))
 const GenreDashboard = lazy(() => import('./components/Genres/GenreDashboard'))
 const ScreenDashboard = lazy(() => import('./components/Screens/ScreenDashboard'))
@@ -23,15 +22,17 @@ const SalesPage = lazy(() => import('./pages/SalesPage'))
 const ReportsPage = lazy(() => import('./pages/ReportsPage'))
 const Profile = lazy(() => import('./pages/Profile'))
 
-// User pages
+// Client pages
 const PurchasePage = lazy(() => import('./pages/PurchasePage'))
 const MyPurchases = lazy(() => import('./pages/MyPurchases'))
 
+// Sends to the home page of the current role
 const HomeRedirect = () => {
   const session = useSession()
   return <Navigate to={session ? homePathFor(session.role) : "/cartelera"} replace />
 }
 
+// App routes by role
 const App = () => {
   return (
     <BrowserRouter>
@@ -44,7 +45,7 @@ const App = () => {
           <Route path="/cartelera/:movieId" element={<MovieDetailPage />} />
         </Route>
 
-        {/* Rutas Admin */}
+        {/* Staff routes */}
         <Route path="/admin" element={<ProtectedRoute roles={STAFF_ROLES}><AppLayout /></ProtectedRoute>}>
           <Route index element={<Navigate to="peliculas" replace />} />
           <Route path="peliculas" element={<Dashboard />} />
@@ -61,7 +62,7 @@ const App = () => {
           <Route path="perfil" element={<Profile />} />
         </Route>
 
-        {/* Rutas Usuario */}
+        {/* Client routes */}
         <Route path="/panel" element={<ProtectedRoute roles={[ROLES.client]}><PublicLayout /></ProtectedRoute>}>
           <Route index element={<Navigate to="/cartelera" replace />} />
           <Route path="cartelera" element={<Navigate to="/cartelera" replace />} />

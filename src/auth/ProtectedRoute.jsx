@@ -2,6 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useSession } from '../hooks/useSession';
 import { homePathFor } from './roles';
 
+// Sends to login or home if session or role is missing
 const ProtectedRoute = ({ children, roles }) => {
     const session = useSession();
     const location = useLocation();
