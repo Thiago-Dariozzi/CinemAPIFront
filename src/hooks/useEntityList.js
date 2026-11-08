@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+// Loads a read-only list
 export const useEntityList = (fetchAll) => {
     const [list, setList] = useState([]);
 
+    // Fetches the list once
     useEffect(() => {
         let ignore = false;
 

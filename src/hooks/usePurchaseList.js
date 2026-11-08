@@ -1,9 +1,11 @@
 import { useCallback } from 'react';
 import { useAsyncData } from './useAsyncData';
 
+// Loads purchases and allows cancelling them
 export const usePurchaseList = (fetchPurchases, cancelPurchase, errorMessage) => {
     const { data, loading, error, reload, setData } = useAsyncData(fetchPurchases, errorMessage);
 
+    // Cancels a purchase and updates it in the list
     const cancel = useCallback(async (id) => {
         const updated = await cancelPurchase(id);
         setData((prev) => (prev ?? []).map((purchase) => (purchase.id === id ? updated : purchase)));

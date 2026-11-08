@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 
+// Merges payload and API result into the item
 const mergeResult = (item, payload, result) => ({
     ...item,
     ...payload,
     ...(result && typeof result === 'object' ? result : {}),
 });
 
+// Loads a list and handles add, update, delete and restore
 export const useEntityCrud = ({
     fetchAll,
     addFn,
@@ -26,6 +28,7 @@ export const useEntityCrud = ({
 
     const fetchErrorMessage = messages.fetchError ?? "No se pudo conectar con el servidor.";
 
+    // Fetches the list on mount and on reload
     useEffect(() => {
         let ignore = false;
         fetchAll()
@@ -50,8 +53,10 @@ export const useEntityCrud = ({
     const refreshing = !loading
         && (loadedRequest?.fetchAll !== fetchAll || loadedRequest?.reloadToken !== reloadToken);
 
+    // Triggers a new fetch
     const reload = useCallback(() => setReloadToken((token) => token + 1), []);
 
+    // Runs an API action and updates the list
     const mutate = async (action, applyToList, successMessage, errorMessage) => {
         try {
             const result = await action();

@@ -3,12 +3,14 @@ import { MAX_SEATS_PER_PURCHASE, compareSeats, seatKey } from '../utils/seats';
 
 const NO_SEATS = new Set();
 
+// Tracks picked seats with a max limit
 export const useSeatSelection = (unavailableKeys = NO_SEATS, maxSeats = MAX_SEATS_PER_PURCHASE) => {
     const [picked, setPicked] = useState([]);
 
     const isAvailable = (seat) => !unavailableKeys.has(seatKey(seat));
     const selected = picked.filter(isAvailable);
 
+    // Adds or removes a seat
     const toggle = (seat) => setPicked((prev) => {
         const current = prev.filter(isAvailable);
         const key = seatKey(seat);
@@ -17,6 +19,7 @@ export const useSeatSelection = (unavailableKeys = NO_SEATS, maxSeats = MAX_SEAT
         return [...current, { row: seat.row, number: seat.number }].sort(compareSeats);
     });
 
+    // Clears all seats
     const clear = () => setPicked([]);
 
     return { selected, toggle, clear, maxSeats };
