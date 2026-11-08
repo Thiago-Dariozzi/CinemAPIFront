@@ -3,6 +3,7 @@ import { dayChipLabel, formatLongDate, formatTime } from '../../utils/dates';
 
 const FEW_SEATS_RATIO = 0.1;
 
+// Text and style for the free seats
 const seatsLabel = ({ availableSeats, totalSeats }) => {
     if (availableSeats === 0) return { text: "Agotada", modifier: "sold-out" };
     if (availableSeats <= Math.max(1, Math.floor(totalSeats * FEW_SEATS_RATIO))) {
@@ -11,6 +12,7 @@ const seatsLabel = ({ availableSeats, totalSeats }) => {
     return { text: `${availableSeats} libres`, modifier: "ok" };
 };
 
+// Day tabs with that day's showtimes
 const ShowtimeSchedule = ({ days, selectedDate, today, canBuy, onSelectDate, onBuy }) => {
     const selectedDay = days.find((day) => day.date === selectedDate) ?? days[0];
 

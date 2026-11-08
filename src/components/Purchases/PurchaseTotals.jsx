@@ -1,5 +1,6 @@
 import { formatMoney } from '../../utils/money';
 
+// Subtotal, fee and total rows
 const PurchaseTotals = ({ subtotal, feeAmount, total, feeLabel = "Cargo por servicio" }) => (
     <dl className="purchase-totals">
         <dt>Subtotal</dt>

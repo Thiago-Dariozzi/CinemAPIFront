@@ -5,11 +5,13 @@ import PurchaseTotals from './PurchaseTotals';
 
 const STATUS_LABELS = { Confirmed: "Confirmada", Cancelled: "Cancelada" };
 
+// One purchase with its tickets and cancel button
 const PurchaseCard = ({ purchase, showCustomer = false, cancelHint, onCancel }) => {
     const [isCancelling, setIsCancelling] = useState(false);
     const [cancelError, setCancelError] = useState(null);
     const isConfirmed = purchase.status === "Confirmed";
 
+    // Confirms and cancels the purchase
     const handleCancel = async () => {
         if (!window.confirm("¿Seguro que querés cancelar esta compra? Las butacas quedan libres.")) return;
         setCancelError(null);

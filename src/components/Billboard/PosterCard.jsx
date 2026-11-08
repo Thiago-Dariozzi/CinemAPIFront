@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { formatDuration } from '../../utils/dates';
 import MoviePoster from './MoviePoster';
 
+// Billboard card linking to the movie
 const PosterCard = ({ movie, genreName, detailPath }) => (
     <Link to={detailPath} className="poster-card">
         <div className="poster-card__frame">

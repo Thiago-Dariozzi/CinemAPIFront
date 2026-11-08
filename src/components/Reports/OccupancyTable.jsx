@@ -4,14 +4,17 @@ import { formatTime } from '../../utils/dates';
 const FULL_THRESHOLD = 80;
 const LOW_THRESHOLD = 30;
 
+// Bar color for the occupancy
 const variantFor = (percentage) => {
     if (percentage >= FULL_THRESHOLD) return "success";
     if (percentage >= LOW_THRESHOLD) return "warning";
     return "danger";
 };
 
+// Formats a percentage
 const formatPercentage = (value) => `${value.toLocaleString('es-AR', { maximumFractionDigits: 1 })} %`;
 
+// Occupancy table by showtime
 const OccupancyTable = ({ report }) => (
     <Table responsive hover variant="dark" className="report-table">
         <caption className="report-table__caption">Ocupación por función</caption>

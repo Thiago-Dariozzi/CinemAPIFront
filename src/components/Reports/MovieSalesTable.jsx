@@ -1,6 +1,7 @@
 import { Table } from 'react-bootstrap';
 import { formatMoney } from '../../utils/money';
 
+// Sales table by movie
 const MovieSalesTable = ({ report }) => (
     <Table responsive hover variant="dark" className="report-table">
         <caption className="report-table__caption">Ventas por película (de mayor a menor recaudación)</caption>

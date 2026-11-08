@@ -4,10 +4,13 @@ const STATUS_OPTIONS = [
     { value: "Cancelled", label: "Canceladas" },
 ];
 
+// Label for a showtime option
 const showtimeLabel = (showtime) =>
     new Date(showtime.startTime).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
+// Filters for the sales list
 const SalesFilters = ({ filters, movies, showtimes, onChange, onClear }) => {
+    // Change handler for a filter
     const handle = (key) => (event) => onChange(key, event.target.value);
 
     return (

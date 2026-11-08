@@ -3,12 +3,15 @@ import { isDateKey } from '../../utils/dates';
 
 const MIN_YEAR = 2000;
 
+// Valid date key from a sane year
 const isReasonableDate = (value) => isDateKey(value) && Number(value.slice(0, 4)) >= MIN_YEAR;
 
+// Day picker for the occupancy report
 const OccupancyDateForm = ({ date, onApply }) => {
     const [draft, setDraft] = useState(date);
     const valid = isReasonableDate(draft);
 
+    // Applies the date if valid
     const handleSubmit = (event) => {
         event.preventDefault();
         if (valid) onApply(draft);

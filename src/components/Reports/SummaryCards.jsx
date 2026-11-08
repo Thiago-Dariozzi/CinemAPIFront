@@ -1,7 +1,9 @@
 import { formatMoney } from '../../utils/money';
 
+// Formats a number
 const formatCount = (value) => value.toLocaleString('es-AR');
 
+// Total sales cards
 const SummaryCards = ({ report }) => {
     const cards = [
         { label: "Entradas vendidas", value: formatCount(report.ticketsSold), detail: `${formatCount(report.purchases)} compras` },

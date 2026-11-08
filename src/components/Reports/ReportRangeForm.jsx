@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { validateRange } from './reportRange';
 
+// Date range form with quick presets
 const ReportRangeForm = ({ range, presets, onApply }) => {
     const [draft, setDraft] = useState(range);
     const error = validateRange(draft);
 
+    // Applies the range if valid
     const handleSubmit = (event) => {
         event.preventDefault();
         if (!error) onApply(draft);
     };
 
+    // Applies a preset right away
     const applyPreset = (preset) => {
         const next = { from: preset.from, to: preset.to };
         setDraft(next);

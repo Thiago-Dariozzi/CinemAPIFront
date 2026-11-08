@@ -1,11 +1,13 @@
 import { rowLetter, seatKey } from '../../utils/seats';
 
+// CSS class for a seat state
 const seatClassName = (isTaken, isSelected) => {
     if (isTaken) return 'seat seat--taken';
     if (isSelected) return 'seat seat--selected';
     return 'seat';
 };
 
+// Clickable grid of seats
 const SeatMap = ({ rows, seatsPerRow, takenKeys, selectedKeys, isFull, disabled = false, onToggle }) => {
     const rowNumbers = Array.from({ length: rows }, (_, i) => i + 1);
     const seatNumbers = Array.from({ length: seatsPerRow }, (_, i) => i + 1);

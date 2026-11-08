@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+// Movie image with a fallback if missing or broken
 const MoviePoster = ({ src, title, className = "", decorative = false }) => {
     const [failedSrc, setFailedSrc] = useState(null);
 

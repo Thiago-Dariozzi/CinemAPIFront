@@ -1,5 +1,6 @@
 import { dayChipLabel } from '../../utils/dates';
 
+// Toggle chip button
 const Chip = ({ selected, onClick, children }) => (
     <button
         type="button"
@@ -11,6 +12,7 @@ const Chip = ({ selected, onClick, children }) => (
     </button>
 );
 
+// Day and genre filters for the billboard
 const BillboardFilters = ({ genres, dateKeys, today, genreId, date, onGenreChange, onDateChange }) => (
     <div className="billboard-filters">
         <div className="billboard-filters__group" role="group" aria-label="Filtrar por día">

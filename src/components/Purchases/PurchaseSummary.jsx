@@ -2,6 +2,7 @@ import { calculatePurchaseTotals, formatMoney } from '../../utils/money';
 import { seatLabel } from '../../utils/seats';
 import PurchaseTotals from './PurchaseTotals';
 
+// Fee name with its percentage and fixed amount
 const feeDescription = (fee) => {
     if (!fee) return "Cargo por servicio";
     const parts = [];
@@ -10,12 +11,14 @@ const feeDescription = (fee) => {
     return parts.length > 0 ? `${fee.name} (${parts.join(' + ')})` : fee.name;
 };
 
+// Text listing the picked seats
 const describeSeats = (seats) => {
     if (seats.length === 0) return "Elegí tus butacas en el mapa.";
     const noun = seats.length === 1 ? 'butaca' : 'butacas';
     return `${seats.length} ${noun}: ${seats.map(seatLabel).join(', ')}`;
 };
 
+// Seats, totals and confirm button
 const PurchaseSummary = ({ seats, price, fee, maxSeats, isSubmitting, canConfirm, onConfirm }) => {
     const totals = calculatePurchaseTotals(price, seats.length, fee);
     const isEnabled = canConfirm && !isSubmitting;
