@@ -1,3 +1,4 @@
+// Input, select or checkbox based on the field type
 const FieldInput = ({ id, field, value, touched, error, onChange, onBlur, optionsSources = {}, compact = false }) => {
     if (field.type === "select") {
         const options = optionsSources[field.optionsFrom] ?? [];

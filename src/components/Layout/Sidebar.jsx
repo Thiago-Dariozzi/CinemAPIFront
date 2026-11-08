@@ -22,10 +22,12 @@ const commonItems = [
     { path: '/admin/perfil', label: 'Mi perfil', icon: '👤' },
 ];
 
+// Menu items for the role
 const itemsFor = (role) => (role === ROLES.superAdmin
     ? [...staffItems, ...superAdminItems, ...commonItems]
     : [...staffItems, ...commonItems]);
 
+// Staff side menu
 const Sidebar = () => {
     const session = useSession();
     if (!session) return null;

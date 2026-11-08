@@ -1,3 +1,4 @@
+// Renders items in a grid
 const EntityGrid = ({ items, renderItem, className = 'entity-grid' }) => (
     <div className={className}>
         {items.map(renderItem)}

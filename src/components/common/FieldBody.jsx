@@ -1,6 +1,7 @@
 import { useId } from 'react';
 import FieldInput from './FieldInput';
 
+// Field with its label and error message
 const FieldBody = (props) => {
     const id = useId();
     const isCheckbox = props.field.type === "checkbox";

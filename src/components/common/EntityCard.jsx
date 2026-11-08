@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { computeErrors } from './fieldValidation';
 import FieldBody from './FieldBody';
+// Generic card that shows an item and edits it inline
 const EntityCard = ({
     id,
     values,
@@ -28,6 +29,7 @@ const EntityCard = ({
     const handleChange = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
     const handleBlur = (key) => setTouched((prev) => ({ ...prev, [key]: true }));
 
+    // Opens edit mode with fresh values
     const startEditing = () => {
         setForm(values);
         setTouched({});
@@ -35,11 +37,13 @@ const EntityCard = ({
         setIsEditing(true);
     };
 
+    // Leaves edit mode
     const cancelEditing = () => {
         setIsEditing(false);
         setSaveError(null);
     };
 
+    // Validates and saves the edited item
     const handleSave = async () => {
         setSaveError(null);
 
@@ -56,6 +60,7 @@ const EntityCard = ({
         }
     };
 
+    // Runs delete or restore and shows its error
     const runAction = async (action, fallbackMessage) => {
         setActionError(null);
         setIsBusy(true);
@@ -68,11 +73,13 @@ const EntityCard = ({
         }
     };
 
+    // Asks for confirmation before deleting
     const handleDelete = () => {
         if (!window.confirm(confirmDeleteMessage)) return;
         runAction(onDelete, "Error al eliminar");
     };
 
+    // Shared props for each field
     const fieldProps = (field) => ({
         field,
         value: form[field.key],

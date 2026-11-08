@@ -1,6 +1,7 @@
 import LazyOutlet from './LazyOutlet';
 import Sidebar from './Sidebar';
 
+// Staff layout with the sidebar
 const AppLayout = () => {
     return (
         <div className="app-layout">

@@ -6,6 +6,7 @@ import { logout } from '../../auth/session';
 import { ROLES, isStaff } from '../../auth/roles';
 import { useSession } from '../../hooks/useSession';
 
+// Navbar links depending on the session
 const accountLinks = (session, location) => {
     if (!session) {
         const from = `${location.pathname}${location.search}`;
@@ -33,6 +34,7 @@ const accountLinks = (session, location) => {
     );
 };
 
+// Public layout with a collapsible navbar
 const PublicLayout = () => {
     const session = useSession();
     const location = useLocation();

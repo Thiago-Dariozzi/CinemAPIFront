@@ -3,6 +3,7 @@ import { computeErrors } from './fieldValidation';
 import FieldInput from './FieldInput';
 import FieldBody from './FieldBody';
 
+// Builds the payload sent to the API
 const buildPayload = (fields, form) => {
     const payload = {};
     fields.forEach((field) => {
@@ -12,6 +13,7 @@ const buildPayload = (fields, form) => {
     return payload;
 };
 
+// Groups fields that share a row
 const groupFields = (fields) => {
     const rows = [];
     let openGroup = null;
@@ -26,6 +28,7 @@ const groupFields = (fields) => {
     return rows;
 };
 
+// Generic create form driven by a fields config
 const EntityForm = ({ title, submitLabel = "Guardar", submittingLabel = submitLabel, fields, initialValues, optionsSources = {}, resetOnSuccess = true, onSubmit }) => {
     const [form, setForm] = useState(initialValues);
     const [touched, setTouched] = useState({});
@@ -38,6 +41,7 @@ const EntityForm = ({ title, submitLabel = "Guardar", submittingLabel = submitLa
     const handleChange = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
     const handleBlur = (key) => setTouched((prev) => ({ ...prev, [key]: true }));
 
+    // Validates, submits and resets the form
     const handleSubmit = async (event) => {
         event.preventDefault();
         setSubmitError(null);
@@ -59,6 +63,7 @@ const EntityForm = ({ title, submitLabel = "Guardar", submittingLabel = submitLa
         }
     };
 
+    // Shared props for each field
     const fieldProps = (field) => ({
         field,
         value: form[field.key],

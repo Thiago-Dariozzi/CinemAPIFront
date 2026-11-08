@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { ErrorState } from './LoadState';
 
+// Shows an error screen if a page crashes or fails to load
 class RouteErrorBoundary extends Component {
     constructor(props) {
         super(props);
