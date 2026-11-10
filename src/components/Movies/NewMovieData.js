@@ -4,6 +4,7 @@ export const initialForm = {
     durationMinutes: 0,
     genreId: "",
     imageUrl: "",
+    releaseDate: "",
     isShowing: true,
     suggestedPrice: ""
 };

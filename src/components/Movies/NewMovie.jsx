@@ -14,6 +14,7 @@ const NewMovie = ({ onAddMovie }) => {
             fields={movieFormFields}
             initialValues={initialForm}
             optionsSources={{ genres }}
+            showMissingFields
             onSubmit={onAddMovie}
         />
     );

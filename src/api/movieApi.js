@@ -5,8 +5,8 @@ const mapMovieToBackend = (movie) => ({
     synopsis: movie.synopsis,
     durationMinutes: Number(movie.durationMinutes) || 0,
     genreId: movie.genreId,
-    imageUrl: movie.imageUrl,
-    releaseDate: movie.releaseDate,
+    imageUrl: movie.imageUrl?.trim() ? movie.imageUrl.trim() : null,
+    releaseDate: movie.releaseDate || null,
     suggestedPrice: movie.suggestedPrice === "" || movie.suggestedPrice == null ? null : Number(movie.suggestedPrice),
     isShowing: movie.isShowing ?? true,
 });
